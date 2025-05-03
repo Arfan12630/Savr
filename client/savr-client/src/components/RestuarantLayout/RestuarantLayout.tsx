@@ -1,10 +1,10 @@
 import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-
-const DraggableRectangle = ({ position }: { position: { x: number; y: number } }) => {
+import NavBar from './Navbar/NavBar';
+const DraggableRectangle = ({ id, position }: { id: string, position: { x: number; y: number } }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: 'draggable-rectangle',
+    id,
   });
 
   const finalTransform = {
@@ -14,7 +14,7 @@ const DraggableRectangle = ({ position }: { position: { x: number; y: number } }
     scaleY: 1,
   };
 
-  const style: React.CSSProperties = {
+  const rectTablestyle: React.CSSProperties = {
     position: 'absolute',
     left: 0,
     top: 0,
@@ -32,9 +32,14 @@ const DraggableRectangle = ({ position }: { position: { x: number; y: number } }
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...listeners} {...attributes}>
+    <>
+
+    <div ref={setNodeRef} style={rectTablestyle} {...listeners} {...attributes}>
       RECTANGULAR TABLE
+      
     </div>
+    
+    </>
   );
 };
 
