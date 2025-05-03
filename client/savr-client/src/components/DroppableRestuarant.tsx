@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DndContext, useDroppable } from '@dnd-kit/core';
-import DraggableRectangle from './RestuarantLayout/RestuarantLayout';
+import RestuarantLayout from './RestuarantLayout/RestuarantLayout';
 import NavBar from './RestuarantLayout/Navbar/NavBar';
 
 const DroppableArea = () => {
@@ -43,7 +43,7 @@ const DroppableArea = () => {
       <div ref={setNodeRef} style={style}>
         <NavBar addChair={addChair} />
         {chairs.map((chair) => (
-          <DraggableRectangle key={chair.id} id={chair.id} position={{ x: chair.x, y: chair.y }} />
+          <RestuarantLayout key={chair.id} id={chair.id} position={{ x: chair.x, y: chair.y }} />
         ))}
       </div>
     </DndContext>

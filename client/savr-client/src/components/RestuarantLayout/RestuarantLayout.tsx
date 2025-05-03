@@ -2,7 +2,7 @@ import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import NavBar from './Navbar/NavBar';
-const DraggableRectangle = ({ id, position }: { id: string, position: { x: number; y: number } }) => {
+const RestuarantLayout = ({ id, position }: { id: string, position: { x: number; y: number } }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
   });
@@ -43,4 +43,4 @@ const DraggableRectangle = ({ id, position }: { id: string, position: { x: numbe
   );
 };
 
-export default DraggableRectangle;
+export default RestuarantLayout;
