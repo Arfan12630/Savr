@@ -28,6 +28,9 @@ const DroppableArea = () => {
     ]);
   };
 
+  const deleteChair = (id: string) => {
+    setChairs((prev) => prev.filter((chair) => chair.id !== id));
+  };
   const style: React.CSSProperties = {
     width: '100vw',
     height: '100vh',
@@ -43,7 +46,7 @@ const DroppableArea = () => {
       <div ref={setNodeRef} style={style}>
         <NavBar addChair={addChair} />
         {chairs.map((chair) => (
-          <RestuarantLayout key={chair.id} id={chair.id} position={{ x: chair.x, y: chair.y }} />
+          <RestuarantLayout key={chair.id} id={chair.id} position={{ x: chair.x, y: chair.y }} onDelete={deleteChair}/>
         ))}
       </div>
     </DndContext>
