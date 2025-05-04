@@ -14,14 +14,15 @@ const RestuarantLayout = ({ onDelete, id, position }: { onDelete: (id: string) =
     scaleY: 1,
   };
 
-  const rectTablestyle: React.CSSProperties = {
+  const chairStyle: React.CSSProperties = {
     position: 'absolute',
     left: 0,
     top: 0,
-    width: 120,
+    width: 60,
     height: 60,
-    background: '#f4a261',
-    border: '2px solid #333',
+    background: 'white',
+
+    border: '2px solid black',
     borderRadius: 8,
     display: 'flex',
     alignItems: 'center',
@@ -43,14 +44,14 @@ const RestuarantLayout = ({ onDelete, id, position }: { onDelete: (id: string) =
 
     <div
       ref={setNodeRef}
-      style={rectTablestyle}
+      style={chairStyle}
       {...attributes}
       onMouseEnter={() => setShowDelete(true)}
       onMouseLeave={() => setShowDelete(false)}
       onContextMenu={handleContextMenu}
     >
       <div {...listeners} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        RECTANGULAR TABLE
+        CHAIR
       </div>
       {showDelete && (
         <button
