@@ -6,7 +6,7 @@ import { BrowserRouter, BrowserRouter as Router } from 'react-router-dom';
 // import logo from './logo.svg';
 import DroppableArea from './components/DroppableRestuarant';
 import './App.css';
-import RestuarantLayout from './components/RestuarantLayout/RestuarantLayout';
+import RestuarantLayout from './components/RestuarantLayout/ChairLayout';
 function App() {
   return (
     <div>

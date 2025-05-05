@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { DndContext, useDroppable } from '@dnd-kit/core';
-import RestuarantLayout from './RestuarantLayout/RestuarantLayout';
+import ChairLayout from './RestuarantLayout/ChairLayout';
 import NavBar from './RestuarantLayout/Navbar/NavBar';
 import Snackbar from '@mui/material/Snackbar';
+import TableLayout from './RestuarantLayout/TableLayout';
 
 const HEADER_HEIGHT = 100; // Adjust as needed
 
@@ -12,6 +13,7 @@ const DroppableArea = () => {
   });
   const [touchedBoundary, setTouchedBoundary] = useState(false);
   const [chairs, setChairs] = useState<{ id: string; x: number; y: number }[]>([]);
+  const [tables, setTables] = useState<{ id: string; x: number; y: number }[]>([]);
   const [isChairPressed, setIsChairPressed] = useState(false);
 
   const [isTablePressed, setIsTablePressed] = useState(false);
@@ -19,6 +21,8 @@ const DroppableArea = () => {
   const handleDragEnd = (event: any) => {
     const { active, delta } = event;
     console.log(event)
+
+    //Chair logic
     setChairs((prev) =>
       prev.map((chair) => {
         if (chair.id === active.id) {
@@ -36,6 +40,25 @@ const DroppableArea = () => {
         return chair;
       })
     );
+
+    // Rect Table logic
+    setTables((prev) => 
+      prev.map((table) => {
+        if (table.id === active.id) {
+          const newX = table.x + delta.x;
+          const newY = table.y + delta.y;
+          if (newY < HEADER_HEIGHT) {
+            console.log("touched boundary")
+            setTouchedBoundary(true);
+            return table; // Don't move if in header area
+          }
+          return { ...table, x: newX, y: newY };
+        }
+        return table;
+      })
+    );
+
+
   };
 
   const preventOverlap = (newX: number, newY: number, id: string, chairs: { id: string; x: number; y: number }[], width: number, height: number) => {
@@ -55,6 +78,13 @@ const DroppableArea = () => {
     setIsChairPressed(true);
   };
 
+  const addTable = () => {
+    setTables((prev) => [
+      ...prev,
+      { id: crypto.randomUUID(), x: 100 + prev.length * 30, y: 100 }
+    ]);
+    setIsTablePressed(true);
+  };
   const deleteChair = (id: string) => {
     setChairs((prev) => prev.filter((chair) => chair.id !== id));
   };
@@ -68,14 +98,20 @@ const DroppableArea = () => {
     overflow: 'hidden',
   };
 
+  const deleteTable = (id: string) => {
+    setTables((prev) => prev.filter((table) => table.id !== id));
+  };
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div ref={setNodeRef} style={style}>
-        <NavBar addChair={addChair} isChairPressed={isChairPressed} setIsChairPressed={setIsChairPressed} />
+        <NavBar addChair={addChair} isChairPressed={isChairPressed} setIsChairPressed={setIsChairPressed} addTable={addTable} isTablePressed={isTablePressed} setIsTablePressed={setIsTablePressed}/>
       
         {chairs.map((chair) => (
-          <RestuarantLayout key={chair.id} id={chair.id} position={{ x: chair.x, y: chair.y }} onDelete={deleteChair}/>
+          <ChairLayout key={chair.id} id={chair.id} position={{ x: chair.x, y: chair.y }} onDelete={deleteChair}/>
         ))}
+       {tables.map((table) => (
+        <TableLayout key={table.id} id={table.id} position={{ x: table.x, y: table.y }} onDelete={deleteTable}/>
+       ))}
         {touchedBoundary && (
           <Snackbar
             open={touchedBoundary}

@@ -2,7 +2,7 @@ import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import NavBar from './Navbar/NavBar';
-const RestuarantLayout = ({ onDelete, id, position }: { onDelete: (id: string) => void, id: string, position: { x: number; y: number } }) => {
+const ChairLayout = ({ onDelete, id, position }: { onDelete: (id: string) => void, id: string, position: { x: number; y: number } }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
   });
@@ -20,10 +20,7 @@ const RestuarantLayout = ({ onDelete, id, position }: { onDelete: (id: string) =
     top: 0,
     width: 60,
     height: 60,
-    background: 'white',
-
-    border: '2px solid black',
-    borderRadius: 8,
+    borderRadius: 10,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -50,8 +47,24 @@ const RestuarantLayout = ({ onDelete, id, position }: { onDelete: (id: string) =
       onMouseLeave={() => setShowDelete(false)}
       onContextMenu={handleContextMenu}
     >
-      <div {...listeners} style={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        CHAIR
+      <div {...listeners} style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column'
+      }}>
+        {/* SeatGeek-style chair SVG */}
+        <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
+          <g>
+            <rect x="6" y="24" width="6" height="8" rx="2" fill="#3973db"/>
+            <rect x="28" y="24" width="6" height="8" rx="2" fill="#3973db"/>
+            <path d="M8 22 Q20 10 32 22" stroke="#3973db" strokeWidth="4" fill="none"/>
+            <rect x="12" y="18" width="16" height="10" rx="3" fill="#3973db"/>
+            <path d="M10 34 Q20 38 30 34" stroke="#3973db" strokeWidth="3" fill="none"/>
+          </g>
+        </svg>
       </div>
       {showDelete && (
         <button
@@ -82,4 +95,4 @@ const RestuarantLayout = ({ onDelete, id, position }: { onDelete: (id: string) =
   );
 };
 
-export default RestuarantLayout;
+export default ChairLayout;
