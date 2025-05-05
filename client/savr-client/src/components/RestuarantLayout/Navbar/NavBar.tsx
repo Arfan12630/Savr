@@ -3,7 +3,8 @@ import Box from '@mui/joy/Box';
 import Drawer from '@mui/joy/Drawer';
 import Button from '@mui/joy/Button';
 import Snackbar from '@mui/material/Snackbar';
-const NavBar = ({addChair, isChairPressed, setIsChairPressed}: {addChair: () => void, isChairPressed: boolean, setIsChairPressed: (isChairPressed: boolean) => void}) => {
+import Avatar from '@mui/joy/Avatar';
+const NavBar = ({addChair, isChairPressed, setIsChairPressed, addTable, isTablePressed, setIsTablePressed}: {addChair: () => void, isChairPressed: boolean, setIsChairPressed: (isChairPressed: boolean) => void, addTable: () => void, isTablePressed: boolean, setIsTablePressed: (isTablePressed: boolean) => void}) => {
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer =
@@ -55,12 +56,13 @@ const NavBar = ({addChair, isChairPressed, setIsChairPressed}: {addChair: () => 
           Restaurant Name
         </h1>
         {/* Empty Box to balance the flex layout, or you can put another button here */}
+
+        <Avatar sx={{ width: 40, height: 40 }}></Avatar>
         <Box sx={{ width: 120 }} />
       </Box>
       <Drawer open={open} onClose={toggleDrawer(false)}>
         <Box
           role="presentation"
-       
           sx={{
             minWidth: 260,
             bgcolor: 'background.body',
@@ -104,6 +106,7 @@ const NavBar = ({addChair, isChairPressed, setIsChairPressed}: {addChair: () => 
               Add Chair
             </Button>
             <Button
+              onClick={() => addTable()}
               variant="soft"
               color="primary"
               sx={{
@@ -154,6 +157,13 @@ const NavBar = ({addChair, isChairPressed, setIsChairPressed}: {addChair: () => 
       message="Chair added ✅"
       anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
     />
+    <Snackbar
+      color="success"
+      open={isTablePressed}
+      autoHideDuration={4000}
+      onClose={() => setIsTablePressed(false)}
+      message="Table added ✅"
+      />
       </Drawer>
     </>
   );
