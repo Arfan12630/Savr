@@ -4,6 +4,7 @@ import ChairLayout from './RestuarantLayout/ChairLayout';
 import NavBar from './RestuarantLayout/Navbar/NavBar';
 import Snackbar from '@mui/material/Snackbar';
 import TableLayout from './RestuarantLayout/TableLayout';
+import axios from 'axios';
 
 const HEADER_HEIGHT = 100; // Adjust as needed
 
@@ -61,6 +62,7 @@ const DroppableArea = () => {
 
   };
 
+  // Need to implement this for tables and chairs
   const preventOverlap = (newX: number, newY: number, id: string, chairs: { id: string; x: number; y: number }[], width: number, height: number) => {
     chairs.forEach((chair) => {
       if (newX < chair.x + 100 && newX + 100 > chair.x && newY < chair.y + 100 && newY + 100 > chair.y) {
@@ -101,10 +103,33 @@ const DroppableArea = () => {
   const deleteTable = (id: string) => {
     setTables((prev) => prev.filter((table) => table.id !== id));
   };
+
+  const saveLayout = () => {
+    const layout = {
+      chairs: [...chairs],
+      tables: [...tables]
+    }
+    console.log(layout)
+    axios({
+      method: 'post',
+      url: 'http://127.0.0.1:5000/save-layout',
+      data: layout,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    })
+    .then((response) => {
+      console.log(response)
+    })
+    .catch((error) => {
+      console.error('Error saving layout:', error);
+    });
+
+  }
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div ref={setNodeRef} style={style}>
-        <NavBar addChair={addChair} isChairPressed={isChairPressed} setIsChairPressed={setIsChairPressed} addTable={addTable} isTablePressed={isTablePressed} setIsTablePressed={setIsTablePressed}/>
+        <NavBar addChair={addChair} isChairPressed={isChairPressed} setIsChairPressed={setIsChairPressed} addTable={addTable} isTablePressed={isTablePressed} setIsTablePressed={setIsTablePressed} saveLayout={saveLayout}/>
       
         {chairs.map((chair) => (
           <ChairLayout key={chair.id} id={chair.id} position={{ x: chair.x, y: chair.y }} onDelete={deleteChair}/>
