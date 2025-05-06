@@ -12,8 +12,15 @@ app.config['SQLALCHEMY_DATABASE_URI'] = layout_collection_DB
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+class Layout(db.Model):
+    __tablename__ = 'layouts'
+    id = db.Column(db.Integer, primary_key=True)
+    created_at = db.Column(db.DateTime, default=db.func.now())
+    chairs = db.Column(db.JSON)
+    tables = db.Column(db.JSON)
 
-
+with app.app_context():
+    db.create_all()
 
 
 #Creating this to get the layout from the owners
@@ -22,8 +29,23 @@ def save_layout():
     if request.method == 'OPTIONS':
         return '', 200
     data = request.json
-    print(data)
-    return jsonify({"message": "Layout saved"})
+    layout = Layout(chairs=data['chairs'], tables=data['tables'])
+    db.session.add(layout)
+    db.session.commit()
+    return jsonify(data)
+
+@app.route('/get-layout', methods=['GET'])
+def get_layout():
+    layout = Layout.query.order_by(Layout.id.desc()).first()
+    if layout:
+        return jsonify({
+            "chairs": layout.chairs,
+            "tables": layout.tables,
+            "created_at": layout.created_at
+        })
+    else:
+        return jsonify({"message": "No layout found"}), 404
+
 
 if __name__ == '__main__':
     app.run(debug=True)
