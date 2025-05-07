@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { DndContext, useDroppable } from '@dnd-kit/core';
-import ChairLayout from './RestuarantLayout/ChairLayout';
-import NavBar from './RestuarantLayout/Navbar/NavBar';
+import ChairLayout from './ChairLayout';
+import NavBar from './Navbar/NavBar';
 import Snackbar from '@mui/material/Snackbar';
-import TableLayout from './RestuarantLayout/TableLayout';
+import TableLayout from './TableLayout';
 import axios from 'axios';
 
 const HEADER_HEIGHT = 100; // Adjust as needed
@@ -105,6 +105,8 @@ const DroppableArea = () => {
   };
 
   const saveLayout = () => {
+
+    //TODO: Add a restuarant Name to the layout when we scrape 
     const layout = {
       chairs: [...chairs],
       tables: [...tables]
@@ -132,10 +134,10 @@ const DroppableArea = () => {
         <NavBar addChair={addChair} isChairPressed={isChairPressed} setIsChairPressed={setIsChairPressed} addTable={addTable} isTablePressed={isTablePressed} setIsTablePressed={setIsTablePressed} saveLayout={saveLayout}/>
       
         {chairs.map((chair) => (
-          <ChairLayout key={chair.id} id={chair.id} position={{ x: chair.x, y: chair.y }} onDelete={deleteChair}/>
+          <ChairLayout viewOnly={false}key={chair.id} id={chair.id} position={{ x: chair.x, y: chair.y }} onDelete={deleteChair}/>
         ))}
        {tables.map((table) => (
-        <TableLayout key={table.id} id={table.id} position={{ x: table.x, y: table.y }} onDelete={deleteTable}/>
+        <TableLayout viewOnly={false} key={table.id} id={table.id} position={{ x: table.x, y: table.y }} onDelete={deleteTable}/>
        ))}
         {touchedBoundary && (
           <Snackbar

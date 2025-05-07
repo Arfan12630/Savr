@@ -4,7 +4,10 @@ import os
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
-CORS(app, resources={r"/save-layout": {"origins": "http://localhost:3000"}})
+CORS(app, resources={
+    r"/save-layout": {"origins": "http://localhost:3000"},
+    r"/get-layout": {"origins": "http://localhost:3000"}
+})
 load_dotenv()
 
 layout_collection_DB = os.environ.get("SQL_DB_LINK")

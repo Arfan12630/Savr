@@ -2,7 +2,7 @@ import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import NavBar from './Navbar/NavBar';
-const ChairLayout = ({ onDelete, id, position }: { onDelete: (id: string) => void, id: string, position: { x: number; y: number } }) => {
+const ChairLayout = ({ onDelete, id, position , viewOnly=false }: { onDelete: (id: string) => void, id: string, position: { x: number; y: number }, viewOnly?: boolean }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
   });
@@ -66,7 +66,7 @@ const ChairLayout = ({ onDelete, id, position }: { onDelete: (id: string) => voi
           </g>
         </svg>
       </div>
-      {showDelete && (
+      {showDelete && !viewOnly && (
         <button
           style={{
             position: 'absolute',

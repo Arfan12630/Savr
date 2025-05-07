@@ -3,7 +3,7 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import table from '../../assets/Dining_Table_Image_Horizontal-removebg-preview.png';
 
-const TableLayout = ({ onDelete, id, position }: { onDelete: (id: string) => void, id: string, position: { x: number; y: number } }) => {
+const TableLayout = ({ onDelete, id, position , viewOnly=false }: { onDelete: (id: string) => void, id: string, position: { x: number; y: number }, viewOnly?: boolean }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
   });
@@ -60,7 +60,7 @@ const TableLayout = ({ onDelete, id, position }: { onDelete: (id: string) => voi
         {/* Table content can go here */}
       </div>
       
-      {showDelete && (
+      {showDelete && !viewOnly && (
         <button
           style={{
             position: 'absolute',
