@@ -13,67 +13,40 @@ soup = BeautifulSoup(response.text, 'html.parser')
 
 
 # Find all restaurant cards
-info = []
-restuarant_data = {
-    "name": [],
-    "address": [],
-    "hours": [],
-    "logo": [],
-    "link": []
-}
+names = [atag.text.strip() for atag in soup.select('h3.text-truncate a')]
+addresses = [
+    ', '.join([line.strip() for line in div.text.strip().split('\n') if line.strip()])
+    for div in soup.find_all('div', class_="res-address")
+]
+hours = [div.text.strip() for div in soup.find_all('div', class_="res-responce text-truncate open")]
+logos = [img.get('data-src') for img in soup.find_all('img', class_="visible lozad")]
+links = [a.get('href') for a in soup.find_all('a', class_="click-overlay")]
 
-restuarant_titles = soup.find_all('h3', class_="text-truncate")
-titles = soup.find_all('h3', class_="text-truncate")
-for title in titles:
-    if title:
-     atag = title.find('a')
-    if atag:
-     #print(atag.text.strip())
-     restuarant_data["name"].append(atag.text.strip())
-addresses = soup.find_all('div', class_="res-address")
-for address in addresses:
-    if address:
-        address_lines = address.text.strip().split('\n')
-        full_address = ', '.join([line.strip() for line in address_lines if line.strip()])
-        restuarant_data["address"].append(full_address)
-
-#print(restuarant_data)
-
-#Opening hours 
-hours = soup.find_all('div', class_="res-responce text-truncate open")
-for hour in hours:
-    if hour:
-        hour = hour.text.strip()
-        restuarant_data["hours"].append(hour)
-
-#Company Logo
-company_logos = soup.find_all('img', class_="visible lozad")
-for logo in company_logos:
-   logo_url = logo.get('data-src')
-   restuarant_data["logo"].append(logo_url)
-
-
-#Find the link 
-links = soup.find_all('a', class_="click-overlay")
-for link in links:
-    if link:
-        link_url = link.get('href')
-        restuarant_data["link"].append(link_url)
-
-# print(restuarant_data)
-
-
-
-# SCRAPING MENU DATA FROM  SIRVED
-menu_url  = "https://www.sirved.com/restaurant/waterloo-ontario-canada/ennios-pasta-house/3794/menus"
-menu_url = menu_url[:-1]
-print(menu_url)
-menu_response = requests.get(menu_url, headers=headers)
-menu_soup = BeautifulSoup(menu_response.text, 'html.parser')
-menu_images = menu_soup.find_all('img', class_="lozad")
-for image in menu_images:
-    if image:
+restaurants = []
+for i in range(len(names)):
+    restaurant = {
+        "name": names[i] if i < len(names) else "",
+        "address": addresses[i] if i < len(addresses) else "",
+        "hours": hours[i] if i < len(hours) else "",
+        "logo": logos[i] if i < len(logos) else "",
+        "link": links[i] if i < len(links) else "",
+        "menu_images": []
+    }
+    # Scrape menu images for this restaurant
+    menu_url = "https://www.sirved.com/restaurant/waterloo-ontario-canada/ennios-pasta-house/3794/menu"
+    menu_response = requests.get(menu_url, headers=headers)
+    menu_soup = BeautifulSoup(menu_response.text, 'html.parser')
+    menu_images = menu_soup.find_all('img', class_="lozad")
+    image_urls = []
+    for image in menu_images:
         image_url = image.get('data-src')
-        print(image_url)
+        if image_url:
+            image_urls.append(image_url)
+    restaurant["menu_images"] = image_urls
+    restaurants.append(restaurant)
+
+# Print the structured data
+for r in restaurants:
+    print(r)
 
 
