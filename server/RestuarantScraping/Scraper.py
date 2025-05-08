@@ -1,6 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
 from flask import Blueprint
+
+
+# SCRAPING RESTUARANT DATA FROM SIRVED
 url = "https://www.sirved.com/city/waterloo-ontario-canada/all?keyword=Ennios"
 headers = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -8,7 +11,6 @@ headers = {
 response = requests.get(url, headers=headers)
 soup = BeautifulSoup(response.text, 'html.parser')
 
-#print(soup.prettify())
 
 # Find all restaurant cards
 info = []
@@ -16,7 +18,8 @@ restuarant_data = {
     "name": [],
     "address": [],
     "hours": [],
-    "logo": []
+    "logo": [],
+    "link": []
 }
 
 restuarant_titles = soup.find_all('h3', class_="text-truncate")
@@ -46,8 +49,31 @@ for hour in hours:
 #Company Logo
 company_logos = soup.find_all('img', class_="visible lozad")
 for logo in company_logos:
-   print(logo)
    logo_url = logo.get('data-src')
    restuarant_data["logo"].append(logo_url)
 
-print(restuarant_data)
+
+#Find the link 
+links = soup.find_all('a', class_="click-overlay")
+for link in links:
+    if link:
+        link_url = link.get('href')
+        restuarant_data["link"].append(link_url)
+
+# print(restuarant_data)
+
+
+
+# SCRAPING MENU DATA FROM  SIRVED
+menu_url  = "https://www.sirved.com/restaurant/waterloo-ontario-canada/ennios-pasta-house/3794/menus"
+menu_url = menu_url[:-1]
+print(menu_url)
+menu_response = requests.get(menu_url, headers=headers)
+menu_soup = BeautifulSoup(menu_response.text, 'html.parser')
+menu_images = menu_soup.find_all('img', class_="lozad")
+for image in menu_images:
+    if image:
+        image_url = image.get('data-src')
+        print(image_url)
+
+
