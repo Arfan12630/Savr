@@ -3,11 +3,14 @@ from flask_cors import CORS
 import os 
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
+from AgentReserver.Reserver import reserver
+from RestuarantScraping.Scraper import scraper
+
 app = Flask(__name__)
-CORS(app, resources={
-    r"/save-layout": {"origins": "http://localhost:3000"},
-    r"/get-layout": {"origins": "http://localhost:3000"}
-})
+CORS(app)
+app.register_blueprint(reserver, scraper)
+
+
 load_dotenv()
 
 layout_collection_DB = os.environ.get("SQL_DB_LINK")
