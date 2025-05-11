@@ -3,6 +3,12 @@ import requests
 from flask import Blueprint, jsonify
 
 scraper = Blueprint('scraper', __name__)
+#Country will be canada for now
+def url_manipulation(address, province, restuarantName,country = "canada"):
+    new_url = f"https://www.sirved.com/city/{address}-{province}-{country}/all?keyword={restuarantName}"
+    restuarant_data = scrape_restaurant_data(new_url)
+    return restuarant_data
+
 
 def scrape_restaurant_data(url):
     headers = {
@@ -49,6 +55,10 @@ def scrape_restaurant_data(url):
 restuarants = scrape_restaurant_data("https://www.sirved.com/city/waterloo-ontario-canada/all?keyword=Ennios")
 print(restuarants)
 #Example usage
+
+
+
+
 
 @scraper.route('/api/restaurants', methods=['GET'])
 def get_restaurants():

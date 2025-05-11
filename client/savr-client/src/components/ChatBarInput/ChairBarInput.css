@@ -1,0 +1,35 @@
+.chat-input-container {
+    display: flex;
+    align-items: center;
+    background-color: #2b2b2f;
+    border-radius: 1.5rem;
+    padding: 0.75rem 1rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    max-width: 700px;          /* ⬅️ Make it narrower */
+    margin: 2rem auto 0 auto;  /* ⬅️ Push it down and center */
+  }
+  
+  .chat-input {
+    flex-grow: 1;
+    border: none;
+    background-color: transparent;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+    padding: 0 0.5rem;
+  }
+  
+  .icon-button {
+    background: none;
+    border: none;
+    color: white;
+    margin-left: 0.75rem;
+    font-size: 1.25rem;
+    cursor: pointer;
+    transition: opacity 0.2s ease-in-out;
+  }
+  
+  .icon-button:hover {
+    opacity: 0.8;
+  }
+  
