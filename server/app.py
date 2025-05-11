@@ -3,12 +3,11 @@ from flask_cors import CORS
 import os 
 from dotenv import load_dotenv
 from flask_sqlalchemy import SQLAlchemy
-from AgentReserver.Reserver import reserver
 from RestuarantScraping.Scraper import scraper
 
 app = Flask(__name__)
 CORS(app)
-app.register_blueprint(reserver, scraper)
+app.register_blueprint(scraper)
 
 
 load_dotenv()
