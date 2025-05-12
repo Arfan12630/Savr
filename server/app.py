@@ -6,10 +6,11 @@ from flask_sqlalchemy import SQLAlchemy
 from RestuarantScraping.Scraper import scraper
 
 app = Flask(__name__)
-CORS(app)
+# Configure CORS properly for all routes
+CORS(app, resources={
+    r"/*": {"origins": "http://localhost:3000"},
+})
 app.register_blueprint(scraper)
-
-
 load_dotenv()
 
 layout_collection_DB = os.environ.get("SQL_DB_LINK")

@@ -7,6 +7,7 @@ import TempHomeFile from './components/HomeLayout/TempHomeFile';
 import ViewRestaurantLayout from './components/RestuarantViewLayout/ViewRestaurantLayout';
 import RestuarantList from './components/HomeLayout/RestuarantList';
 import Chat from './components/ChatBarInput/Chat';
+import RestaurantStoreLayout from './components/RestuarantStoreLayout/RestuarantStoreLayout';
 function App() {
   return (
     <Router>
@@ -27,6 +28,10 @@ function App() {
           element={
               <ViewRestaurantLayout />
           }
+        />
+        <Route
+          path="/restaurant-display"
+          element={<RestaurantStoreLayout />}
         />
       </Routes>
     </Router>
