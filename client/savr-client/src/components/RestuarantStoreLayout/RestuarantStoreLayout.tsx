@@ -29,6 +29,9 @@ const RestaurantStoreLayout: React.FC = () => {
     );
   }
 
+    const clickedImage = () => {
+        console.log("clicked image")
+    }
   return (
     <div className="restaurant-display">
       <h2>Results for {restaurantData.restaurant} in {restaurantData.city}, {restaurantData.state}</h2>
@@ -36,7 +39,7 @@ const RestaurantStoreLayout: React.FC = () => {
       <div className="results-list">
         {restaurantData.results.map((restaurant, index) => (
           <div key={index} className="restaurant-card">
-            {restaurant.logo && <img src={restaurant.logo} alt={restaurant.name} className="restaurant-logo" />}
+            {restaurant.logo && <img onClick={clickedImage} src={restaurant.logo} alt={restaurant.name} className="restaurant-logo" />}
             <h4>{restaurant.name}</h4>
             <p>{restaurant.address}</p>
             <p>Hours: {restaurant.hours || "Not available"}</p>
