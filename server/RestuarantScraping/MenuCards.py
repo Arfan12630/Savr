@@ -13,7 +13,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 load_dotenv()
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 openai_api_key = os.environ.get("OPENAI_API_KEY")
-menu_cards = Blueprint('menu_cards', __name__)
+# menu_cards = Blueprint('menu_cards', __name__)
 image_urls = [
   "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c5e8c54.jpg",
   "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c736763.jpg",
