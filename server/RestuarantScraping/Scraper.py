@@ -87,7 +87,24 @@ def get_city_and_country():
         print("No features found in autocompletion data.")
     url_manipulation(city, state, restaurant)
 
-
+def save_restaurant_data(restaurants):
+    for restaurant in restaurants:
+        restaurant_exists = Restaurant.query.filter_by(
+            name=restaurant["name"], address=restaurant["address"]
+        ).first()
+        if not restaurant_exists:
+            new_restaurant = Restaurant(
+                name=restaurant["name"],
+                address=restaurant["address"],
+                hours=restaurant["hours"],
+                logo=restaurant["logo"],
+                link=restaurant["link"],
+                menu_images=restaurant["menu_images"],
+                menu_html=restaurant["menu_html"]
+            )
+            db.session.add(new_restaurant)
+    db.session.commit()
+                
 def scrape_restaurant_data(url):
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -131,6 +148,7 @@ def scrape_restaurant_data(url):
         restaurant["menu_images"] = image_urls
         #restaurant["menu_html"] = image_html
         restaurants.append(restaurant)
+    save_restaurant_data(restaurants)
     return restaurants
 
 
