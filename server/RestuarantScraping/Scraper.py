@@ -11,6 +11,8 @@ from flask_cors import CORS
 import base64
 import requests
 from requests.structures import CaseInsensitiveDict
+from models import db, Restaurant
+
 load_dotenv()
 
 openai_api_key = os.environ.get("OPENAI_API_KEY")
@@ -18,38 +20,6 @@ geography_api_key = os.environ.get("GEOGRAPHY_API_KEY")
 client = OpenAI(api_key=openai_api_key)
 
 scraper = Blueprint('scraper', __name__)
-
-
-
-def image_to_html(image_url="https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c5e8c54.jpg"):
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o",
-            messages=[
-                {
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "text",
-                            "text": "Extract this restaurant menu into structured HTML. Use <div class='menu-category'> for categories, <h2> for headers, <div class='menu-item'> for each dish, <h3> for the name, <p> for description, and <span class='price'> for price. Preserve structure and avoid hallucinating data."
-                        },
-                        {
-                            "type": "image_url",
-                            "image_url": { "url": image_url }
-                        }
-                    ],
-                }
-            ],
-            max_tokens=2000,
-        )
-        print(response.choices[0].message.content)
-        return response.choices[0].message.content
-    except Exception as e:
-        print(f"Error processing {image_url}: {e}")
-        return None
-response_html =image_to_html()
-print(response_html)
-
 #Country will be canada for now
 def url_manipulation(city, province, restuarantName,country = "canada"):
     new_url = f"https://www.sirved.com/city/{city}-{province}-{country}/all?keyword={restuarantName}"
@@ -124,7 +94,7 @@ def scrape_restaurant_data(url):
     }
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.text, 'html.parser')
-
+    
     # Find all restaurant cards
     names = [atag.text.strip() for atag in soup.select('h3.text-truncate a')]
     addresses = [

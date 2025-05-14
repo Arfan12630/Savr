@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import os 
 from dotenv import load_dotenv
-from flask_sqlalchemy import SQLAlchemy
+from models import db, Restaurant
 from RestuarantScraping.Scraper import scraper
 
 app = Flask(__name__)
@@ -13,10 +13,9 @@ CORS(app, resources={
 app.register_blueprint(scraper)
 load_dotenv()
 
-layout_collection_DB = os.environ.get("SQL_DB_LINK")
-app.config['SQLALCHEMY_DATABASE_URI'] = layout_collection_DB
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("SQL_DB_LINK")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
+db.init_app(app)
 
 class Layout(db.Model):
     __tablename__ = 'layouts'
