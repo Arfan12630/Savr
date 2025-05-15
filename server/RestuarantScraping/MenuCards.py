@@ -13,7 +13,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 load_dotenv()
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 openai_api_key = os.environ.get("OPENAI_API_KEY")
-# menu_cards = Blueprint('menu_cards', __name__)
+menu_cards = Blueprint('menu_cards', __name__)
 image_urls = [
   "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c5e8c54.jpg",
   "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c736763.jpg",
@@ -64,6 +64,10 @@ def process_images_in_parallel(image_urls, max_workers=15):
                 results.append({"url": url, "html": None})
     return results
 
+
+@menu_cards.route('/extract_menu_html', methods=['POST'])
+def extract_menu_html():
+    return None
 # Testing hard coded values for now
 if __name__ == "__main__":
     image_urls = [

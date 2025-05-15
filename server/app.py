@@ -4,13 +4,14 @@ import os
 from dotenv import load_dotenv
 from models import db, Restaurant
 from RestuarantScraping.Scraper import scraper
-
+from RestuarantScraping.MenuCards import menu_cards
 app = Flask(__name__)
 # Configure CORS properly for all routes
 CORS(app, resources={
     r"/*": {"origins": "http://localhost:3000"},
 })
 app.register_blueprint(scraper)
+app.register_blueprint(menu_cards)
 load_dotenv()
 
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("SQL_DB_LINK")
