@@ -1,8 +1,9 @@
 import React from "react";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, Typography } from "@mui/joy";
 import { styled, keyframes } from "@mui/system";
 import axios from "axios";
+
 interface RestaurantData {
   restaurant: string;
   city: string;
@@ -44,6 +45,7 @@ const StyledCard = styled(Card)`
 
 const RestaurantStoreLayout: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const restaurantData = location.state?.restaurantData as RestaurantData;
 
   if (!restaurantData) {
@@ -58,6 +60,20 @@ const RestaurantStoreLayout: React.FC = () => {
   const clickedImage = (restaurant: any) => {
     console.log("clicked image");
     console.log(restaurant);
+    axios({
+      method: 'post',
+      url: 'http://127.0.0.1:5000/show_menus',
+      data: {
+        restaurant: restaurant
+      }
+    })
+    .then((response) => {
+      console.log(response.data);
+      navigate('/menu-layout', { state: { menu_html: response.data.menu_html } });
+    })
+    .catch((error) => {
+      console.error("Error fetching menus:", error);
+    });
   };
 
   return (

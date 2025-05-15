@@ -12,7 +12,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<TempHomeFile />} />
+        <Route path="/lander" element={<TempHomeFile />} />
         <Route path="/restaurants" element={<RestuarantList />} />
         <Route path="/chat" element={<Chat />} />
         <Route
