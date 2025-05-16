@@ -1,15 +1,21 @@
 import os
 from flask import Blueprint, request, jsonify
-from langchain.chat_models import ChatOpenAI
-from langchain.tools import create_openai_fn_tool
+from langchain_openai import ChatOpenAI
 from langchain.agents import initialize_agent, AgentType
 from langchain.memory import ConversationBufferMemory
 from langchain.tools import Tool
+import traceback
+
 # Set up your OpenAI API key (or use dotenv)
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 def store_restuarant_data(restuarant_name=None, location=None, availabe_hours=None, menuImages=None):
-    return {restuarant_name:restuarant_name, location:location, availabe_hours:availabe_hours, menuImages:menuImages}
+    return {
+        "restuarant_name": restuarant_name,
+        "location": location,
+        "availabe_hours": availabe_hours,
+        "menuImages": menuImages
+    }
 
 store_info_tool = Tool(
     name="StoreRestaurantInfo",
@@ -21,7 +27,12 @@ memory = ConversationBufferMemory(memory_key="chat_history", return_messages=Tru
 
 llm = ChatOpenAI(model="gpt-4o", temperature=0, openai_api_key=OPENAI_API_KEY)
 
-agent = initialize_agent([store_info_tool], llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, memory=memory)
+agent = initialize_agent(
+    [store_info_tool],
+    llm,
+    agent=AgentType.OPENAI_FUNCTIONS,
+    memory=memory
+)
 
 def chatbot_response(user_input):
     prompt = (
@@ -44,6 +55,13 @@ def restaurant_entry_chat():
 
     try:
         response = chatbot_response(user_message)
+        # Handle LangChain message objects
+        if hasattr(response, "content"):
+            response = response.content
+        elif not isinstance(response, str):
+            response = str(response['output'])
         return jsonify({"message": response})
     except Exception as e:
+        print("Exception occurred:", e)
+        traceback.print_exc()
         return jsonify({"message": f"Error: {str(e)}"}), 500
