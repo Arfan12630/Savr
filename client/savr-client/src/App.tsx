@@ -8,6 +8,7 @@ import ViewRestaurantLayout from './components/RestuarantViewLayout/ViewRestaura
 import RestuarantList from './components/HomeLayout/RestuarantList';
 import Chat from './components/ChatBarInput/Chat';
 import RestaurantStoreLayout from './components/RestuarantStoreLayout/RestuarantStoreLayout';
+import RestuarantEntry from './components/RestuarantEntry/RestuarantEntry';
 function App() {
   return (
     <Router>
@@ -15,6 +16,7 @@ function App() {
         <Route path="/lander" element={<TempHomeFile />} />
         <Route path="/restaurants" element={<RestuarantList />} />
         <Route path="/chat" element={<Chat />} />
+        <Route path="owner/restaurant-entry" element={<RestuarantEntry />} />
         <Route
           path="/edit"
           element={

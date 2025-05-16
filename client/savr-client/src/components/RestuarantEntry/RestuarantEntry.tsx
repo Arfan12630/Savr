@@ -1,40 +1,35 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 import Box from '@mui/joy/Box';
 import Typography from '@mui/joy/Typography';
 import CircularProgress from '@mui/joy/CircularProgress';
-import ChatInput from "./ChatBarInput";
 import axios from "axios";
+import RestuarantEntryInput from './RestuarantEntryInput';
 
-interface ResponseData {
-  status: "valid" | "invalid" | "error";
-  message: string;
-  data?: {
-    restaurant: string;
-    city: string;
-    state: string;
-    country: string;
-    results: any[];
-  };
-}
-
-const Chat: React.FC = () => {
+const RestuarantEntry: React.FC = () => {
   const [userMessage, setUserMessage] = useState<string>("");
   const [responseMessage, setResponseMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    // On mount, get the initial prompt from backend
+    axios.post('http://127.0.0.1:5000/restaurant-entry', { message: "" })
+      .then(res => setResponseMessage(res.data.message))
+      .catch(() => setResponseMessage('Error connecting to server. Please try again.'));
+  }, []);
+
   const handleSend = (text: string) => {
     setUserMessage(text);
     setIsLoading(true);
 
-    axios.post('http://127.0.0.1:5000/chat', { message: text })
+    axios.post('http://127.0.0.1:5000/restaurant-entry', { message: text })
       .then(res => {
-        const data: ResponseData = res.data;
-        setResponseMessage(data.message);
-        if (data.status === 'valid' && data.data) {
-          navigate('/restaurant-display', { state: { restaurantData: data.data } });
-        }
+        setResponseMessage(res.data.message);
+        // If you want to navigate on success, do it here:
+        // if (res.data.status === 'valid') {
+        //   navigate('/somewhere', { state: { ... } });
+        // }
       })
       .catch(() => {
         setResponseMessage('Error connecting to server. Please try again.');
@@ -57,7 +52,7 @@ const Chat: React.FC = () => {
         sx={{
           width: '90%',
           maxWidth: '800px',
-          height: '600px',
+          height: '400px',
           backgroundColor: '#1a1d26',
           borderRadius: '20px',
           boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
@@ -112,11 +107,11 @@ const Chat: React.FC = () => {
 
         {/* Input bar */}
         <Box sx={{ mt: 1 }}>
-          <ChatInput onSend={handleSend} />
+          <RestuarantEntryInput onSend={handleSend} />
         </Box>
       </Box>
     </Box>
   );
 };
 
-export default Chat;
+export default RestuarantEntry;

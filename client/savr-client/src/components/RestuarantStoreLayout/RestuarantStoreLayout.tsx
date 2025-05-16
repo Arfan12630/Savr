@@ -1,7 +1,8 @@
 import React from "react";
 import { useLocation, Link, useNavigate } from "react-router-dom";
-import { Card, CardContent, Typography } from "@mui/joy";
+import { Box, Card, CardContent, Typography, IconButton } from "@mui/joy";
 import { styled, keyframes } from "@mui/system";
+import Bookmark from '@mui/icons-material/BookmarkBorder';
 import axios from "axios";
 
 interface RestaurantData {
@@ -19,27 +20,25 @@ interface RestaurantData {
   }>;
 }
 
-// Animation
+// Fade-in animation
 const fadeIn = keyframes`
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 `;
 
-// Styled card with animation
+// Styled card with dark mode and hover effects
 const StyledCard = styled(Card)`
-  animation: ${fadeIn} 0.6s ease forwards;
-  margin: 1rem;
-  width: 100%;
-  max-width: 500px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  animation: ${fadeIn} 0.5s ease-out;
+  width: 280px;
+  margin: 16px;
+  background-color: #1e2431;
+  border: 1px solid #2e3448;
+  border-radius: 12px;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-
   &:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-    border-color: #1976d2; /* Optional: changes border color on hover */
+    transform: translateY(-8px) scale(1.03);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4);
+    border-color: #1976d2;
   }
 `;
 
@@ -50,74 +49,84 @@ const RestaurantStoreLayout: React.FC = () => {
 
   if (!restaurantData) {
     return (
-      <div style={{ padding: "2rem", textAlign: "center" }}>
-        <h3>No restaurant data found</h3>
-        <Link to="/">Return to search</Link>
-      </div>
+      <Box sx={{ p: 4, textAlign: 'center', color: '#ccc' }}>
+        <Typography level="h4">No restaurant data found</Typography>
+        <Link to="/" style={{ color: '#1976d2', textDecoration: 'underline' }}>
+          Back to Search
+        </Link>
+      </Box>
     );
   }
 
   const clickedImage = (restaurant: any) => {
-    console.log("clicked image");
-    console.log(restaurant);
-    axios({
-      method: 'post',
-      url: 'http://127.0.0.1:5000/show_menus',
-      data: {
-        restaurant: restaurant
-      }
-    })
-    .then((response) => {
-      console.log(response.data);
-      navigate('/menu-layout', { state: { menu_html: response.data.menu_html } });
-    })
-    .catch((error) => {
-      console.error("Error fetching menus:", error);
-    });
+    console.log(restaurant)
+    // axios.post('http://127.0.0.1:5000/show_menus', { restaurant })
+    //   .then(res => {
+    //     navigate('/menu-layout', { state: { menu_html: res.data.menu_html } });
+    //   })
+    //   .catch(err => console.error(err));
   };
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <Typography level="h2" textAlign="center" mb={3}>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        background: 'radial-gradient(circle at top, #151824, #0a0f1f)',
+        p: 4,
+      }}
+    >
+      <Typography level="h2" sx={{ color: 'white', textAlign: 'center', mb: 4 }}>
         Results for {restaurantData.restaurant} in {restaurantData.city}, {restaurantData.state}
       </Typography>
 
-      <div
-        style={{
-          display: "flex",
-          flexWrap: "wrap",
-          justifyContent: "center",
+      <Box
+        sx={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          justifyContent: 'center',
         }}
       >
-        {restaurantData.results.map((restaurant, index) => (
-          <StyledCard key={index} variant="outlined">
-            {restaurant.logo && (
-              <img
-                src={restaurant.logo}
-                alt={restaurant.name}
-                onClick={() => clickedImage(restaurant)}
-                style={{ width: "100%", maxHeight: "200px", objectFit: "contain" }}
-              />
-            )}
-            <CardContent>
-              <Typography level="title-lg" fontWeight="lg">
-                {restaurant.name}
+        {restaurantData.results.map((r, i) => (
+          <StyledCard key={i} variant="outlined">
+            <Box sx={{ position: 'relative', width: '100%', height: 160, overflow: 'hidden', borderRadius: '12px 12px 0 0' }}>
+              {r.logo && (
+                <img
+                  src={r.logo}
+                  alt={r.name}
+                  onClick={() => clickedImage(r)}
+                  style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
+                />
+              )}
+              <IconButton
+                size="sm"
+                variant="plain"
+                color="neutral"
+                sx={{ position: 'absolute', top: 8, right: 8, color: '#bbb' }}
+              >
+                <Bookmark />
+              </IconButton>
+            </Box>
+            <CardContent sx={{ p: 2, flexGrow: 1 }}>
+              <Typography level="title-lg" sx={{ color: 'white', mb: 1 }}>
+                {r.name}
               </Typography>
-              <Typography>{restaurant.address}</Typography>
-              <Typography level="body-sm">
-                Hours: {restaurant.hours || "Not available"}
+              <Typography level="body-sm" sx={{ color: '#aaa', mb: 1 }}>
+                {r.address}
+              </Typography>
+              <Typography level="body-xs" sx={{ color: '#888' }}>
+                Hours: {r.hours || 'Not available'}
               </Typography>
             </CardContent>
           </StyledCard>
         ))}
-      </div>
+      </Box>
 
-      <div style={{ textAlign: "center", marginTop: "2rem" }}>
-        <Link to="/" style={{ textDecoration: "underline", color: "#1976d2" }}>
-          Back to Search
+      <Box sx={{ textAlign: 'center', mt: 6 }}>
+        <Link to="/" style={{ color: '#1976d2', textDecoration: 'underline' }}>
+          &larr; New Search
         </Link>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 

@@ -123,7 +123,7 @@ const TempHomeFile = () => {
               variant="solid"
               size="md"
               color="primary"
-              onClick={() => navigate('/search')}
+              onClick={() => navigate('/chat')}
               sx={{
                 ml: 'auto',
                 fontWeight: 600,
