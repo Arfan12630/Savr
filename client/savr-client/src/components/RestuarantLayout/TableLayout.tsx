@@ -23,6 +23,58 @@ const TableLayout = ({
   });
 
   const [size, setSize] = React.useState({ width: 220, height: 60 });
+  const [showDelete, setShowDelete] = React.useState(false);
+  const [resizeOnly, setResizeOnly] = React.useState(false);
+
+  // --- Resizing state ---
+  const [resizing, setResizing] = React.useState(false);
+  const [startPos, setStartPos] = React.useState<{ x: number; y: number } | null>(null);
+  const [startSize, setStartSize] = React.useState<{ width: number; height: number } | null>(null);
+
+  // --- Mouse down on resize handle ---
+  const handleResizeMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setResizing(true);
+    setStartPos({ x: e.clientX, y: e.clientY });
+    setStartSize({ width: size.width, height: size.height });
+  };
+
+  // --- Mouse move/up listeners for resizing ---
+  React.useEffect(() => {
+    if (!resizing) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (startPos && startSize) {
+        const dx = e.clientX - startPos.x;
+        const dy = e.clientY - startPos.y;
+        setSize({
+          width: Math.max(60, startSize.width + dx),
+          height: Math.max(30, startSize.height + dy),
+        });
+      }
+    };
+    const handleMouseUp = () => setResizing(false);
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [resizing, startPos, startSize]);
+
+  // --- Context menu and mouse leave logic ---
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setResizeOnly(true);
+    setShowDelete(false);
+  };
+
+  const handleMouseLeave = () => {
+    setResizeOnly(false);
+    setShowDelete(false);
+  };
 
   const tableStyle: React.CSSProperties = {
     position: 'absolute',
@@ -48,20 +100,13 @@ const TableLayout = ({
     transition: 'box-shadow 0.2s, border 0.2s',
   };
 
-  const [showDelete, setShowDelete] = React.useState(false);
-
-  const handleContextMenu = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setShowDelete(true);
-  };
-
   return (
     <div
       ref={setNodeRef}
       style={tableStyle}
       {...attributes}
-      onMouseEnter={() => setShowDelete(true)}
-      onMouseLeave={() => setShowDelete(false)}
+      onMouseEnter={() => !resizeOnly && setShowDelete(true)}
+      onMouseLeave={handleMouseLeave}
       onContextMenu={handleContextMenu}
     >
       <div {...listeners} style={{
@@ -74,7 +119,8 @@ const TableLayout = ({
         {/* Table content can go here */}
       </div>
       
-      {showDelete && !viewOnly && (
+      {/* Only show delete/rotate if not in resize-only mode */}
+      {showDelete && !viewOnly && !resizeOnly && (
         <>
           <button
             style={{
@@ -122,6 +168,25 @@ const TableLayout = ({
             </button>
           )}
         </>
+      )}
+
+      {/* --- Resize handle --- */}
+      {!viewOnly && (
+        <div
+          style={{
+            position: 'absolute',
+            right: 0,
+            bottom: 0,
+            width: 16,
+            height: 16,
+            background: '#3973db',
+            borderRadius: 4,
+            cursor: 'nwse-resize',
+            zIndex: 20,
+          }}
+          onMouseDown={handleResizeMouseDown}
+          title="Resize"
+        />
       )}
     </div>
   );

@@ -6,7 +6,22 @@ import Snackbar from '@mui/material/Snackbar';
 import TableLayout from './TableLayout';
 import axios from 'axios';
 
-const HEADER_HEIGHT = 100; // Adjust as needed
+const HEADER_HEIGHT = 150; // Adjust as needed
+const CHAIR_SIZE = 50;
+const TABLE_WIDTH = 220;
+const TABLE_HEIGHT = 60;
+
+function isOverlapping(
+  x1: number, y1: number, w1: number, h1: number,
+  x2: number, y2: number, w2: number, h2: number
+) {
+  return (
+    x1 < x2 + w2 &&
+    x1 + w1 > x2 &&
+    y1 < y2 + h2 &&
+    y1 + h1 > y2
+  );
+}
 
 const DroppableArea = () => {
   const { setNodeRef, isOver } = useDroppable({
@@ -21,56 +36,77 @@ const DroppableArea = () => {
   const [isRoundTablePressed, setIsRoundTablePressed] = useState(false);
   const handleDragEnd = (event: any) => {
     const { active, delta } = event;
-    console.log(event)
 
-    //Chair logic
+    // Chair logic
     setChairs((prev) =>
       prev.map((chair) => {
         if (chair.id === active.id) {
           const newX = chair.x + delta.x;
           const newY = chair.y + delta.y;
-          // Prevent overlap with header
           if (newY < HEADER_HEIGHT) {
-            console.log("touched boundary")
             setTouchedBoundary(true);
-            return chair; // Don't move if in header area
+            return chair;
           }
-          // (Optional: add your overlap check with other chairs here)
+          const overlapWithChairs = chairs.some(
+            (c) =>
+              c.id !== chair.id &&
+              isOverlapping(
+                newX, newY, CHAIR_SIZE, CHAIR_SIZE,
+                c.x, c.y, CHAIR_SIZE, CHAIR_SIZE
+              )
+          );
+          const overlapWithTables = tables.some(
+            (t) =>
+              isOverlapping(
+                newX, newY, CHAIR_SIZE, CHAIR_SIZE,
+                t.x, t.y, TABLE_WIDTH, TABLE_HEIGHT
+              )
+          );
+          if (overlapWithChairs || overlapWithTables) {
+            setTouchedBoundary(true);
+            return chair;
+          }
           return { ...chair, x: newX, y: newY };
         }
         return chair;
       })
     );
 
-    // Rect Table logic
-    setTables((prev) => 
+    // Table logic
+    setTables((prev) =>
       prev.map((table) => {
         if (table.id === active.id) {
           const newX = table.x + delta.x;
           const newY = table.y + delta.y;
           if (newY < HEADER_HEIGHT) {
-            console.log("touched boundary")
             setTouchedBoundary(true);
-            return table; // Don't move if in header area
+            return table;
+          }
+          const overlapWithTables = tables.some(
+            (t) =>
+              t.id !== table.id &&
+              isOverlapping(
+                newX, newY, TABLE_WIDTH, TABLE_HEIGHT,
+                t.x, t.y, TABLE_WIDTH, TABLE_HEIGHT
+              )
+          );
+          const overlapWithChairs = chairs.some(
+            (c) =>
+              isOverlapping(
+                newX, newY, TABLE_WIDTH, TABLE_HEIGHT,
+                c.x, c.y, CHAIR_SIZE, CHAIR_SIZE
+              )
+          );
+          if (overlapWithTables || overlapWithChairs) {
+            setTouchedBoundary(true);
+            return table;
           }
           return { ...table, x: newX, y: newY };
         }
         return table;
       })
     );
-
-
   };
-
-  // Need to implement this for tables and chairs
-  const preventOverlap = (newX: number, newY: number, id: string, chairs: { id: string; x: number; y: number }[], width: number, height: number) => {
-    chairs.forEach((chair) => {
-      if (newX < chair.x + 100 && newX + 100 > chair.x && newY < chair.y + 100 && newY + 100 > chair.y) {
-        return true;
-      }
-    });
-    return false;
-  }
 
   const addChair = () => {
     setChairs((prev) => [
