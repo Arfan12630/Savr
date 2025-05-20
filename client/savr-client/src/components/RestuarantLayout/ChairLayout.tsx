@@ -21,6 +21,7 @@ const ChairLayout = ({ onDelete, id, position , viewOnly=false }: { onDelete: (i
     width: 60,
     height: 60,
     borderRadius: 10,
+    border: '1px solid black',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
