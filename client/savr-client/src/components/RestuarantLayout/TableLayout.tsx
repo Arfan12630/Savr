@@ -3,7 +3,21 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import table from '../../assets/Dining_Table_Image_Horizontal-removebg-preview.png';
 
-const TableLayout = ({ onDelete, id, position , viewOnly=false }: { onDelete: (id: string) => void, id: string, position: { x: number; y: number }, viewOnly?: boolean }) => {
+const TableLayout = ({
+  onDelete,
+  id,
+  position,
+  viewOnly = false,
+  rotation = 0,
+  onRotate
+}: {
+  onDelete: (id: string) => void,
+  id: string,
+  position: { x: number; y: number },
+  viewOnly?: boolean,
+  rotation?: number,
+  onRotate?: (id: string) => void
+}) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
   });
@@ -25,12 +39,12 @@ const TableLayout = ({ onDelete, id, position , viewOnly=false }: { onDelete: (i
     justifyContent: 'center',
     cursor: 'grab',
     userSelect: 'none',
-    transform: CSS.Translate.toString({
+    transform: `${CSS.Translate.toString({
       x: (transform?.x ?? 0) + position.x,
       y: (transform?.y ?? 0) + position.y,
       scaleX: 1,
       scaleY: 1,
-    }),
+    })} rotate(${rotation}deg)`,
     transition: 'box-shadow 0.2s, border 0.2s',
   };
 
@@ -61,27 +75,53 @@ const TableLayout = ({ onDelete, id, position , viewOnly=false }: { onDelete: (i
       </div>
       
       {showDelete && !viewOnly && (
-        <button
-          style={{
-            position: 'absolute',
-            top: 2,
-            right: 2,
-            zIndex: 10,
-            background: 'red',
-            color: 'white',
-            border: 'none',
-            borderRadius: '50%',
-            width: 24,
-            height: 24,
-            cursor: 'pointer',
-          }}
-          onClick={e => {
-            e.stopPropagation();
-            onDelete(id);
-          }}
-        >
-          ×
-        </button>
+        <>
+          <button
+            style={{
+              position: 'absolute',
+              top: 2,
+              right: 2,
+              zIndex: 10,
+              background: 'red',
+              color: 'white',
+              border: 'none',
+              borderRadius: '50%',
+              width: 24,
+              height: 24,
+              cursor: 'pointer',
+            }}
+            onClick={e => {
+              e.stopPropagation();
+              onDelete(id);
+            }}
+          >
+            ×
+          </button>
+          {onRotate && (
+            <button
+              style={{
+                position: 'absolute',
+                top: 2,
+                left: 2,
+                zIndex: 10,
+                background: '#3973db',
+                color: 'white',
+                border: 'none',
+                borderRadius: '50%',
+                width: 24,
+                height: 24,
+                cursor: 'pointer',
+              }}
+              onClick={e => {
+                e.stopPropagation();
+                onRotate(id);
+              }}
+              title="Rotate"
+            >
+              ⟳
+            </button>
+          )}
+        </>
       )}
     </div>
   );
