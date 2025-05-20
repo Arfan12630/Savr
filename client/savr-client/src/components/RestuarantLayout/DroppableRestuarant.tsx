@@ -14,7 +14,7 @@ const DroppableArea = () => {
   });
   const [touchedBoundary, setTouchedBoundary] = useState(false);
   const [chairs, setChairs] = useState<{ id: string; x: number; y: number }[]>([]);
-  const [tables, setTables] = useState<{ id: string; x: number; y: number }[]>([]);
+  const [tables, setTables] = useState<{ id: string; x: number; y: number; rotation: number }[]>([]);
   const [isChairPressed, setIsChairPressed] = useState(false);
 
   const [isTablePressed, setIsTablePressed] = useState(false);
@@ -83,7 +83,7 @@ const DroppableArea = () => {
   const addTable = () => {
     setTables((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), x: 100 + prev.length * 30, y: 100 }
+      { id: crypto.randomUUID(), x: 100 + prev.length * 30, y: 100, rotation: 0 }
     ]);
     setIsTablePressed(true);
   };
@@ -128,6 +128,17 @@ const DroppableArea = () => {
     });
 
   }
+
+  const rotateTable = (id: string) => {
+    setTables((prev) =>
+      prev.map((table) =>
+        table.id === id
+          ? { ...table, rotation: (table.rotation + 90) % 360 }
+          : table
+      )
+    );
+  };
+
   return (
     <DndContext onDragEnd={handleDragEnd}>
       <div ref={setNodeRef} style={style}>
@@ -137,7 +148,15 @@ const DroppableArea = () => {
           <ChairLayout viewOnly={false}key={chair.id} id={chair.id} position={{ x: chair.x, y: chair.y }} onDelete={deleteChair}/>
         ))}
        {tables.map((table) => (
-        <TableLayout viewOnly={false} key={table.id} id={table.id} position={{ x: table.x, y: table.y }} onDelete={deleteTable}/>
+        <TableLayout
+          viewOnly={false}
+          key={table.id}
+          id={table.id}
+          position={{ x: table.x, y: table.y }}
+          rotation={table.rotation}
+          onDelete={deleteTable}
+          onRotate={rotateTable}
+        />
        ))}
         {touchedBoundary && (
           <Snackbar
