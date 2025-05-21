@@ -2,7 +2,7 @@ import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import table from '../../assets/Dining_Table_Image_Horizontal-removebg-preview.png';
-
+import ReservationModal from '../RestuarantViewLayout/ReservationModal';
 const TableLayout = ({
   onDelete,
   id,
@@ -34,6 +34,10 @@ const TableLayout = ({
 
   // -- Reserving State ---
   const [reserved, setReserved] = React.useState(false);
+
+  // --- Reservation Modal State ---
+  const [modalOpen, setModalOpen] = React.useState(false);
+
   // --- Mouse down on resize handle ---
   const handleResizeMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -87,12 +91,15 @@ const TableLayout = ({
     top: 0,
     width: size.width,
     height: size.height,
-    background: reserved
-      ? '#ff9800'
-      : hovered
-        ? '#ffecb3'
-        : '#3973db',
-    border: hovered ? '3px solid #ff9800' : '2.5px solid #274b8f',
+    background:
+      reserved && modalOpen
+        ? '#3973db'
+        : reserved
+          ? '#ff9800'
+          : viewOnly && hovered
+            ? '#ffecb3'
+            : '#3973db',
+    border: viewOnly && hovered ? '3px solid #ff9800' : '2.5px solid #274b8f',
     borderRadius: 18,
     boxShadow: hovered
       ? '0 8px 24px rgba(57, 115, 219, 0.25)'
@@ -134,24 +141,41 @@ const TableLayout = ({
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-        <div
-          onClick={e => {
-            e.stopPropagation();
-            setReserved(r => !r);
-          }}
-          style={{
-            color: reserved ? '#fff' : '#333',
-            background: reserved ? '#ff9800' : 'transparent',
-            borderRadius: 8,
-            padding: '4px 12px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            userSelect: 'none',
-            transition: 'background 0.2s, color 0.2s',
-          }}
-        >
-          {reserved ? 'Reserved' : 'Reserve'}
-        </div>
+        {viewOnly && (
+          <>
+            <div
+              onClick={e => {
+                e.stopPropagation();
+                setModalOpen(true);
+              }}
+              style={{
+                color: reserved ? '#fff' : '#333',
+                background: reserved ? '#ff9800' : 'transparent',
+                borderRadius: 8,
+                padding: '4px 12px',
+                fontWeight: 'bold',
+                cursor: 'pointer',
+                userSelect: 'none',
+                transition: 'background 0.2s, color 0.2s',
+              }}
+            >
+              {reserved ? 'Reserved' : 'Reserve'}
+            </div>
+            <ReservationModal
+              open={modalOpen}
+              onClose={() => setModalOpen(false)}
+              onReserve={() => {
+                setReserved(true);
+                setModalOpen(false);
+              }}
+              onCancel={() => {
+                setReserved(false);
+                setModalOpen(false);
+              }}
+              reserved={reserved}
+            />
+          </>
+        )}
       </div>
       
       {/* Only show delete/rotate if not in resize-only mode */}
