@@ -6,7 +6,7 @@ import Snackbar from '@mui/material/Snackbar';
 import TableLayout from './TableLayout';
 import axios from 'axios';
 
-const HEADER_HEIGHT = 150; // Adjust as needed
+const HEADER_HEIGHT = 100; // Adjust as needed
 const CHAIR_SIZE = 50;
 const TABLE_WIDTH = 220;
 const TABLE_HEIGHT = 60;

@@ -31,6 +31,9 @@ const TableLayout = ({
   const [startPos, setStartPos] = React.useState<{ x: number; y: number } | null>(null);
   const [startSize, setStartSize] = React.useState<{ width: number; height: number } | null>(null);
 
+
+  // -- Reserving State ---
+  const [reserved, setReserved] = React.useState(false);
   // --- Mouse down on resize handle ---
   const handleResizeMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -76,16 +79,24 @@ const TableLayout = ({
     setShowDelete(false);
   };
 
+  const [hovered, setHovered] = React.useState(false);
+
   const tableStyle: React.CSSProperties = {
     position: 'absolute',
     left: 0,
     top: 0,
     width: size.width,
     height: size.height,
-    background: '#3973db',
-    border: '2.5px solid #274b8f',
+    background: reserved
+      ? '#ff9800'
+      : hovered
+        ? '#ffecb3'
+        : '#3973db',
+    border: hovered ? '3px solid #ff9800' : '2.5px solid #274b8f',
     borderRadius: 18,
-    boxShadow: '0 4px 16px rgba(57, 115, 219, 0.10)',
+    boxShadow: hovered
+      ? '0 8px 24px rgba(57, 115, 219, 0.25)'
+      : '0 4px 16px rgba(57, 115, 219, 0.10)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -97,7 +108,7 @@ const TableLayout = ({
       scaleX: 1,
       scaleY: 1,
     })} rotate(${rotation}deg)`,
-    transition: 'box-shadow 0.2s, border 0.2s',
+    transition: 'box-shadow 0.2s, border 0.2s, background 0.2s',
   };
 
   return (
@@ -105,8 +116,15 @@ const TableLayout = ({
       ref={setNodeRef}
       style={tableStyle}
       {...attributes}
-      onMouseEnter={() => !resizeOnly && setShowDelete(true)}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => {
+        setHovered(true);
+        if (!resizeOnly) setShowDelete(true);
+      }}
+      onMouseLeave={() => {
+        setHovered(false);
+        setResizeOnly(false);
+        setShowDelete(false);
+      }}
       onContextMenu={handleContextMenu}
     >
       <div {...listeners} style={{
@@ -116,7 +134,24 @@ const TableLayout = ({
         alignItems: 'center',
         justifyContent: 'center',
       }}>
-        {/* Table content can go here */}
+        <div
+          onClick={e => {
+            e.stopPropagation();
+            setReserved(r => !r);
+          }}
+          style={{
+            color: reserved ? '#fff' : '#333',
+            background: reserved ? '#ff9800' : 'transparent',
+            borderRadius: 8,
+            padding: '4px 12px',
+            fontWeight: 'bold',
+            cursor: 'pointer',
+            userSelect: 'none',
+            transition: 'background 0.2s, color 0.2s',
+          }}
+        >
+          {reserved ? 'Reserved' : 'Reserve'}
+        </div>
       </div>
       
       {/* Only show delete/rotate if not in resize-only mode */}

@@ -4,6 +4,7 @@ import ChairLayout from '../RestuarantLayout/ChairLayout';
 import TableLayout from '../RestuarantLayout/TableLayout';
 const ViewRestaurantLayout: React.FC = () => {
   const [layout, setLayout] = useState<{ chairs: any[]; tables: any[] } | null>(null);
+  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
     axios.get('http://127.0.0.1:5000/get-layout')
