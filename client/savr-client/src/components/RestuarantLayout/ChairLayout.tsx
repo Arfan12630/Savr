@@ -2,7 +2,20 @@ import React from 'react';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import NavBar from './Navbar/NavBar';
-const ChairLayout = ({ onDelete, id, position , viewOnly=false }: { onDelete: (id: string) => void, id: string, position: { x: number; y: number }, viewOnly?: boolean }) => {
+
+const ChairLayout = ({
+  onDelete,
+  id,
+  position,
+  viewOnly = false,
+  selected = false,
+}: {
+  onDelete: (id: string) => void,
+  id: string,
+  position: { x: number; y: number },
+  viewOnly?: boolean,
+  selected?: boolean,
+}) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
   });
@@ -21,13 +34,16 @@ const ChairLayout = ({ onDelete, id, position , viewOnly=false }: { onDelete: (i
     width: 60,
     height: 60,
     borderRadius: 10,
-    border: '1px solid black',
+    border: selected ? '2px solid #ff9800' : '1px solid black',
+    boxShadow: selected ? '0 0 8px #ff9800' : undefined,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     cursor: 'grab',
     userSelect: 'none',
     transform: CSS.Translate.toString(finalTransform),
+    background: '#fff',
+    transition: 'box-shadow 0.2s, border 0.2s',
   };
 
   const [showDelete, setShowDelete] = React.useState(false);
@@ -39,7 +55,6 @@ const ChairLayout = ({ onDelete, id, position , viewOnly=false }: { onDelete: (i
 
   return (
     <>
-
     <div
       ref={setNodeRef}
       style={chairStyle}

@@ -34,10 +34,39 @@ const DroppableArea = () => {
 
   const [isTablePressed, setIsTablePressed] = useState(false);
   const [isRoundTablePressed, setIsRoundTablePressed] = useState(false);
+  const [selectionBox, setSelectionBox] = useState<{
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+    active: boolean;
+  } | null>(null);
+
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+
   const handleDragEnd = (event: any) => {
     const { active, delta } = event;
 
-    // Chair logic
+    // If the dragged item is selected, move all selected items of the same type
+    if (selectedIds.includes(active.id)) {
+      setChairs((prev) =>
+        prev.map((chair) =>
+          selectedIds.includes(chair.id)
+            ? { ...chair, x: chair.x + delta.x, y: chair.y + delta.y }
+            : chair
+        )
+      );
+      setTables((prev) =>
+        prev.map((table) =>
+          selectedIds.includes(table.id)
+            ? { ...table, x: table.x + delta.x, y: table.y + delta.y }
+            : table
+        )
+      );
+      return;
+    }
+
+    // Otherwise, move just the single item as before
     setChairs((prev) =>
       prev.map((chair) => {
         if (chair.id === active.id) {
@@ -72,7 +101,6 @@ const DroppableArea = () => {
       })
     );
 
-    // Table logic
     setTables((prev) =>
       prev.map((table) => {
         if (table.id === active.id) {
@@ -175,13 +203,74 @@ const DroppableArea = () => {
     );
   };
 
+  const handleMouseDown = (e: React.MouseEvent) => {
+    // Only start if not clicking on a chair/table
+    if (e.target === e.currentTarget) {
+      setSelectionBox({
+        startX: e.clientX,
+        startY: e.clientY,
+        endX: e.clientX,
+        endY: e.clientY,
+        active: true,
+      });
+    }
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (selectionBox?.active) {
+      setSelectionBox(box => box && ({
+        ...box,
+        endX: e.clientX,
+        endY: e.clientY,
+      }));
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (selectionBox?.active) {
+      // Calculate selection rectangle
+      const minX = Math.min(selectionBox.startX, selectionBox.endX);
+      const maxX = Math.max(selectionBox.startX, selectionBox.endX);
+      const minY = Math.min(selectionBox.startY, selectionBox.endY);
+      const maxY = Math.max(selectionBox.startY, selectionBox.endY);
+
+      // Find all chairs/tables inside the rectangle
+      const selected = [
+        ...chairs.filter(chair =>
+          chair.x >= minX && chair.x <= maxX &&
+          chair.y >= minY && chair.y <= maxY
+        ).map(chair => chair.id),
+        ...tables.filter(table =>
+          table.x >= minX && table.x <= maxX &&
+          table.y >= minY && table.y <= maxY
+        ).map(table => table.id),
+      ];
+
+      setSelectedIds(selected);
+      setSelectionBox(null);
+    }
+  };
+
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div ref={setNodeRef} style={style}>
+      <div
+        ref={setNodeRef}
+        style={style}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+      >
         <NavBar addChair={addChair} isChairPressed={isChairPressed} setIsChairPressed={setIsChairPressed} addTable={addTable} isTablePressed={isTablePressed} setIsTablePressed={setIsTablePressed} saveLayout={saveLayout}/>
       
         {chairs.map((chair) => (
-          <ChairLayout viewOnly={false}key={chair.id} id={chair.id} position={{ x: chair.x, y: chair.y }} onDelete={deleteChair}/>
+          <ChairLayout
+            viewOnly={false}
+            key={chair.id}
+            id={chair.id}
+            position={{ x: chair.x, y: chair.y }}
+            onDelete={deleteChair}
+            selected={selectedIds.includes(chair.id)}
+          />
         ))}
        {tables.map((table) => (
         <TableLayout
@@ -192,6 +281,7 @@ const DroppableArea = () => {
           rotation={table.rotation}
           onDelete={deleteTable}
           onRotate={rotateTable}
+          selected={selectedIds.includes(table.id)}
         />
        ))}
         {touchedBoundary && (
@@ -204,6 +294,21 @@ const DroppableArea = () => {
           />
         )}
        
+        {selectionBox && selectionBox.active && (
+          <div
+            style={{
+              position: 'fixed',
+              left: Math.min(selectionBox.startX, selectionBox.endX),
+              top: Math.min(selectionBox.startY, selectionBox.endY),
+              width: Math.abs(selectionBox.endX - selectionBox.startX),
+              height: Math.abs(selectionBox.endY - selectionBox.startY),
+              background: 'rgba(100, 149, 237, 0.2)',
+              border: '1.5px solid #3973db',
+              zIndex: 1000,
+              pointerEvents: 'none',
+            }}
+          />
+        )}
       </div>
     </DndContext>
   );

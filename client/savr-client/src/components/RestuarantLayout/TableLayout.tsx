@@ -3,20 +3,23 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import table from '../../assets/Dining_Table_Image_Horizontal-removebg-preview.png';
 import ReservationModal from '../RestuarantViewLayout/ReservationModal';
+
 const TableLayout = ({
   onDelete,
   id,
   position,
   viewOnly = false,
   rotation = 0,
-  onRotate
+  onRotate,
+  selected = false,
 }: {
   onDelete: (id: string) => void,
   id: string,
   position: { x: number; y: number },
   viewOnly?: boolean,
   rotation?: number,
-  onRotate?: (id: string) => void
+  onRotate?: (id: string) => void,
+  selected?: boolean,
 }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
@@ -85,36 +88,29 @@ const TableLayout = ({
 
   const [hovered, setHovered] = React.useState(false);
 
+  const finalTransform = {
+    x: (transform?.x ?? 0) + position.x,
+    y: (transform?.y ?? 0) + position.y,
+    scaleX: 1,
+    scaleY: 1,
+  };
+
   const tableStyle: React.CSSProperties = {
     position: 'absolute',
     left: 0,
     top: 0,
     width: size.width,
     height: size.height,
-    background:
-      reserved && modalOpen
-        ? '#3973db'
-        : reserved
-          ? '#ff9800'
-          : viewOnly && hovered
-            ? '#ffecb3'
-            : '#3973db',
-    border: viewOnly && hovered ? '3px solid #ff9800' : '2.5px solid #274b8f',
     borderRadius: 18,
-    boxShadow: hovered
-      ? '0 8px 24px rgba(57, 115, 219, 0.25)'
-      : '0 4px 16px rgba(57, 115, 219, 0.10)',
+    border: selected ? '2px solid #ff9800' : '2.5px solid #274b8f',
+    boxShadow: selected ? '0 0 8px #ff9800' : '0 4px 16px rgba(57, 115, 219, 0.10)',
+    background: '#3973db',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     cursor: 'grab',
     userSelect: 'none',
-    transform: `${CSS.Translate.toString({
-      x: (transform?.x ?? 0) + position.x,
-      y: (transform?.y ?? 0) + position.y,
-      scaleX: 1,
-      scaleY: 1,
-    })} rotate(${rotation}deg)`,
+    transform: CSS.Translate.toString(finalTransform) + ` rotate(${rotation}deg)`,
     transition: 'box-shadow 0.2s, border 0.2s, background 0.2s',
   };
 
