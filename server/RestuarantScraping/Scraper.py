@@ -12,6 +12,9 @@ import base64
 import requests
 from requests.structures import CaseInsensitiveDict
 from models import db, Restaurant
+import datetime
+from dateutil import parser as date_parser
+from datetime import datetime, date, time as dt_time
 
 load_dotenv()
 
@@ -28,23 +31,31 @@ def url_manipulation(city, province, restuarantName,country = "canada"):
 
 def function_scheme():
     function_schema = {
-    "name": "extract_restaurant_location",
-    "description": "Extract restaurant name and city from user input",
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "restaurant": {
-                "type": "string",
-                "description": "The name of the restaurant"
+        "name": "extract_reservation_details",
+        "description": "Extract restaurant name, city, party size, and reservation time from user input",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "restaurant": {
+                    "type": "string",
+                    "description": "The name of the restaurant"
+                },
+                "city": {
+                    "type": "string",
+                    "description": "The city where the user wants to eat"
+                },
+                "party_size": {
+                    "type": "integer",
+                    "description": "The number of people in the party"
+                },
+                "time": {
+                    "type": "string",
+                    "description": "The time for the reservation, e.g. '7pm', '19:00', 'tonight', etc."
+                }
             },
-            "city": {
-                "type": "string",
-                "description": "The city where the user wants to eat"
-            },
-        },
-        "required": ["restaurant", "city"]
+            "required": ["restaurant", "city", "party_size", "time"]
+        }
     }
-}
     return function_schema
 
 
@@ -151,7 +162,6 @@ def scrape_restaurant_data(url):
     save_restaurant_data(restaurants)
     return restaurants
 
-
 #Post request to get the text from frontend
 @scraper.route('/chat', methods=['POST', 'OPTIONS'])
 def get_restaurants():
@@ -180,15 +190,26 @@ def get_restaurants():
         args_str = chatdata.choices[0].message.function_call.arguments
         args = json.loads(args_str)
         
-        # Validate if we have both city and restaurant
-        if not args.get("city") or not args.get("restaurant"):
+        # Validate if we have all required fields
+        if not all([args.get("city"), args.get("restaurant"), args.get("party_size"), args.get("time")]):
             return jsonify({
                 "status": "invalid",
-                "message": "Could not identify both restaurant and city. Please provide both."
+                "message": "Could not identify all reservation details. Please provide restaurant, city, party size, and time."
             })
             
         city = args["city"]
         restaurant = args["restaurant"]
+        party_size = args["party_size"]
+        time = args["time"]
+        
+        # Try to parse the time string
+        try:
+            now = datetime.now()
+            parsed_time = date_parser.parse(time, default=now)
+            formatted_time = parsed_time.strftime('%Y-%m-%d %H:%M:%S')
+        except Exception as e:
+            print(f"Could not parse time '{time}': {e}")
+            formatted_time = time
         
         # Get city details from geography API
         headers = CaseInsensitiveDict()
@@ -227,12 +248,14 @@ def get_restaurants():
             
         return jsonify({
             "status": "valid",
-            "message": f"Found information for {restaurant} in {city}, {state}",
+            "message": f"Found information for {restaurant} in {city}, {state} at {formatted_time} for {party_size} people",
             "data": {
                 "restaurant": restaurant,
                 "city": city_name,
                 "state": state,
                 "country": country,
+                "party_size": party_size,
+                "time": formatted_time,
                 "results": restaurant_data
             }
         })
@@ -243,5 +266,6 @@ def get_restaurants():
             "status": "error",
             "message": f"An error occurred while processing your request: {str(e)}"
         })
+
 
 

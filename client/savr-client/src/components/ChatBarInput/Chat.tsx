@@ -33,6 +33,7 @@ const Chat: React.FC = () => {
         const data: ResponseData = res.data;
         setResponseMessage(data.message);
         if (data.status === 'valid' && data.data) {
+          console.log(data.data);
           navigate('/restaurant-display', { state: { restaurantData: data.data } });
         }
       })

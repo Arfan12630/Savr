@@ -101,7 +101,7 @@ const DroppableArea = () => {
       })
     );
 
-    setTables((prev) =>
+    setTables((prev) => 
       prev.map((table) => {
         if (table.id === active.id) {
           const newX = table.x + delta.x;

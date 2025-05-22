@@ -177,27 +177,27 @@ const TableLayout = ({
       {/* Only show delete/rotate if not in resize-only mode */}
       {showDelete && !viewOnly && !resizeOnly && (
         <>
-          <button
-            style={{
-              position: 'absolute',
-              top: 2,
-              right: 2,
-              zIndex: 10,
-              background: 'red',
-              color: 'white',
-              border: 'none',
-              borderRadius: '50%',
-              width: 24,
-              height: 24,
-              cursor: 'pointer',
-            }}
-            onClick={e => {
-              e.stopPropagation();
-              onDelete(id);
-            }}
-          >
-            ×
-          </button>
+        <button
+          style={{
+            position: 'absolute',
+            top: 2,
+            right: 2,
+            zIndex: 10,
+            background: 'red',
+            color: 'white',
+            border: 'none',
+            borderRadius: '50%',
+            width: 24,
+            height: 24,
+            cursor: 'pointer',
+          }}
+          onClick={e => {
+            e.stopPropagation();
+            onDelete(id);
+          }}
+        >
+          ×
+        </button>
           {onRotate && (
             <button
               style={{
