@@ -42,14 +42,14 @@ const ReservationModal: React.FC<{
             <Stack spacing={2}>
               {!reserved && (
                 <>
-                  <FormControl>
-                    <FormLabel>Name</FormLabel>
-                    <Input autoFocus required />
-                  </FormControl>
-                  <FormControl>
-                    <FormLabel>Description</FormLabel>
-                    <Input required />
-                  </FormControl>
+              <FormControl>
+                <FormLabel>Name</FormLabel>
+                <Input autoFocus required />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Description</FormLabel>
+                <Input required />
+              </FormControl>
                 </>
               )}
               <Button type="submit">
