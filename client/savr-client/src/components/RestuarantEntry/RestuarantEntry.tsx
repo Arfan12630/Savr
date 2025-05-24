@@ -12,30 +12,23 @@ const RestuarantEntry: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    // On mount, get the initial prompt from backend
-    axios.post('http://127.0.0.1:5000/restaurant-entry', { message: "" })
-      .then(res => setResponseMessage(res.data.message))
-      .catch(() => setResponseMessage('Error connecting to server. Please try again.'));
-  }, []);
+  const handleSend = (text:string) => {
+    setUserMessage(text)
+    setIsLoading(true)
 
-  const handleSend = (text: string) => {
-    setUserMessage(text);
-    setIsLoading(true);
-
-    axios.post('http://127.0.0.1:5000/restaurant-entry', { message: text })
+    axios.post('http://127.0.0.1:5000/restaurant-entry', {message: text})
       .then(res => {
-        setResponseMessage(res.data.message);
-        // If you want to navigate on success, do it here:
-        // if (res.data.status === 'valid') {
-        //   navigate('/somewhere', { state: { ... } });
-        // }
+        setResponseMessage(res.data.message)
+        if (res.data.status === 'valid' && res.data.data) {
+          console.log(res.data.data)
+        }
       })
       .catch(() => {
-        setResponseMessage('Error connecting to server. Please try again.');
+        setResponseMessage('Error connecting to server. Please try again.')
       })
-      .finally(() => setIsLoading(false));
-  };
+      .finally(() => setIsLoading(false))
+  }
+  
 
   return (
     <Box
@@ -107,7 +100,7 @@ const RestuarantEntry: React.FC = () => {
 
         {/* Input bar */}
         <Box sx={{ mt: 1 }}>
-          <RestuarantEntryInput onSend={handleSend} />
+          <RestuarantEntryInput onSend = {() => console.log("send")} />
         </Box>
       </Box>
     </Box>
