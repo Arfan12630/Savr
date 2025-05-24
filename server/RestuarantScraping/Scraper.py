@@ -69,34 +69,34 @@ def chatbot_response(function_schema, user_input):
 
     return response
 
-def get_city_and_country():
-    chatdata = chatbot_response(function_scheme(), "I want to eat from Ennios in Waterloo")
-    args_str = chatdata.choices[0].message.function_call.arguments
-    args = json.loads(args_str)
-    city = args["city"] #pass this guy to the geography api
-    restaurant = args["restaurant"]
+# def get_city_and_country():
+#     chatdata = chatbot_response(function_scheme(), "I want to eat from Ennios in Waterloo")
+#     args_str = chatdata.choices[0].message.function_call.arguments
+#     args = json.loads(args_str)
+#     city = args["city"] #pass this guy to the geography api
+#     restaurant = args["restaurant"]
 
-    headers = CaseInsensitiveDict()
-    headers["Accept"] = "application/json"
-    autocompletion_url = f"https://api.geoapify.com/v1/geocode/autocomplete?text={city}&apiKey={geography_api_key}"
-    autocompletion_response = requests.get(autocompletion_url, headers=headers)
-    autocompletion_data = autocompletion_response.json() 
+#     headers = CaseInsensitiveDict()
+#     headers["Accept"] = "application/json"
+#     autocompletion_url = f"https://api.geoapify.com/v1/geocode/autocomplete?text={city}&apiKey={geography_api_key}"
+#     autocompletion_response = requests.get(autocompletion_url, headers=headers)
+#     autocompletion_data = autocompletion_response.json() 
 
-    # Check if there are any features
-    if autocompletion_data.get("features"):
-        first_feature = autocompletion_data["features"][0]
-        properties = first_feature.get("properties", {})
-        # Now you can access fields like:
-        country = properties.get("country")
-        state = properties.get("state")
-        city = properties.get("city")  # May not always be present, sometimes 'county' or 'formatted' is used
-        print("Country:", country)
-        print("State/Province:", state)
-        print("City:", city)
-        print("All properties:", properties)
-    else:
-        print("No features found in autocompletion data.")
-    url_manipulation(city, state, restaurant)
+#     # Check if there are any features
+#     if autocompletion_data.get("features"):
+#         first_feature = autocompletion_data["features"][0]
+#         properties = first_feature.get("properties", {})
+#         # Now you can access fields like:
+#         country = properties.get("country")
+#         state = properties.get("state")
+#         city = properties.get("city")  # May not always be present, sometimes 'county' or 'formatted' is used
+#         print("Country:", country)
+#         print("State/Province:", state)
+#         print("City:", city)
+#         print("All properties:", properties)
+#     else:
+#         print("No features found in autocompletion data.")
+#     url_manipulation(city, state, restaurant)
 
 def save_restaurant_data(restaurants):
     for restaurant in restaurants:
