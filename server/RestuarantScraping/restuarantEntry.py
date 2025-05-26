@@ -86,13 +86,13 @@ def get_address_info(restaurant, city):
             "message": f"Could not determine state/province for '{city}'. Please be more specific."
         }
     restaurant_data = url_maker(city, state, country, restaurant)
-    return {
-        "status": "valid",
+    restaurant_info = {
+        "restaurant": restaurant,
         "city": city,
-        "state": state,
-        "country": country,
-        "restaurant_data": restaurant_data
+        "address": "",
+        "cards": restaurant_data
     }
+    return restaurant_info
 
 def scrape_restaurant_data(url):
     print("REACHED SCRAPE RESTAURANT DATA")
@@ -166,6 +166,10 @@ restaurant_info = {
 @restuarantEntry.route('/get-address-options', methods=['POST'])
 def get_address_options():
     data = request.json
+    for field in ["restaurant", "city"]:
+        if not data.get(field):
+            return jsonify({"status": "waiting", "message": "Waiting for all fields."})
+        
     restaurant = data.get("restaurant")
     city = data.get("city")
     if restaurant and city:
