@@ -50,7 +50,7 @@ def image_to_html(image_url):
         print(f"Error processing {image_url}: {e}")
         return None
 
-def process_images_in_parallel(image_urls, max_workers=15):
+def process_images_in_parallel(image_urls, max_workers=30):
     results = []
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_url = {executor.submit(image_to_html, url): url for url in image_urls}

@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 
 const RestuarantEntryInput: React.FC<{
     onSend: (message: string) => void;
-}> = ({ onSend }) => {
+    placeholder: string;
+    disabled: boolean;
+}> = ({ onSend, placeholder, disabled }) => {
     const [message, setMessage] = useState("");
 
     const handleSubmit = () => {
@@ -17,13 +19,14 @@ const RestuarantEntryInput: React.FC<{
             <input
                 className="chat-input"
                 type="text"
-                placeholder="Enter restaurant info..."
+                placeholder={placeholder}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                disabled={disabled}
             />
             <button className="icon-button" title="Voice">🎤</button>
-            <button className="icon-button" title="Send" onClick={handleSubmit}>⬆️</button>
+            <button className="icon-button" title="Send" onClick={handleSubmit} disabled={disabled}>⬆️</button>
         </div>
     );
 };
