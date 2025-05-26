@@ -167,13 +167,29 @@ restaurant_info = {
 def get_address_options():
     data = request.json
     for field in ["restaurant", "city"]:
-        if not data.get(field):
-            return jsonify({"status": "waiting", "message": "Waiting for all fields."})
-        
-    restaurant = data.get("restaurant")
-    city = data.get("city")
-    if restaurant and city:
-        address_info = get_address_info(restaurant, city)
-        return jsonify(address_info)
-    else:
-        return jsonify({"status": "waiting", "message": "Waiting for all fields."})
+       restaurant_info[field] = data.get(field)
+    address_info = get_address_info(restaurant_info["restaurant"], restaurant_info["city"])
+    restaurant_info["address"] = address_info["address"]
+    restaurant_info["cards"] = address_info["cards"]
+    if all(restaurant_info.values()):
+        print("RESTAURANT INFO", restaurant_info)
+    result = chain.run(
+        restaurant=restaurant_info["restaurant"],
+        city=restaurant_info["city"],
+        current_field=field,  # This will be the last field entered
+        format_instructions=parser.get_format_instructions()
+    )
+
+    print("\n--- Raw LLM Output ---")
+    print(result)
+    print("----------------------\n")
+
+    # Step 8: Parse the final result into a structured Python object
+    parsed = parser.parse(result)
+    print("✅ Final Parsed Output:")
+    print(parsed.dict())
+    return jsonify(restaurant_info)
+
+@restuarantEntry.route('/get-address-info', methods=['POST'])
+def place_in_DB():
+    return None
