@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+
 import { useNavigate } from "react-router-dom";
 import Box from '@mui/joy/Box';
 import Typography from '@mui/joy/Typography';
@@ -6,29 +7,40 @@ import CircularProgress from '@mui/joy/CircularProgress';
 import axios from "axios";
 import RestuarantEntryInput from './RestuarantEntryInput';
 
+const fields = ["restaurant", "city"];
+type Field = typeof fields[number];
+
 const RestuarantEntry: React.FC = () => {
+  const [currentStep, setCurrentStep] = useState<number>(0);
   const [userMessage, setUserMessage] = useState<string>("");
+  const [inputs, setInputs] = useState<{ [K in Field]?: string }>({});
   const [responseMessage, setResponseMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
   const navigate = useNavigate();
 
-  const handleSend = (text:string) => {
-    setUserMessage(text)
-    setIsLoading(true)
+  const currentField = fields[currentStep];
 
-    axios.post('http://127.0.0.1:5000/restaurant-entry', {message: text})
-      .then(res => {
-        setResponseMessage(res.data.message)
-        if (res.data.status === 'valid' && res.data.data) {
-          console.log(res.data.data)
-        }
-      })
-      .catch(() => {
-        setResponseMessage('Error connecting to server. Please try again.')
-      })
-      .finally(() => setIsLoading(false))
-  }
-  
+  const handleSend = async (value: string) => {
+    setIsLoading(true);
+    const updatedInputs = { ...inputs, [currentField]: value };
+    setInputs(updatedInputs);
+
+    if (currentStep < fields.length - 1) {
+      setCurrentStep(currentStep + 1);
+      setIsLoading(false);
+    } else {
+      // Only send to backend when all fields are collected
+      try {
+        const response = await axios.post('http://127.0.0.1:5000/get-address-options', updatedInputs);
+        setResponseMessage(response.data.response);
+      } catch (error) {
+        setResponseMessage("Error connecting to server. Please try again.");
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
 
   return (
     <Box
@@ -100,7 +112,11 @@ const RestuarantEntry: React.FC = () => {
 
         {/* Input bar */}
         <Box sx={{ mt: 1 }}>
-          <RestuarantEntryInput onSend = {() => console.log("send")} />
+          <RestuarantEntryInput
+            onSend={handleSend}
+            placeholder={`Enter ${currentField}...`}
+            disabled={isLoading}
+          />
         </Box>
       </Box>
     </Box>

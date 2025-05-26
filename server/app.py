@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from models import db, Restaurant
 from RestuarantScraping.Scraper import scraper
 from RestuarantScraping.MenuCards import menu_cards
+from RestuarantScraping.restuarantEntry import restuarantEntry
 app = Flask(__name__)
 # Configure CORS properly for all routes
 CORS(app, resources={
@@ -12,7 +13,7 @@ CORS(app, resources={
 })
 app.register_blueprint(scraper)
 app.register_blueprint(menu_cards)
-
+app.register_blueprint(restuarantEntry)
 
 load_dotenv()
 
@@ -56,5 +57,5 @@ def get_layout():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
 

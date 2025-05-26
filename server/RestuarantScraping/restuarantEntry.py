@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-from flask import jsonify
+from flask import jsonify, Blueprint, request
 from pydantic import BaseModel
 from langchain_openai import ChatOpenAI
 from langchain.chains import LLMChain
@@ -12,9 +12,12 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 from dateutil import parser as date_parser
 import time
+import json
 
 # Load .env file
 load_dotenv()
+restuarantEntry = Blueprint('restuarantEntry', __name__)
+
 openai_api_key = os.environ.get("OPENAI_API_KEY")
 geography_api_key = os.environ.get("GEOGRAPHY_API_KEY")
 
@@ -22,8 +25,6 @@ geography_api_key = os.environ.get("GEOGRAPHY_API_KEY")
 class RestaurantEntry(BaseModel):
     restaurant: str
     city: str
-    state: str
-    menu_image_urls: str
 
 # Step 2: Create parser
 parser = PydanticOutputParser(pydantic_object=RestaurantEntry)
@@ -33,19 +34,16 @@ prompt = PromptTemplate(
     template="""
 You are a helpful assistant that helps restaurant owners submit their restaurant information into a database.
 
-They will enter one field at a time. After each input, update and display the current state of collected info. 
-Then, respond with a friendly prompt for the next missing field. You just received input for: {current_field}
+You will receive one field at a time. After each input, return the **current state** of the information you have **strictly in JSON format**.
 
-When all fields are filled, summarize the info in the following format:
+Only include JSON. No extra commentary. Your response must match this schema exactly:
 {format_instructions}
 
 Current Info:
 Restaurant: {restaurant}
 City: {city}
-State: {state}
-Menu Image URLs: {menu_image_urls}
 """,
-    input_variables=["restaurant", "city", "state", "menu_image_urls", "current_field", "format_instructions"]
+    input_variables=["restaurant", "city", "current_field", "format_instructions"]
 )
 
 
@@ -129,44 +127,49 @@ def scrape_restaurant_data(url):
 restaurant_info = {
     "restaurant": "",
     "city": "",
-    "state": "",
-    "menu_image_urls": ""
+    "address": "",
 }
 
-# Step 6: Collect first two inputs
-first_fields = ["restaurant", "city"]
-for field in first_fields:
-    value = input(f"Please enter {field.replace('_', ' ')}: ")
-    restaurant_info[field] = value.strip()
+# # Step 6: Collect inputs
+# for field in ["restaurant", "city"]:
+#     value = input(f"Please enter {field.replace('_', ' ')}: ")
+#     restaurant_info[field] = value.strip()
 
-# Call get_address_info after first two inputs
-address_info = get_address_info(restaurant_info["restaurant"], restaurant_info["city"])
-#print("Address info:", address_info)
-dataCards  = address_info["restaurant_data"]
-for card in dataCards:
-    print("Card Address", card["address"])
+# # Ensure all required fields are filled before running the chain
+# if all(restaurant_info.values()):
+#     # Call get_address_info after inputs
+#     address_info = get_address_info(restaurant_info["restaurant"], restaurant_info["city"])
+#     #print("Address info:", address_info)
+#     dataCards  = address_info["restaurant_data"]
+#     for card in dataCards:
+#         print("Card Address", card["address"])
 
-# Step 7: Collect remaining inputs
-second_fields = ["state", "menu_image_urls"]
-for field in second_fields:
-    value = input(f"Please enter {field.replace('_', ' ')}: ")
-    restaurant_info[field] = value.strip()
+#     # Step 8: Run the chain with inputs
+#     result = chain.run(
+#         restaurant=restaurant_info["restaurant"],
+#         city=restaurant_info["city"],
+#         current_field=field,  # This will be the last field entered
+#         format_instructions=parser.get_format_instructions()
+#     )
 
-# Step 8: Now you can run the chain with all inputs
-result = chain.run(
-    restaurant=restaurant_info["restaurant"],
-    city=restaurant_info["city"],
-    state=restaurant_info["state"],
-    menu_image_urls=restaurant_info["menu_image_urls"],
-    current_field=field,  # This will be the last field entered
-    format_instructions=parser.get_format_instructions()
-)
+#     print("\n--- Raw LLM Output ---")
+#     print(result)
+#     print("----------------------\n")
 
-print("\n--- Assistant Response ---")
-print(result)
-print("--------------------------\n")
+#     # Step 8: Parse the final result into a structured Python object
+#     parsed = parser.parse(result)
+#     print("✅ Final Parsed Output:")
+#     print(parsed.dict())
+# else:
+#     print("Please provide all required information.")
 
-# Step 8: Parse the final result into a structured Python object
-parsed = parser.parse(result)
-print("✅ Final Parsed Output:")
-print(parsed.dict())
+@restuarantEntry.route('/get-address-options', methods=['POST'])
+def get_address_options():
+    data = request.json
+    restaurant = data.get("restaurant")
+    city = data.get("city")
+    if restaurant and city:
+        address_info = get_address_info(restaurant, city)
+        return jsonify(address_info)
+    else:
+        return jsonify({"status": "waiting", "message": "Waiting for all fields."})
