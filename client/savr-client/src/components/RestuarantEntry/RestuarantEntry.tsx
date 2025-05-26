@@ -15,6 +15,7 @@ const RestuarantEntry: React.FC = () => {
   const [userMessage, setUserMessage] = useState<string>("");
   const [inputs, setInputs] = useState<{ [K in Field]?: string }>({});
   const [responseMessage, setResponseMessage] = useState<string>("");
+  const [cards, setCards] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const navigate = useNavigate();
@@ -34,6 +35,8 @@ const RestuarantEntry: React.FC = () => {
       try {
         const response = await axios.post('http://127.0.0.1:5000/get-address-options', updatedInputs);
         setResponseMessage(response.data.response);
+        console.log(response.data.cards);
+        setCards(response.data.cards);
       } catch (error) {
         setResponseMessage("Error connecting to server. Please try again.");
       } finally {
