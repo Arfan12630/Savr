@@ -19,14 +19,13 @@ const RestuarantEntryInput: React.FC<{
             <input
                 className="chat-input"
                 type="text"
-                placeholder={placeholder}
+                placeholder= {placeholder}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
-                disabled={disabled}
             />
             <button className="icon-button" title="Voice">🎤</button>
-            <button className="icon-button" title="Send" onClick={handleSubmit} disabled={disabled}>⬆️</button>
+            <button className="icon-button" title="Send" onClick={handleSubmit}>⬆️</button>
         </div>
     );
 };

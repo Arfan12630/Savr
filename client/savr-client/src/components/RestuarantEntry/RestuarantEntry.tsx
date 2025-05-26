@@ -15,27 +15,31 @@ const RestuarantEntry: React.FC = () => {
   const [userMessage, setUserMessage] = useState<string>("");
   const [inputs, setInputs] = useState<{ [K in Field]?: string }>({});
   const [responseMessage, setResponseMessage] = useState<string>("");
-  const [cards, setCards] = useState<string[]>([]);
+  const [cards, setCards] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const [entryMessages, setEntryMessages] = useState<string>("Please enter the name of the restaurant");
   const navigate = useNavigate();
 
   const currentField = fields[currentStep];
-
+ 
   const handleSend = async (value: string) => {
     setIsLoading(true);
     const updatedInputs = { ...inputs, [currentField]: value };
     setInputs(updatedInputs);
 
+    setUserMessage(value);
+    setEntryMessages("");
+
     if (currentStep < fields.length - 1) {
       setCurrentStep(currentStep + 1);
       setIsLoading(false);
+      setResponseMessage(`Please enter ${fields[currentStep + 1]} name`);
     } else {
       // Only send to backend when all fields are collected
       try {
+        setResponseMessage("");
         const response = await axios.post('http://127.0.0.1:5000/get-address-options', updatedInputs);
-        setResponseMessage(response.data.response);
-        console.log(response.data.cards);
+        setResponseMessage(response.data.response || "Are these addresses correct?, If so which one are you located in?");
         setCards(response.data.cards);
       } catch (error) {
         setResponseMessage("Error connecting to server. Please try again.");
@@ -109,6 +113,36 @@ const RestuarantEntry: React.FC = () => {
               >
                 {responseMessage}
               </Typography>
+            </Box>
+          )}
+
+          {entryMessages && (
+            <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
+              <Typography
+                level="body-md"
+                sx={{
+                  backgroundColor: '#2a2f3d',
+                  color: '#ddd',
+                  px: 2,
+                  py: 1,
+                  borderRadius: '12px',
+                }}
+              >
+                {entryMessages}       
+              </Typography>
+            </Box>
+          )}
+
+          {cards && cards.length > 0 && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', mb: 2 }}>
+              {cards.map((card, idx) => (
+                <Box onClick={()=>console.log(card)} key={card.name ? card.name + idx : idx} sx={{ mb: 1 }}>
+                  <Typography level="body-md" sx={{ fontWeight: 'bold' }}>{card.name}</Typography>
+                  <Typography level="body-sm">{card.address}</Typography>
+                  <Typography level="body-xs">{card.hours}</Typography>
+                  {card.logo && <img src={card.logo} alt={card.name} style={{ maxWidth: 50, maxHeight: 50 }} />}
+                </Box>
+              ))}
             </Box>
           )}
         </Box>
