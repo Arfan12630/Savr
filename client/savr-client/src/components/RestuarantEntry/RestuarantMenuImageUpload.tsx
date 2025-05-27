@@ -2,15 +2,27 @@ import React from "react";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import RestuarantMenuUploadInput from "./RestuarantMenuUploadInput";
-
+import axios from "axios";
 const RestuarantMenuImageUpload: React.FC = () => {
   const imageHandling = (input: File | string) => {
     if (typeof input === "string") {
-      // Handle URL
-      console.log("URL submitted:", input);
+      // Optionally handle URLs here
     } else {
       // Handle image file
-      console.log("Image file submitted:", input);
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        const base64DataUrl = e.target?.result;
+        if (typeof base64DataUrl === "string") {
+          axios.post("http://127.0.0.1:5000/extract-menu-html", {
+            image_urls: [base64DataUrl]
+          }).then((response) => {
+            console.log(response.data);
+          }).catch((error) => {
+            console.error("Error extracting menu HTML:", error);
+          });
+        }
+      };
+      reader.readAsDataURL(input);
     }
   };
 

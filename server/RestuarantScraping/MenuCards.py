@@ -33,7 +33,17 @@ def image_to_html(image_url):
                     "content": [
                         {
                             "type": "text",
-                            "text": "Extract this restaurant menu into structured HTML. Use <div class='menu-category'> for categories, <h2> for headers, <div class='menu-item'> for each dish, <h3> for the name, <p> for description, and <span class='price'> for price. Preserve structure and avoid hallucinating data."
+                            "text": (
+                                "Extract this restaurant menu into structured HTML. "
+                                "Use <div class='menu-category'> for categories, <h2> for headers, "
+                                "<div class='menu-item'> for each dish, <h3> for the name, <p> for description, "
+                                "and <span class='price'> for price. "
+                                "Preserve structure and avoid hallucinating data. "
+                                "IMPORTANT: Also extract any add-on options, modifiers, or special instructions, "
+                                "even if they are in smaller, lighter, italicized, or differently styled text. "
+                                "Include these as a separate <div class='menu-addons'> section at the top of the HTML, "
+                                "with each add-on or instruction in a <p> tag."
+                            )
                         },
                         {
                             "type": "image_url",
@@ -52,32 +62,39 @@ def image_to_html(image_url):
 
 def process_images_in_parallel(image_urls, max_workers=30):
     results = []
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_url = {executor.submit(image_to_html, url): url for url in image_urls}
-        for future in as_completed(future_to_url):
-            url = future_to_url[future]
-            try:
-                html = future.result()
-                results.append({"url": url, "html": html})
-            except Exception as exc:
-                print(f"{url} generated an exception: {exc}")
-                results.append({"url": url, "html": None})
+    if len(image_urls) == 1:
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:       
+            future = executor.submit(image_to_html, image_urls[0])
+            return [{"url": image_urls[0], "html": future.result()}]
+    else:
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_url = {executor.submit(image_to_html, url): url for url in image_urls}
+            for future in as_completed(future_to_url):
+                url = future_to_url[future]
+                try:
+                    html = future.result()
+                    results.append({"url": url, "html": html})
+                except Exception as exc:
+                    print(f"{url} generated an exception: {exc}")
+                    results.append({"url": url, "html": None})
     return results
+# results = process_images_in_parallel(image_urls, max_workers=15)
+# for result in results:
+#         print(f"URL: {result['url']}\nHTML: {result['html']}\n{'-'*40}")
 
-
-@menu_cards.route('/extract_menu_html', methods=['POST'])
-def extract_menu_html():
-    return None
-# Testing hard coded values for now
-if __name__ == "__main__":
-    image_urls = [
-        "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c5e8c54.jpg",
-        "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c736763.jpg",
-        "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c80ba7c.jpg",
-        "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c964228.jpg",
-        "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c54bee4.jpg",
-        "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c689130.jpg",
-    ]
-    results = process_images_in_parallel(image_urls, max_workers=15)
-    for result in results:
-        print(f"URL: {result['url']}\nHTML: {result['html']}\n{'-'*40}")
+# @menu_cards.route('/extract_menu_html', methods=['POST'])
+# def extract_menu_html():
+#     return None
+# # Testing hard coded values for now
+# if __name__ == "__main__":
+#     image_urls = [
+#         "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c5e8c54.jpg",
+#         "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c736763.jpg",
+#         "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c80ba7c.jpg",
+#         "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c964228.jpg",
+#         "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c54bee4.jpg",
+#         "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c689130.jpg",
+#     ]
+#     results = process_images_in_parallel(image_urls, max_workers=15)
+#     for result in results:
+#         print(f"URL: {result['url']}\nHTML: {result['html']}\n{'-'*40}")
