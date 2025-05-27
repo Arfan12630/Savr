@@ -59,7 +59,7 @@ const RestuarantEntry: React.FC = () => {
   };
 
   const handleCardClick = async (card: any) => {
-    console.log(card);
+    setIsLoading(true);
     try {
       const response = await axios.post(
         "http://127.0.0.1:5000/get-address-info",
@@ -69,13 +69,16 @@ const RestuarantEntry: React.FC = () => {
       if (response.data.message == "Restaurant already exists") {
         setResponseMessage("Restaurant already exists");
       }
+      setTimeout(() => {
+        navigate("/owner/restaurant-entry/menu-image-upload");
+        setHovered(true);
+      }, 500);
     } catch (error) {
       console.log(error);
+      setResponseMessage("Error connecting to server. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
-    setResponseMessage(
-      "Please Upload images of the menu or send links of the menu"
-    );
-    setHovered(true);
   };
 
   return (
@@ -197,6 +200,7 @@ const RestuarantEntry: React.FC = () => {
           )}
         </Box>
 
+         
         {/* Input bar */}
         <Box sx={{ mt: 1 }}>
           <RestuarantEntryInput

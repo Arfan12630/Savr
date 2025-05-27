@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 const RestuarantEntryInput: React.FC<{
-    onSend: (message: string) => void;
+    onSend: (message: any) => void;
     placeholder: string;
     disabled: boolean;
 }> = ({ onSend, placeholder, disabled }) => {
@@ -15,7 +15,7 @@ const RestuarantEntryInput: React.FC<{
 
     return (
         <div className="chat-input-container">
-            <button className="icon-button" title="Search">🌐</button>
+            <button className="icon-button" title="Drop Images or send links">📂 🔗</button>
             <input
                 className="chat-input"
                 type="text"
