@@ -15,6 +15,7 @@ import time
 import json
 from models import db, Restaurant_Entry
 import uuid
+from RestuarantScraping.MenuCards import image_to_html, process_images_in_parallel
 # Load .env file
 load_dotenv()
 restuarantEntry = Blueprint('restuarantEntry', __name__)
@@ -176,3 +177,10 @@ def place_in_DB():
     db.session.add(restaurant_entry)
     db.session.commit()
     return jsonify(data)
+
+@restuarantEntry.route('/extract-menu-html', methods=['POST'])
+def extract_menu_html():
+    data = request.json
+    image_urls = data["image_urls"]
+    menu_html = process_images_in_parallel(image_urls)
+    return jsonify(menu_html)
