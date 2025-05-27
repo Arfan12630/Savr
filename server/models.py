@@ -1,4 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.dialects.postgresql import UUID
+import uuid
 
 db = SQLAlchemy()
 
@@ -16,7 +18,7 @@ class Restaurant(db.Model):
 
 class Restaurant_Entry(db.Model):
     __tablename__ = 'restaurant_entries'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = db.Column(db.String(255), nullable=False)
     address = db.Column(db.Text)
     hours = db.Column(db.String(255))

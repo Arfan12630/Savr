@@ -13,7 +13,8 @@ from datetime import datetime
 from dateutil import parser as date_parser
 import time
 import json
-
+from models import db, Restaurant_Entry
+import uuid
 # Load .env file
 load_dotenv()
 restuarantEntry = Blueprint('restuarantEntry', __name__)
@@ -130,38 +131,7 @@ restaurant_info = {
     "address": "",
 }
 
-# # Step 6: Collect inputs
-# for field in ["restaurant", "city"]:
-#     value = input(f"Please enter {field.replace('_', ' ')}: ")
-#     restaurant_info[field] = value.strip()
 
-# # Ensure all required fields are filled before running the chain
-# if all(restaurant_info.values()):
-#     # Call get_address_info after inputs
-#     address_info = get_address_info(restaurant_info["restaurant"], restaurant_info["city"])
-#     #print("Address info:", address_info)
-#     dataCards  = address_info["restaurant_data"]
-#     for card in dataCards:
-#         print("Card Address", card["address"])
-
-#     # Step 8: Run the chain with inputs
-#     result = chain.run(
-#         restaurant=restaurant_info["restaurant"],
-#         city=restaurant_info["city"],
-#         current_field=field,  # This will be the last field entered
-#         format_instructions=parser.get_format_instructions()
-#     )
-
-#     print("\n--- Raw LLM Output ---")
-#     print(result)
-#     print("----------------------\n")
-
-#     # Step 8: Parse the final result into a structured Python object
-#     parsed = parser.parse(result)
-#     print("✅ Final Parsed Output:")
-#     print(parsed.dict())
-# else:
-#     print("Please provide all required information.")
 
 @restuarantEntry.route('/get-address-options', methods=['POST'])
 def get_address_options():
@@ -192,4 +162,17 @@ def get_address_options():
 
 @restuarantEntry.route('/get-address-info', methods=['POST'])
 def place_in_DB():
-    return None
+    data = request.json
+    restaurant_entry = Restaurant_Entry(
+        id=uuid.uuid4(),
+        name=data["name"],
+        address=data["address"],
+        hours=data["hours"],
+        logo=data["logo"],
+        created_at=datetime.now()
+    )
+    if Restaurant_Entry.query.filter_by(name=data["name"], address=data["address"]).first():
+        return jsonify({"message": "Restaurant already exists"})
+    db.session.add(restaurant_entry)
+    db.session.commit()
+    return jsonify(data)
