@@ -1,0 +1,12 @@
+# Ignore Python virtual environment
+venv/
+
+# Bytecode files
+__pycache__/
+*.pyc
+
+# macOS system files
+.DS_Store
+
+# Environment variables
+.env

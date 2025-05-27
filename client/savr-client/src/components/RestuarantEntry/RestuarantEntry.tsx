@@ -18,6 +18,7 @@ const RestuarantEntry: React.FC = () => {
   const [cards, setCards] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [entryMessages, setEntryMessages] = useState<string>("Please enter the name of the restaurant");
+  const [hovered, setHovered] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const currentField = fields[currentStep];
@@ -47,6 +48,28 @@ const RestuarantEntry: React.FC = () => {
         setIsLoading(false);
       }
     }
+  };
+
+  const handleCardClick = async (card: any) => {
+    console.log(card);
+    try{
+    const response = await axios.post('http://127.0.0.1:5000/get-address-info', card);
+    console.log(response.data);
+    if(response.data.message == "Restaurant already exists"){
+      setResponseMessage("Restaurant already exists");
+      setCards([]);
+      setCurrentStep(0);
+      setInputs({});
+      setUserMessage("");
+      setEntryMessages("");
+      setHovered(false);
+      setIsLoading(false);
+      setResponseMessage("Please Upload images of the menu or send links of the menu");
+      setHovered(true); 
+    }
+  } catch (error) {
+    console.log(error);
+  }
   };
 
   return (
@@ -136,7 +159,7 @@ const RestuarantEntry: React.FC = () => {
           {cards && cards.length > 0 && (
             <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', mb: 2 }}>
               {cards.map((card, idx) => (
-                <Box onClick={()=>console.log(card)} key={card.name ? card.name + idx : idx} sx={{ mb: 1 }}>
+                <Box onClick={()=>{handleCardClick(card)}} key={card.name ? card.name + idx : idx} sx={{ mb: 1 }}>
                   <Typography level="body-md" sx={{ fontWeight: 'bold' }}>{card.name}</Typography>
                   <Typography level="body-sm">{card.address}</Typography>
                   <Typography level="body-xs">{card.hours}</Typography>
