@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 import { useNavigate } from "react-router-dom";
-import Box from '@mui/joy/Box';
-import Typography from '@mui/joy/Typography';
-import CircularProgress from '@mui/joy/CircularProgress';
+import Box from "@mui/joy/Box";
+import Typography from "@mui/joy/Typography";
+import CircularProgress from "@mui/joy/CircularProgress";
 import axios from "axios";
-import RestuarantEntryInput from './RestuarantEntryInput';
+import RestuarantEntryInput from "./RestuarantEntryInput";
 
 const fields = ["restaurant", "city"];
-type Field = typeof fields[number];
+type Field = (typeof fields)[number];
 
 const RestuarantEntry: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
@@ -17,12 +17,14 @@ const RestuarantEntry: React.FC = () => {
   const [responseMessage, setResponseMessage] = useState<string>("");
   const [cards, setCards] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [entryMessages, setEntryMessages] = useState<string>("Please enter the name of the restaurant");
+  const [entryMessages, setEntryMessages] = useState<string>(
+    "Please enter the name of the restaurant"
+  );
   const [hovered, setHovered] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const currentField = fields[currentStep];
- 
+
   const handleSend = async (value: string) => {
     setIsLoading(true);
     const updatedInputs = { ...inputs, [currentField]: value };
@@ -39,8 +41,14 @@ const RestuarantEntry: React.FC = () => {
       // Only send to backend when all fields are collected
       try {
         setResponseMessage("");
-        const response = await axios.post('http://127.0.0.1:5000/get-address-options', updatedInputs);
-        setResponseMessage(response.data.response || "Are these addresses correct?, If so which one are you located in?");
+        const response = await axios.post(
+          "http://127.0.0.1:5000/get-address-options",
+          updatedInputs
+        );
+        setResponseMessage(
+          response.data.response ||
+            "Are these addresses correct?, If so which one are you located in?"
+        );
         setCards(response.data.cards);
       } catch (error) {
         setResponseMessage("Error connecting to server. Please try again.");
@@ -52,63 +60,61 @@ const RestuarantEntry: React.FC = () => {
 
   const handleCardClick = async (card: any) => {
     console.log(card);
-    try{
-    const response = await axios.post('http://127.0.0.1:5000/get-address-info', card);
-    console.log(response.data);
-    if(response.data.message == "Restaurant already exists"){
-      setResponseMessage("Restaurant already exists");
-      setCards([]);
-      setCurrentStep(0);
-      setInputs({});
-      setUserMessage("");
-      setEntryMessages("");
-      setHovered(false);
-      setIsLoading(false);
-      setResponseMessage("Please Upload images of the menu or send links of the menu");
-      setHovered(true); 
+    try {
+      const response = await axios.post(
+        "http://127.0.0.1:5000/get-address-info",
+        card
+      );
+      console.log(response.data);
+      if (response.data.message == "Restaurant already exists") {
+        setResponseMessage("Restaurant already exists");
+      }
+    } catch (error) {
+      console.log(error);
     }
-  } catch (error) {
-    console.log(error);
-  }
+    setResponseMessage(
+      "Please Upload images of the menu or send links of the menu"
+    );
+    setHovered(true);
   };
 
   return (
     <Box
       sx={{
-        width: '100vw',
-        height: '100vh',
-        background: 'radial-gradient(circle at top, #161a2b, #0a0f1f)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
+        width: "100vw",
+        height: "100vh",
+        background: "radial-gradient(circle at top, #161a2b, #0a0f1f)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
       <Box
         sx={{
-          width: '90%',
-          maxWidth: '800px',
-          height: '400px',
-          backgroundColor: '#1a1d26',
-          borderRadius: '20px',
-          boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+          width: "90%",
+          maxWidth: "800px",
+          height: "400px",
+          backgroundColor: "#1a1d26",
+          borderRadius: "20px",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
           p: 2,
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
         }}
       >
         {/* Message area */}
-        <Box sx={{ flexGrow: 1, overflowY: 'auto', pr: 1 }}>
+        <Box sx={{ flexGrow: 1, overflowY: "auto", pr: 1 }}>
           {userMessage && (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+            <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
               <Typography
                 level="body-md"
                 sx={{
-                  backgroundColor: '#2e3953',
-                  color: 'white',
+                  backgroundColor: "#2e3953",
+                  color: "white",
                   px: 2,
                   py: 1,
-                  borderRadius: '12px',
+                  borderRadius: "12px",
                 }}
               >
                 {userMessage}
@@ -117,21 +123,21 @@ const RestuarantEntry: React.FC = () => {
           )}
 
           {isLoading && (
-            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
               <CircularProgress color="neutral" />
             </Box>
           )}
 
           {responseMessage && (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
+            <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}>
               <Typography
                 level="body-md"
                 sx={{
-                  backgroundColor: '#2a2f3d',
-                  color: '#ddd',
+                  backgroundColor: "#2a2f3d",
+                  color: "#ddd",
                   px: 2,
                   py: 1,
-                  borderRadius: '12px',
+                  borderRadius: "12px",
                 }}
               >
                 {responseMessage}
@@ -140,30 +146,51 @@ const RestuarantEntry: React.FC = () => {
           )}
 
           {entryMessages && (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
+            <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}>
               <Typography
                 level="body-md"
                 sx={{
-                  backgroundColor: '#2a2f3d',
-                  color: '#ddd',
+                  backgroundColor: "#2a2f3d",
+                  color: "#ddd",
                   px: 2,
                   py: 1,
-                  borderRadius: '12px',
+                  borderRadius: "12px",
                 }}
               >
-                {entryMessages}       
+                {entryMessages}
               </Typography>
             </Box>
           )}
 
           {cards && cards.length > 0 && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', mb: 2 }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "flex-start",
+                mb: 2,
+              }}
+            >
               {cards.map((card, idx) => (
-                <Box onClick={()=>{handleCardClick(card)}} key={card.name ? card.name + idx : idx} sx={{ mb: 1 }}>
-                  <Typography level="body-md" sx={{ fontWeight: 'bold' }}>{card.name}</Typography>
+                <Box
+                  onClick={() => {
+                    handleCardClick(card);
+                  }}
+                  key={card.name ? card.name + idx : idx}
+                  sx={{ mb: 1 }}
+                >
+                  <Typography level="body-md" sx={{ fontWeight: "bold" }}>
+                    {card.name}
+                  </Typography>
                   <Typography level="body-sm">{card.address}</Typography>
                   <Typography level="body-xs">{card.hours}</Typography>
-                  {card.logo && <img src={card.logo} alt={card.name} style={{ maxWidth: 50, maxHeight: 50 }} />}
+                  {card.logo && (
+                    <img
+                      src={card.logo}
+                      alt={card.name}
+                      style={{ maxWidth: 50, maxHeight: 50 }}
+                    />
+                  )}
                 </Box>
               ))}
             </Box>
