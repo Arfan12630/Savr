@@ -2,18 +2,22 @@ import React, { useState } from "react";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
 import CircularProgress from "@mui/joy/CircularProgress";
+import Button from "@mui/joy/Button";
 import RestuarantMenuUploadInput from "./RestuarantMenuUploadInput";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const RestuarantMenuImageUpload: React.FC = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const restaurantCardData = location.state;
   const [isLoading, setIsLoading] = useState(false);
+  const [extractedMenus, setExtractedMenus] = useState<string[]>([]);
+  const [showConfirmation, setShowConfirmation] = useState(false);
 
   const imageHandling = (input: File | string) => {
     if (typeof input === "string") {
-      // Optionally handle URLs here
+      // Handle URLs here if needed
     } else {
       // Handle image file
       const reader = new FileReader();
@@ -26,6 +30,12 @@ const RestuarantMenuImageUpload: React.FC = () => {
             image_urls: [base64DataUrl]
           }).then((response) => {
             console.log(response.data);
+            // Add the extracted HTML to our list
+            if (response.data.menu_html) {
+              setExtractedMenus(prev => [...prev, response.data.menu_html]);
+            }
+            // Show confirmation dialog
+            setShowConfirmation(true);
           }).catch((error) => {
             console.error("Error extracting menu HTML:", error);
           }).finally(() => {
@@ -35,6 +45,27 @@ const RestuarantMenuImageUpload: React.FC = () => {
       };
       reader.readAsDataURL(input);
     }
+  };
+
+  const handleUploadMore = () => {
+    setShowConfirmation(false);
+  };
+
+  const handleFinishUploading = () => {
+    // Save all extracted menus to database
+    axios.post("http://127.0.0.1:5000/save-all-menu-html", {
+      restaurant_data: restaurantCardData,
+      menu_htmls: extractedMenus
+    }).then((response) => {
+      console.log("All menus saved:", response.data);
+      navigate("/edit", { state: { restaurantCardData: restaurantCardData,
+        extractedMenus: extractedMenus
+
+       } });
+      // Navigate to next step or show success message
+    }).catch((error) => {
+      console.error("Error saving menus:", error);
+    });
   };
 
   return (
@@ -62,7 +93,7 @@ const RestuarantMenuImageUpload: React.FC = () => {
           justifyContent: "space-between",
         }}
       >
-        {/* Static guidance message */}
+        {/* Messages area */}
         <Box sx={{ flexGrow: 1, overflowY: "auto", pr: 1 }}>
           <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}>
             <Typography
@@ -78,9 +109,53 @@ const RestuarantMenuImageUpload: React.FC = () => {
               Upload images of your menu or paste menu links below.
             </Typography>
           </Box>
+
+          {extractedMenus.length > 0 && (
+            <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}>
+              <Typography
+                level="body-md"
+                sx={{
+                  backgroundColor: "#2a2f3d",
+                  color: "#ddd",
+                  px: 2,
+                  py: 1,
+                  borderRadius: "12px",
+                }}
+              >
+                {extractedMenus.length} menu image(s) processed successfully.
+              </Typography>
+            </Box>
+          )}
+
           {isLoading && (
             <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
               <CircularProgress color="neutral" />
+            </Box>
+          )}
+
+          {showConfirmation && (
+            <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}>
+              <Box
+                sx={{
+                  backgroundColor: "#2a2f3d",
+                  color: "#ddd",
+                  px: 2,
+                  py: 1,
+                  borderRadius: "12px",
+                }}
+              >
+                <Typography level="body-md" sx={{ mb: 2 }}>
+                  Menu extracted successfully! Do you have more menu images to upload?
+                </Typography>
+                <Box sx={{ display: "flex", gap: 1 }}>
+                  <Button size="sm" onClick={handleUploadMore}>
+                    Yes, upload more
+                  </Button>
+                  <Button size="sm" variant="solid" onClick={handleFinishUploading}>
+                    No, I'm done
+                  </Button>
+                </Box>
+              </Box>
             </Box>
           )}
         </Box>
@@ -90,7 +165,7 @@ const RestuarantMenuImageUpload: React.FC = () => {
           <RestuarantMenuUploadInput
             onSend={imageHandling}
             placeholder="Upload images of the menu or send links of the menu"
-            disabled={isLoading}
+            disabled={isLoading || showConfirmation}
           />
         </Box>
       </Box>

@@ -184,14 +184,33 @@ def extract_menu_html():
     image_urls = data["image_urls"]
     restaurant_data = data["restaurant_data"]
     menu_html = process_images_in_parallel(image_urls)
+    
     if not restaurant_data and not image_urls:
         return jsonify({"message": "No data provided"})
     
-    entry = Restaurant_Entry.query.filter_by(name=restaurant_data["name"], address=restaurant_data["address"]).first()
+    # Just return the extracted HTML, don't save to DB yet
+    return jsonify({"menu_html": menu_html[0]})  # Assuming single image
+
+
+@restuarantEntry.route('/save-all-menu-html', methods=['POST'])
+def save_all_menu_html():
+    data = request.json
+    restaurant_data = data["restaurant_data"]
+    menu_htmls = data["menu_htmls"]  # List of HTML strings
+    
+    entry = Restaurant_Entry.query.filter_by(
+        name=restaurant_data["name"], 
+        address=restaurant_data["address"]
+    ).first()
+    
     if not entry:
-        return jsonify({"message": "Entry not found"})
-    entry.menu_html = menu_html[0]["html"]
+        return jsonify({"message": "Entry not found"}), 404
+    
+    # Store as array of strings or concatenate them
+    entry.menu_html = menu_htmls  # If your column is ARRAY(Text) or JSON
+    # OR concatenate: entry.menu_html = "\n\n".join(menu_htmls)
+    
     db.session.commit()
-    return jsonify({"message": "Menu entry created"})
+    return jsonify({"message": "All menu HTMLs saved successfully"})
 
     
