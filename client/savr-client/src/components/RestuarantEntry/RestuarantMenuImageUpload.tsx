@@ -1,9 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 import Box from "@mui/joy/Box";
 import Typography from "@mui/joy/Typography";
+import CircularProgress from "@mui/joy/CircularProgress";
 import RestuarantMenuUploadInput from "./RestuarantMenuUploadInput";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
+
 const RestuarantMenuImageUpload: React.FC = () => {
+  const location = useLocation();
+  const restaurantCardData = location.state;
+  const [isLoading, setIsLoading] = useState(false);
+
   const imageHandling = (input: File | string) => {
     if (typeof input === "string") {
       // Optionally handle URLs here
@@ -13,12 +20,16 @@ const RestuarantMenuImageUpload: React.FC = () => {
       reader.onload = function (e) {
         const base64DataUrl = e.target?.result;
         if (typeof base64DataUrl === "string") {
+          setIsLoading(true);
           axios.post("http://127.0.0.1:5000/extract-menu-html", {
+            restaurant_data: restaurantCardData,
             image_urls: [base64DataUrl]
           }).then((response) => {
             console.log(response.data);
           }).catch((error) => {
             console.error("Error extracting menu HTML:", error);
+          }).finally(() => {
+            setIsLoading(false);
           });
         }
       };
@@ -67,6 +78,11 @@ const RestuarantMenuImageUpload: React.FC = () => {
               Upload images of your menu or paste menu links below.
             </Typography>
           </Box>
+          {isLoading && (
+            <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+              <CircularProgress color="neutral" />
+            </Box>
+          )}
         </Box>
 
         {/* Input bar */}
@@ -74,7 +90,7 @@ const RestuarantMenuImageUpload: React.FC = () => {
           <RestuarantMenuUploadInput
             onSend={imageHandling}
             placeholder="Upload images of the menu or send links of the menu"
-            disabled={false}
+            disabled={isLoading}
           />
         </Box>
       </Box>

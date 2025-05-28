@@ -70,7 +70,7 @@ const RestuarantEntry: React.FC = () => {
         setResponseMessage("Restaurant already exists");
       }
       setTimeout(() => {
-        navigate("/owner/restaurant-entry/menu-image-upload");
+        navigate("/owner/restaurant-entry/menu-image-upload", { state: card });
         setHovered(true);
       }, 500);
     } catch (error) {
