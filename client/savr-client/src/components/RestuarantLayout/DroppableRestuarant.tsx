@@ -27,7 +27,7 @@ function isOverlapping(
 const DroppableArea = () => {
   const location = useLocation();
   const restaurantCardData = location.state;
-  console.log(restaurantCardData)
+ 
   const { setNodeRef, isOver } = useDroppable({
     id: 'droppable-area',
   });
