@@ -4,7 +4,7 @@ import Drawer from '@mui/joy/Drawer';
 import Button from '@mui/joy/Button';
 import Snackbar from '@mui/material/Snackbar';
 import Avatar from '@mui/joy/Avatar';
-const NavBar = ({addChair, isChairPressed, setIsChairPressed, addTable, isTablePressed, setIsTablePressed, saveLayout}: {addChair: () => void, isChairPressed: boolean, setIsChairPressed: (isChairPressed: boolean) => void, addTable: () => void, isTablePressed: boolean, setIsTablePressed: (isTablePressed: boolean) => void, saveLayout: () => void}) => {
+const NavBar = ({restaurantCardData, addChair, isChairPressed, setIsChairPressed, addTable, isTablePressed, setIsTablePressed, saveLayout}: {restaurantCardData: any, addChair: () => void, isChairPressed: boolean, setIsChairPressed: (isChairPressed: boolean) => void, addTable: () => void, isTablePressed: boolean, setIsTablePressed: (isTablePressed: boolean) => void, saveLayout: () => void}) => {
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer =
@@ -53,7 +53,7 @@ const NavBar = ({addChair, isChairPressed, setIsChairPressed, addTable, isTableP
           flex: 1,
           textAlign: 'center'
         }}>
-          Restaurant Name
+         {restaurantCardData.name}
         </h1>
         {/* Empty Box to balance the flex layout, or you can put another button here */}
         <Button sx = {{

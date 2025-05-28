@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { DndContext, useDroppable } from '@dnd-kit/core';
+import { useLocation } from 'react-router-dom';
 import ChairLayout from './ChairLayout';
 import NavBar from './Navbar/NavBar';
 import Snackbar from '@mui/material/Snackbar';
@@ -24,6 +25,9 @@ function isOverlapping(
 }
 
 const DroppableArea = () => {
+  const location = useLocation();
+  const restaurantCardData = location.state;
+  console.log(restaurantCardData)
   const { setNodeRef, isOver } = useDroppable({
     id: 'droppable-area',
   });
@@ -260,7 +264,7 @@ const DroppableArea = () => {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       >
-        <NavBar addChair={addChair} isChairPressed={isChairPressed} setIsChairPressed={setIsChairPressed} addTable={addTable} isTablePressed={isTablePressed} setIsTablePressed={setIsTablePressed} saveLayout={saveLayout}/>
+        <NavBar restaurantCardData={restaurantCardData.restaurantCardData} addChair={addChair} isChairPressed={isChairPressed} setIsChairPressed={setIsChairPressed} addTable={addTable} isTablePressed={isTablePressed} setIsTablePressed={setIsTablePressed} saveLayout={saveLayout}/>
       
         {chairs.map((chair) => (
           <ChairLayout
