@@ -189,7 +189,7 @@ def extract_menu_html():
         return jsonify({"message": "No data provided"})
     
     # Just return the extracted HTML, don't save to DB yet
-    return jsonify({"menu_html": menu_html[0]})  # Assuming single image
+    return jsonify({"menu_html": menu_html})  # Assuming single image
 
 
 @restuarantEntry.route('/save-all-menu-html', methods=['POST'])

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 const RestuarantMenuUploadInput: React.FC<{
-    onSend: (message: File | string) => void;
+    onSend: (message:any) => void;
     placeholder: string;
     disabled: boolean;
 }> = ({ onSend, placeholder, disabled }) => {
@@ -14,9 +14,9 @@ const RestuarantMenuUploadInput: React.FC<{
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files && e.target.files[0]) {
-            onSend(e.target.files[0]);
-            // Optionally reset the file input
+        if (e.target.files && e.target.files.length > 0) {
+            const filesArray = Array.from(e.target.files);
+            onSend(filesArray);
             e.target.value = "";
         }
     };
@@ -28,6 +28,7 @@ const RestuarantMenuUploadInput: React.FC<{
                 <input
                     type="file"
                     accept="image/*"
+                    multiple
                     style={{ display: "none" }}
                     onChange={handleFileChange}
                     disabled={disabled}
