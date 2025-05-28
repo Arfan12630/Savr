@@ -78,23 +78,3 @@ def process_images_in_parallel(image_urls, max_workers=30):
                     print(f"{url} generated an exception: {exc}")
                     results.append({"url": url, "html": None})
     return results
-# results = process_images_in_parallel(image_urls, max_workers=15)
-# for result in results:
-#         print(f"URL: {result['url']}\nHTML: {result['html']}\n{'-'*40}")
-
-# @menu_cards.route('/extract_menu_html', methods=['POST'])
-# def extract_menu_html():
-#     return None
-# # Testing hard coded values for now
-# if __name__ == "__main__":
-#     image_urls = [
-#         "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c5e8c54.jpg",
-#         "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c736763.jpg",
-#         "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c80ba7c.jpg",
-#         "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c964228.jpg",
-#         "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c54bee4.jpg",
-#         "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c689130.jpg",
-#     ]
-#     results = process_images_in_parallel(image_urls, max_workers=15)
-#     for result in results:
-#         print(f"URL: {result['url']}\nHTML: {result['html']}\n{'-'*40}")

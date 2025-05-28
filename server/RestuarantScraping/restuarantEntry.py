@@ -182,5 +182,16 @@ def place_in_DB():
 def extract_menu_html():
     data = request.json
     image_urls = data["image_urls"]
+    restaurant_data = data["restaurant_data"]
     menu_html = process_images_in_parallel(image_urls)
-    return jsonify(menu_html)
+    if not restaurant_data and not image_urls:
+        return jsonify({"message": "No data provided"})
+    
+    entry = Restaurant_Entry.query.filter_by(name=restaurant_data["name"], address=restaurant_data["address"]).first()
+    if not entry:
+        return jsonify({"message": "Entry not found"})
+    entry.menu_html = menu_html[0]["html"]
+    db.session.commit()
+    return jsonify({"message": "Menu entry created"})
+
+    
