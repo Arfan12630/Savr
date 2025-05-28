@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { DndContext } from '@dnd-kit/core';
 import DroppableArea from './components/RestuarantLayout/DroppableRestuarant';
 import './App.css';
-import TempHomeFile from './components/HomeLayout/TempHomeFile';
+import SavrLandingPage from './components/HomeLayout/SavrLandingPage';
 import ViewRestaurantLayout from './components/RestuarantViewLayout/ViewRestaurantLayout';
 import RestuarantList from './components/HomeLayout/RestuarantList';
 import Chat from './components/ChatBarInput/Chat';
@@ -14,7 +14,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/lander" element={<TempHomeFile />} />
+        <Route path="/lander" element={<SavrLandingPage />} />
         <Route path="/restaurants" element={<RestuarantList />} />
         <Route path="/chat" element={<Chat />} />
         <Route path="owner/restaurant-entry" element={<RestuarantEntry />} />
