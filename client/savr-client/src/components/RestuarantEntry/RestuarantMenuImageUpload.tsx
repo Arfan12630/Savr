@@ -15,36 +15,45 @@ const RestuarantMenuImageUpload: React.FC = () => {
   const [extractedMenus, setExtractedMenus] = useState<string[]>([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
 
-  const imageHandling = (input: File | string) => {
+  const imageHandling = (input: File[] | File | string) => {
     if (typeof input === "string") {
       // Handle URLs here if needed
+    } else if (Array.isArray(input)) {
+      // Handle multiple files
+      input.forEach((file) => {
+        processFile(file);
+      });
     } else {
-      // Handle image file
-      const reader = new FileReader();
-      reader.onload = function (e) {
-        const base64DataUrl = e.target?.result;
-        if (typeof base64DataUrl === "string") {
-          setIsLoading(true);
-          axios.post("http://127.0.0.1:5000/extract-menu-html", {
-            restaurant_data: restaurantCardData,
-            image_urls: [base64DataUrl]
-          }).then((response) => {
-            console.log(response.data);
-            // Add the extracted HTML to our list
-            if (response.data.menu_html) {
-              setExtractedMenus(prev => [...prev, response.data.menu_html]);
-            }
-            // Show confirmation dialog
-            setShowConfirmation(true);
-          }).catch((error) => {
-            console.error("Error extracting menu HTML:", error);
-          }).finally(() => {
-            setIsLoading(false);
-          });
-        }
-      };
-      reader.readAsDataURL(input);
+      // Handle single file
+      processFile(input);
     }
+  };
+
+  const processFile = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const base64DataUrl = e.target?.result;
+      if (typeof base64DataUrl === "string") {
+        setIsLoading(true);
+        axios.post("http://127.0.0.1:5000/extract-menu-html", {
+          restaurant_data: restaurantCardData,
+          image_urls: [base64DataUrl]
+        }).then((response) => {
+          console.log(response.data);
+          // Add the extracted HTML to our list
+          if (response.data.menu_html) {
+            setExtractedMenus(prev => [...prev, response.data.menu_html]);
+          }
+          // Show confirmation dialog
+          setShowConfirmation(true);
+        }).catch((error) => {
+          console.error("Error extracting menu HTML:", error);
+        }).finally(() => {
+          setIsLoading(false);
+        });
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleUploadMore = () => {

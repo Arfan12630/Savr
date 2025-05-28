@@ -65,7 +65,7 @@ def process_images_in_parallel(image_urls, max_workers=30):
     if len(image_urls) == 1:
         with ThreadPoolExecutor(max_workers=max_workers) as executor:       
             future = executor.submit(image_to_html, image_urls[0])
-            return [{"url": image_urls[0], "html": future.result()}]
+            return [{"html": future.result()}]
     else:
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             future_to_url = {executor.submit(image_to_html, url): url for url in image_urls}
@@ -73,8 +73,8 @@ def process_images_in_parallel(image_urls, max_workers=30):
                 url = future_to_url[future]
                 try:
                     html = future.result()
-                    results.append({"url": url, "html": html})
+                    results.append({"html": html})
                 except Exception as exc:
                     print(f"{url} generated an exception: {exc}")
-                    results.append({"url": url, "html": None})
+                    results.append({ "html": None})
     return results
