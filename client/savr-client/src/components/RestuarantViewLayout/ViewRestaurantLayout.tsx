@@ -20,7 +20,7 @@ const ViewRestaurantLayout: React.FC = () => {
         <ChairLayout viewOnly={true} key={chair.id} id={chair.id} position={{ x: chair.x, y: chair.y }} onDelete={() => {}} />
       ))}
       {layout.tables.map(table => (
-        <TableLayout viewOnly={true} key={table.id} id={table.id} position={{ x: table.x, y: table.y }} onDelete={() => {}} />
+        <TableLayout viewOnly={true} key={table.id} id={table.id} position={{ x: table.x, y: table.y }} onDelete={() => {}} width={table.width} height={table.height} onResize={()=>{}} />
       ))}
     </div>
   );
