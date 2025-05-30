@@ -33,7 +33,7 @@ const DroppableArea = () => {
   });
   const [touchedBoundary, setTouchedBoundary] = useState(false);
   const [chairs, setChairs] = useState<{ id: string; x: number; y: number }[]>([]);
-  const [tables, setTables] = useState<{ id: string; x: number; y: number; rotation: number }[]>([]);
+  const [tables, setTables] = useState<{ id: string; x: number; y: number; rotation: number, height: number, width: number }[]>([]);
   const [isChairPressed, setIsChairPressed] = useState(false);
 
   const [isTablePressed, setIsTablePressed] = useState(false);
@@ -151,9 +151,17 @@ const DroppableArea = () => {
   const addTable = () => {
     setTables((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), x: 100 + prev.length * 30, y: 100, rotation: 0 }
+      { id: crypto.randomUUID(), x: 100 + prev.length * 30, y: 100, rotation: 0, height: TABLE_HEIGHT, width: TABLE_WIDTH }
     ]);
     setIsTablePressed(true);
+  };
+
+  const updateTableSize = (id: string, width: number, height: number) => {
+    setTables(prev =>
+      prev.map(table =>
+        table.id === id ? { ...table, width, height } : table
+      )
+    );
   };
   const deleteChair = (id: string) => {
     setChairs((prev) => prev.filter((chair) => chair.id !== id));
@@ -283,17 +291,21 @@ const DroppableArea = () => {
           />
         ))}
        {tables.map((table) => (
-        <TableLayout
-          viewOnly={false}
-          key={table.id}
-          id={table.id}
-          position={{ x: table.x, y: table.y }}
-          rotation={table.rotation}
-          onDelete={deleteTable}
-          onRotate={rotateTable}
-          selected={selectedIds.includes(table.id)}
-        />
-       ))}
+  <TableLayout
+    viewOnly={false}
+    key={table.id}
+    id={table.id}
+    position={{ x: table.x, y: table.y }}
+    rotation={table.rotation}
+    onDelete={deleteTable}
+    onRotate={rotateTable}
+    selected={selectedIds.includes(table.id)}
+    width={table.width}
+    height={table.height}
+    onResize={updateTableSize} // ✅ NEW!
+  />
+))}
+
         {touchedBoundary && (
           <Snackbar
             open={touchedBoundary}

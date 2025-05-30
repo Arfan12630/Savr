@@ -12,6 +12,9 @@ const TableLayout = ({
   rotation = 0,
   onRotate,
   selected = false,
+  width,
+  height,
+  onResize,
 }: {
   onDelete: (id: string) => void,
   id: string,
@@ -20,12 +23,16 @@ const TableLayout = ({
   rotation?: number,
   onRotate?: (id: string) => void,
   selected?: boolean,
+  width: number,
+  height: number,
+  onResize: (id: string, width: number, height: number) => void,
 }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
   });
 
-  const [size, setSize] = React.useState({ width: 220, height: 60 });
+  const [size, setSize] = React.useState({ width, height });
+
   const [showDelete, setShowDelete] = React.useState(false);
   const [resizeOnly, setResizeOnly] = React.useState(false);
 
@@ -57,10 +64,12 @@ const TableLayout = ({
       if (startPos && startSize) {
         const dx = e.clientX - startPos.x;
         const dy = e.clientY - startPos.y;
-        setSize({
-          width: Math.max(60, startSize.width + dx),
-          height: Math.max(30, startSize.height + dy),
-        });
+        const newWidth = Math.max(60, startSize.width + dx);
+        const newHeight = Math.max(30, startSize.height + dy);
+        
+        setSize({ width: newWidth, height: newHeight });
+        onResize?.(id, newWidth, newHeight); // 🔥 Notify parent
+        
       }
     };
     const handleMouseUp = () => setResizing(false);
