@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { DndContext, useDroppable } from '@dnd-kit/core';
-import { useLocation } from 'react-router-dom';
+import { data, useLocation } from 'react-router-dom';
 import ChairLayout from './ChairLayout';
 import NavBar from './Navbar/NavBar';
 import Snackbar from '@mui/material/Snackbar';
@@ -17,10 +17,10 @@ function isOverlapping(
   x2: number, y2: number, w2: number, h2: number
 ) {
   return (
-    x1 < x2 + w2 &&
-    x1 + w1 > x2 &&
-    y1 < y2 + h2 &&
-    y1 + h1 > y2
+    x1 <= x2 + w2 &&
+    x1 + w1 >= x2 &&
+    y1 <= y2 + h2 &&
+    y1 + h1 >= y2
   );
 }
 
@@ -88,14 +88,14 @@ const DroppableArea = () => {
                 c.x, c.y, CHAIR_SIZE, CHAIR_SIZE
               )
           );
-          const overlapWithTables = tables.some(
-            (t) =>
-              isOverlapping(
-                newX, newY, CHAIR_SIZE, CHAIR_SIZE,
-                t.x, t.y, TABLE_WIDTH, TABLE_HEIGHT
-              )
-          );
-          if (overlapWithChairs || overlapWithTables) {
+          // const overlapWithTables = tables.some(
+          //   (t) =>
+          //     isOverlapping(
+          //       newX, newY, CHAIR_SIZE, CHAIR_SIZE,
+          //       t.x, t.y, TABLE_WIDTH, TABLE_HEIGHT
+          //     )
+          // );
+          if (overlapWithChairs) {
             setTouchedBoundary(true);
             return chair;
           }
@@ -183,12 +183,18 @@ const DroppableArea = () => {
     axios({
       method: 'post',
       url: 'http://127.0.0.1:5000/save-layout',
-      data: layout,
+      data: {
+        layout,
+        restaurantCardData
+      },
       headers: {
         'Content-Type': 'application/json'
       }
     })
+    
     .then((response) => {
+      console.log(data)
+
       console.log(response)
     })
     .catch((error) => {

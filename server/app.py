@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 from models import db, Restaurant
 from RestuarantScraping.Scraper import scraper
 from RestuarantScraping.restuarantEntry import restuarantEntry
+import uuid
+from sqlalchemy.dialects.postgresql import UUID
+from datetime import datetime
 app = Flask(__name__)
 # Configure CORS properly for all routes
 CORS(app, resources={
@@ -22,10 +25,12 @@ db.init_app(app)
 
 class Layout(db.Model):
     __tablename__ = 'layouts'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     created_at = db.Column(db.DateTime, default=db.func.now())
     chairs = db.Column(db.JSON)
     tables = db.Column(db.JSON)
+    name = db.Column(db.String(255), nullable=False)
+    address = db.Column(db.Text)
 
 with app.app_context():
     db.create_all()
@@ -37,7 +42,14 @@ def save_layout():
     if request.method == 'OPTIONS':
         return '', 200
     data = request.json
-    layout = Layout(chairs=data['chairs'], tables=data['tables'])
+    print(data)
+    layout = Layout(id = uuid.uuid4(), 
+                    chairs=data['layout']['chairs'], 
+                    tables=data['layout']['tables'], 
+                    name=data['restaurantCardData']['restaurantCardData']['name'], 
+                    address=data['restaurantCardData']['restaurantCardData']['address'], 
+                    created_at=datetime.now())
+    
     db.session.add(layout)
     db.session.commit()
     return jsonify(data)
