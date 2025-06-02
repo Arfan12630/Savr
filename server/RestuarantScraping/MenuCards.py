@@ -60,6 +60,46 @@ def image_to_html(image_url):
         print(f"Error processing {image_url}: {e}")
         return None
 
+def image_to_RAG_Embeddings(image_url):
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {
+                    "role": "user",
+                    "content": [
+                        {
+                            "type": "text",
+                            "text": (
+                                "Extract this restaurant menu into structured HTML. "
+                                "Use <div class='menu-category'> for categories, <h2> for headers, "
+                                "<div class='menu-item'> for each dish, <h3> for the name, <p> for description, "
+                                "and <span class='price'> for price. "
+                                "Preserve structure and avoid hallucinating data. "
+                                "IMPORTANT: Also extract any add-on options, modifiers, or special instructions, "
+                                "even if they are in smaller, lighter, italicized, or differently styled text. "
+                                "Include these as a separate <div class='menu-addons'> section at the top of the HTML, "
+                                "with each add-on or instruction in a <p> tag."
+                            )
+                        },
+                        {
+                            "type": "image_url",
+                            "image_url": { "url": image_url }
+                        }
+                    ],
+                }
+            ],
+            max_tokens=2000,
+        )
+        print(response.choices[0].message.content)
+        return response.choices[0].message.content
+    except Exception as e:
+        print(f"Error processing {image_url}: {e}")
+        return None
+
+
+
+
 def process_images_in_parallel(image_urls, max_workers=30):
     results = []
     if len(image_urls) == 1:
