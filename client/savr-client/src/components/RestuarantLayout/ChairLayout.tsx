@@ -9,12 +9,20 @@ const ChairLayout = ({
   position,
   viewOnly = false,
   selected = false,
+  width,
+  height,
+  onRotate,
+  onResize,
 }: {
   onDelete: (id: string) => void,
   id: string,
   position: { x: number; y: number },
   viewOnly?: boolean,
   selected?: boolean,
+  width: number,  
+  height: number,
+  onRotate: (id: string) => void,
+  onResize: (id: string, width: number, height: number) => void,
 }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
@@ -46,12 +54,63 @@ const ChairLayout = ({
     transition: 'box-shadow 0.2s, border 0.2s',
   };
 
+  const [size, setSize] = React.useState({ width, height});
   const [showDelete, setShowDelete] = React.useState(false);
+  const [resizeOnly, setResizeOnly] = React.useState(false);
 
+  // --- Resizing state ---
+  const [resizing, setResizing] = React.useState(false);
+  const [startPos, setStartPos] = React.useState<{ x: number; y: number } | null>(null);
+  const [startSize, setStartSize] = React.useState<{ width: number; height: number } | null>(null);
+
+
+  // --- Mouse down on resize handle ---
+  const handleResizeMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setResizing(true);
+    setStartPos({ x: e.clientX, y: e.clientY });
+    setStartSize({ width: size.width, height: size.height });
+  };
+
+  React.useEffect(() => {
+    if (!resizing) return;
+
+    const handleMouseMove = (e: MouseEvent) => {
+      if (startPos && startSize) {
+        const dx = e.clientX - startPos.x;
+        const dy = e.clientY - startPos.y;
+        const newWidth = Math.max(60, startSize.width + dx);
+        const newHeight = Math.max(30, startSize.height + dy);
+        
+        setSize({ width: newWidth, height: newHeight });
+        onResize?.(id, newWidth, newHeight); // 🔥 Notify parent
+        
+      }
+    };
+    const handleMouseUp = () => setResizing(false);
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+
+    return () => {  
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [resizing, startPos, startSize]);
+
+  // --- Context menu and mouse leave logic ---
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     setShowDelete(true);
   };
+
+  const handleMouseLeave = () => {
+    setResizeOnly(false);
+    setShowDelete(false);
+  };
+
+  const [hovered, setHovered] = React.useState(false);
+
 
   return (
     <>
@@ -104,6 +163,24 @@ const ChairLayout = ({
         >
           ×
         </button>
+      )}
+      {/* --- Resize handle --- */}
+      {!viewOnly && (
+        <div
+          style={{
+            position: 'absolute',
+            right: 0,
+            bottom: 0,
+            width: 16,
+            height: 16,
+            background: '#3973db',
+            borderRadius: 4,
+            cursor: 'nwse-resize',
+            zIndex: 20,
+          }}
+          onMouseDown={handleResizeMouseDown}
+          title="Resize"
+        />
       )}
     </div>
     

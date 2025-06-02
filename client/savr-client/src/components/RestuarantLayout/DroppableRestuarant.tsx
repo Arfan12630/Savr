@@ -32,7 +32,7 @@ const DroppableArea = () => {
     id: 'droppable-area',
   });
   const [touchedBoundary, setTouchedBoundary] = useState(false);
-  const [chairs, setChairs] = useState<{ id: string; x: number; y: number }[]>([]);
+  const [chairs, setChairs] = useState<{ id: string; x: number; y: number, rotation: number, width: number, height: number }[]>([]);
   const [tables, setTables] = useState<{ id: string; x: number; y: number; rotation: number, height: number, width: number }[]>([]);
   const [isChairPressed, setIsChairPressed] = useState(false);
 
@@ -88,13 +88,13 @@ const DroppableArea = () => {
                 c.x, c.y, CHAIR_SIZE, CHAIR_SIZE
               )
           );
-          // const overlapWithTables = tables.some(
-          //   (t) =>
-          //     isOverlapping(
-          //       newX, newY, CHAIR_SIZE, CHAIR_SIZE,
-          //       t.x, t.y, TABLE_WIDTH, TABLE_HEIGHT
-          //     )
-          // );
+          const overlapWithTables = tables.some(
+            (t) =>
+              isOverlapping(
+                newX, newY, CHAIR_SIZE, CHAIR_SIZE,
+                t.x, t.y, TABLE_WIDTH, TABLE_HEIGHT
+              )
+          );
           if (overlapWithChairs) {
             setTouchedBoundary(true);
             return chair;
@@ -143,7 +143,7 @@ const DroppableArea = () => {
   const addChair = () => {
     setChairs((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), x: 100 + prev.length * 30, y: 100 }
+      { id: crypto.randomUUID(), x: 100 + prev.length * 30, y: 100, rotation: 0, width: CHAIR_SIZE, height: CHAIR_SIZE }
     ]);
     setIsChairPressed(true);
   };
@@ -160,6 +160,13 @@ const DroppableArea = () => {
     setTables(prev =>
       prev.map(table =>
         table.id === id ? { ...table, width, height } : table
+      )
+    );
+  };
+  const updateChairSize = (id: string, width: number, height: number) => {
+    setChairs(prev =>
+      prev.map(chair =>
+        chair.id === id ? { ...chair, width, height } : chair
       )
     );
   };
@@ -221,6 +228,15 @@ const DroppableArea = () => {
     );
   };
 
+  const rotateChair = (id: string) => {
+    setChairs((prev) =>
+      prev.map((chair) =>
+        chair.id === id
+          ? { ...chair, rotation: (chair.rotation + 90) % 360 }
+          : chair
+      )
+    );
+  };
   const handleMouseDown = (e: React.MouseEvent) => {
     // Only start if not clicking on a chair/table
     if (e.target === e.currentTarget) {
@@ -288,6 +304,11 @@ const DroppableArea = () => {
             position={{ x: chair.x, y: chair.y }}
             onDelete={deleteChair}
             selected={selectedIds.includes(chair.id)}
+          
+            onRotate={rotateChair}
+            width={chair.width}
+            height={chair.height}
+            onResize={updateChairSize}
           />
         ))}
        {tables.map((table) => (

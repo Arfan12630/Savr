@@ -42,7 +42,6 @@ def save_layout():
     if request.method == 'OPTIONS':
         return '', 200
     data = request.json
-    print(data)
     layout = Layout(id = uuid.uuid4(), 
                     chairs=data['layout']['chairs'], 
                     tables=data['layout']['tables'], 
@@ -54,6 +53,7 @@ def save_layout():
     db.session.commit()
     return jsonify(data)
 
+#have to edit this to where we to click something to get the layout
 @app.route('/get-layout', methods=['GET'])
 def get_layout():
     layout = Layout.query.order_by(Layout.id.desc()).first()
