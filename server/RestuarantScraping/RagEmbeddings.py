@@ -73,22 +73,34 @@ def image_to_RAG_chunks(image_url):
             print("⚠️ GPT-4o response could not be parsed as JSON.")
             print(content)
             return []
-
-        # for item in menu_chunks:
-        #     print("\n📋 Dish:", item.get("name"))
-        #     print("📝 Desc:", item.get("description"))
-        #     print("💰 Price:", item.get("price"))
-        #     print("📍 Coords:", item.get("position"))
-        #     print("📂 Category:", item.get("category"))
-        #     print("-" * 50)
-
         return menu_chunks
 
     except Exception as e:
         print(f"❌ Error processing {image_url}: {e}")
         return []
 
+def embedding_chunks(chunks):
+    texts = []
+    for chunk in chunks:
+        if chunk.get("type") == "add-on":
+            text = chunk.get("text", "")
+        else:
+            text = f"{chunk.get('name', '')} {chunk.get('description', '')} {chunk.get('category', '')} {chunk.get('price', '')} {chunk.get('position', '')}"
+        texts.append(text.strip())
 
+    try:
+        embedding_response = client.embeddings.create(
+            input=texts,
+            model="text-embedding-3-small"
+        )
+        embeddings = [record.embedding for record in embedding_response.data]
+        return [
+            {"chunk": chunk, "embedding": emb}
+            for chunk, emb in zip(chunks, embeddings)
+        ]
+    except Exception as e:
+        print(f"❌ Error embedding chunks: {e}")
+        return []
 
 def process_images_in_parallel(image_urls, max_workers=200):
     results = []
@@ -111,14 +123,18 @@ images = process_images_in_parallel(image_urls)
 end_time = time.time()
 print(f"Time taken: {end_time - start_time} seconds")
 print("=== RAW DATA ===")
-print(images)
+
 
 print("\n=== LOOPED ACCESS ===")
 for image in images:
     print("Image:")
-    for i, chunk in enumerate(image["chunks"]):
-        print(f"Chunk {i}:")
-        print("  Full chunk:", chunk)
-        print("  chunk.get('position'):", chunk.get("position"))
-        print("  chunk['position'] (direct):", chunk['position'] if 'position' in chunk else 'Key not present')
-        print("-" * 30)
+    print(image["chunks"])
+    embeddings = embedding_chunks(image["chunks"])
+    for item in embeddings:
+        print(item["chunk"]["name"] if "name" in item["chunk"] else "add-on", item["embedding"][:5])  # print first 5 dims
+    # for i, chunk in enumerate(image["chunks"]):
+    #     print(f"Chunk {i}:")
+    #     print("  Full chunk:", chunk)
+    #     print("  chunk.get('position'):", chunk.get("position"))
+    #     print("  chunk['position'] (direct):", chunk['position'] if 'position' in chunk else 'Key not present')
+    #     print("-" * 30)
