@@ -213,4 +213,7 @@ def save_all_menu_html():
     db.session.commit()
     return jsonify({"message": "All menu HTMLs saved successfully"})
 
-    
+@restuarantEntry.route('/get-all-menu-html', methods=['GET'])
+def get_all_menu_html():
+    entry = Restaurant_Entry.query.filter_by(name="Ennio's Pasta House").first()
+    return jsonify({"menu_htmls": entry.menu_html})

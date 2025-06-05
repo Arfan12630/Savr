@@ -11,7 +11,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import time 
 import re
 from pinecone import Pinecone
-
+import cv2
+import numpy as np
 # pc = Pinecone(api_key=os.environ.get("PINECONE_API_KEY"))
 # index = pc.Index("savr")
 
@@ -19,10 +20,14 @@ from pinecone import Pinecone
 load_dotenv()
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 menu_cards = Blueprint('menu_cards', __name__)
+file_path = "/Users/arfan/Desktop/Cuisine.jpg"
+# image_urls = [
+#     "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c5e8c54.jpg",
+# ]
 
-image_urls = [
-    "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c5e8c54.jpg",
-]
+image_urls = ["https://images.sirved.com/ChIJmz57CmkqK4gRReNqmD9vPnQ/5efe6f0906735.jpg"]
+
+
 
 def clean_json_string(content):
     content = re.sub(r"^```json|^```|```$", "", content.strip(), flags=re.MULTILINE)
@@ -44,7 +49,6 @@ def image_to_RAG_chunks(image_url):
                                 "- 'name': the dish name\n"
                                 "- 'description': description if available\n"
                                 "- 'price': e.g., '$18'\n"
-                                "- 'position': coordinates of the text block in the image (if visible)\n"
                                 "- 'category': if any category headers exist like 'Pasta' or 'Appetizers'\n"
                                 "**Additionally, extract any sections that list optional add-ons or extras (e.g. 'Enhance any Salad with...') "
                                 "and return these as a separate object with 'type': 'add-on' and a 'text' field containing the full string of add-ons.**\n"
@@ -76,13 +80,10 @@ def image_to_RAG_chunks(image_url):
         return []
 
 def image_to_RAG_chunks_with_retry(image_url, retries=5):
-    for attempt in range(1, retries + 1):
-        print(f"\n🔄 Attempt {attempt} for image: {image_url}")
+        print(f"\n🔄 Processing image: {image_url}")
         chunks = image_to_RAG_chunks(image_url)
-        if any(chunk.get("position") not in [None, "", []] for chunk in chunks if chunk.get("type") != "add-on"):
-            return chunks
-        print("⚠️ No positions found, retrying...")
-    return chunks  # return last attempt if all failed
+
+        return chunks  
 
 def embedding_chunks(chunks):
     texts = []
@@ -122,6 +123,7 @@ def process_images_in_parallel(image_urls, max_workers=30):
     return results
 
 # === Main execution ===
+
 start_time = time.time()
 images = process_images_in_parallel(image_urls)
 end_time = time.time()
@@ -132,7 +134,7 @@ print("=== LOOPED ACCESS ===")
 for image in images:
     print("Image:")
     print(image["chunks"])
-    embeddings = embedding_chunks(image["chunks"])
-    embeddings_results = {}
-    for item in embeddings:
-        print(item["chunk"]["name"] if "name" in item["chunk"] else "add-on", item["embedding"][:5])
+#     embeddings = embedding_chunks(image["chunks"])
+#     embeddings_results = {}
+#     for item in embeddings:
+#         print(item["chunk"]["name"] if "name" in item["chunk"] else "add-on", item["embedding"][:5])
