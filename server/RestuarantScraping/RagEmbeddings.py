@@ -91,7 +91,7 @@ def embedding_chunks(chunks):
         if chunk.get("type") == "add-on":
             text = chunk.get("text", "")
         else:
-            text = f"{chunk.get('name', '')} {chunk.get('description', '')} {chunk.get('category', '')} {chunk.get('price', '')} {chunk.get('position', '')}"
+            text = f"{chunk.get('name', '')} {chunk.get('description', '')} {chunk.get('category', '')} {chunk.get('price', '')}"
         texts.append(text.strip())
 
     try:
@@ -108,7 +108,7 @@ def embedding_chunks(chunks):
         print(f"❌ Error embedding chunks: {e}")
         return []
 
-def process_images_in_parallel(image_urls, max_workers=30):
+def process_images_in_parallel(image_urls, max_workers=80):
     results = []
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_url = {executor.submit(image_to_RAG_chunks_with_retry, url): url for url in image_urls}
@@ -134,7 +134,7 @@ print("=== LOOPED ACCESS ===")
 for image in images:
     print("Image:")
     print(image["chunks"])
-#     embeddings = embedding_chunks(image["chunks"])
-#     embeddings_results = {}
-#     for item in embeddings:
-#         print(item["chunk"]["name"] if "name" in item["chunk"] else "add-on", item["embedding"][:5])
+    embeddings = embedding_chunks(image["chunks"])
+    embeddings_results = {}
+    for item in embeddings:
+        print(item["chunk"]["name"] if "name" in item["chunk"] else "add-on", item["embedding"][:5])
