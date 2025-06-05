@@ -10,6 +10,7 @@ import Chat from './components/ChatBarInput/Chat';
 import RestaurantStoreLayout from './components/RestuarantStoreLayout/RestuarantStoreLayout';
 import RestuarantEntry from './components/RestuarantEntry/RestuarantEntry';
 import RestuarantMenuImageUpload from './components/RestuarantEntry/RestuarantMenuImageUpload';
+import MenuDisplay from './components/MenuDisplay/MenuDisplay';
 function App() {
   return (
     <Router>
@@ -19,6 +20,7 @@ function App() {
         <Route path="/chat" element={<Chat />} />
         <Route path="owner/restaurant-entry" element={<RestuarantEntry />} />
         <Route path="owner/restaurant-entry/menu-image-upload" element={<RestuarantMenuImageUpload />} />
+        <Route path="/menu-display" element={<MenuDisplay />} />
         <Route
           path="/edit"
           element={
