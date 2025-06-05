@@ -34,16 +34,18 @@ def image_to_html(image_url):
                         {
                             "type": "text",
                             "text": (
-                                "Extract this restaurant menu into structured HTML. "
-                                "Use <div class='menu-category'> for categories, <h2> for headers, "
-                                "<div class='menu-item'> for each dish, <h3> for the name, <p> for description, "
-                                "and <span class='price'> for price. "
-                                "Preserve structure and avoid hallucinating data. "
-                                "IMPORTANT: Also extract any add-on options, modifiers, or special instructions, "
-                                "even if they are in smaller, lighter, italicized, or differently styled text. "
-                                "Include these as a separate <div class='menu-addons'> section at the top of the HTML, "
-                                "with each add-on or instruction in a <p> tag."
-                            )
+    "Extract this restaurant menu into structured HTML. "
+    "Use <div class='menu-category'> for categories, <h2> for headers, "
+    "<div class='menu-item'> for each dish, <h3> for the name, <p> for description, "
+    "and <span class='price'> for price. "
+    "IMPORTANT: If there are any add-on modifiers, enhancements, or optional extras "
+    "(e.g., protein upgrades, substitutions, toppings), include them inside "
+    "<div class='menu-addons'> blocks immediately after the <h2> of the category they apply to. "
+    "If the add-ons include a heading like 'ENHANCE any Salad with:', include that heading as an "
+    "<h4> inside the menu-addons block, followed by each item in a separate <p> tag. "
+    "Only include actual visible text. Avoid hallucination."
+)
+
                         },
                         {
                             "type": "image_url",
@@ -70,17 +72,18 @@ def image_to_RAG_Embeddings(image_url):
                     "content": [
                         {
                             "type": "text",
-                            "text": (
-                                "Extract this restaurant menu into structured HTML. "
-                                "Use <div class='menu-category'> for categories, <h2> for headers, "
-                                "<div class='menu-item'> for each dish, <h3> for the name, <p> for description, "
-                                "and <span class='price'> for price. "
-                                "Preserve structure and avoid hallucinating data. "
-                                "IMPORTANT: Also extract any add-on options, modifiers, or special instructions, "
-                                "even if they are in smaller, lighter, italicized, or differently styled text. "
-                                "Include these as a separate <div class='menu-addons'> section at the top of the HTML, "
-                                "with each add-on or instruction in a <p> tag."
-                            )
+                           "text": (
+    "Extract this restaurant menu into structured HTML. "
+    "Use <div class='menu-category'> for categories, <h2> for headers, "
+    "<div class='menu-item'> for each dish, <h3> for the name, <p> for description, "
+    "and <span class='price'> for price. "
+    "Preserve structure and avoid hallucinating data. "
+    "IMPORTANT: If any category (e.g. Insalata, Pasta, Antipasti, etc.) contains add-ons, "
+    "place them in a <div class='menu-addons'> immediately after the <h2> of that category. "
+    "Each add-on should go in a <p> tag. "
+    "Only include add-ons near the category they belong to, not at the top."
+)
+
                         },
                         {
                             "type": "image_url",
