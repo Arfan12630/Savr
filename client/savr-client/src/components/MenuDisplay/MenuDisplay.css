@@ -1,0 +1,78 @@
+.menu-container {
+    max-width: 850px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fffdf8;
+    font-family: 'Georgia', serif;
+    color: #333;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  .menu-category {
+    margin-bottom: 3rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 2rem;
+  }
+  
+  .menu-category h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1.2rem;
+    color: #4a2f12;
+    letter-spacing: 1px;
+    border-bottom: 2px solid #e1b382;
+    display: inline-block;
+    padding-bottom: 0.2rem;
+  }
+  
+  .menu-addons {
+    background-color: #fff2d4;
+    border-left: 4px solid #e1b382;
+    padding: 1rem 1.5rem;
+    margin: 1rem 0 2rem;
+    border-radius: 6px;
+  }
+  
+  .menu-addons h4 {
+    font-size: 1.2rem;
+    color: #8b4513;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+  }
+  
+  .menu-addons p {
+    margin: 0.3rem 0;
+    font-size: 0.95rem;
+    color: #5a4632;
+  }
+  
+  .menu-item {
+    margin-bottom: 1.8rem;
+    padding-bottom: 0.8rem;
+    border-bottom: 1px dashed #ddd;
+  }
+  
+  .menu-item h3 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2e2e2e;
+    margin-bottom: 0.3rem;
+  }
+  
+  .menu-item p {
+    font-size: 0.95rem;
+    color: #555;
+    margin: 0.2rem 0;
+    line-height: 1.4;
+  }
+  
+  .menu-item .price {
+    display: block;
+    margin-top: 0.2rem;
+    font-weight: bold;
+    color: #c96c00;
+    font-size: 1rem;
+  }
+  
