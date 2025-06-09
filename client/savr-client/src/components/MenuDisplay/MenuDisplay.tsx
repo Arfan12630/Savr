@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import './MenuDisplay.css';
 
 const cleanHTML = (raw: string): string => {
   return raw
@@ -19,17 +20,19 @@ const MenuDisplay: React.FC = () => {
       .then((res) => {
         console.log(res.data.menu_htmls);
         setMenuHtml(res.data.menu_htmls); // keep raw array structure here
+        console.log(res.data.menu_htmls[0][0].html)
       });
   }, []);
 
   return (
-    <div>
+    <>
       {menuHtml.map((group, groupIdx) => (
         <div key={groupIdx} className="card">
           {group.map((item: any, itemIdx: number) => {
             const cleaned = cleanHTML(item.html);
             return (
               <div
+                className="menu-container"
                 key={itemIdx}
                 dangerouslySetInnerHTML={{ __html: cleaned }}
               />
@@ -37,7 +40,7 @@ const MenuDisplay: React.FC = () => {
           })}
         </div>
       ))}
-    </div>
+    </>
   );
 };
 

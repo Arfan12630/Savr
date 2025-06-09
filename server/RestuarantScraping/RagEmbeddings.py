@@ -13,8 +13,10 @@ import re
 from pinecone import Pinecone
 import cv2
 import numpy as np
-# pc = Pinecone(api_key=os.environ.get("PINECONE_API_KEY"))
-# index = pc.Index("savr")
+import pprint
+pinecone_api_key = os.environ.get("PINECONE_API_KEY")
+pc = Pinecone(api_key="")
+index = pc.Index("savr")
 
 
 load_dotenv()
@@ -50,6 +52,7 @@ def image_to_RAG_chunks(image_url):
                                 "- 'description': description if available\n"
                                 "- 'price': e.g., '$18'\n"
                                 "- 'category': if any category headers exist like 'Pasta' or 'Appetizers'\n"
+                                "- 'embeddings': the embedding of the dish, keep it empty for now as I will add it later  should be an array \n"
                                 "**Additionally, extract any sections that list optional add-ons or extras (e.g. 'Enhance any Salad with...') "
                                 "and return these as a separate object with 'type': 'add-on' and a 'text' field containing the full string of add-ons.**\n"
                                 "Do NOT hallucinate. Only extract what is visually present."
@@ -92,6 +95,7 @@ def embedding_chunks(chunks):
             text = chunk.get("text", "")
         else:
             text = f"{chunk.get('name', '')} {chunk.get('description', '')} {chunk.get('category', '')} {chunk.get('price', '')}"
+
         texts.append(text.strip())
 
     try:
@@ -135,6 +139,32 @@ for image in images:
     print("Image:")
     print(image["chunks"])
     embeddings = embedding_chunks(image["chunks"])
-    embeddings_results = {}
-    for item in embeddings:
-        print(item["chunk"]["name"] if "name" in item["chunk"] else "add-on", item["embedding"][:5])
+    # Update the 'embeddings' field in each chunk:
+    for emb_item in embeddings:
+        emb = emb_item["embedding"]
+        chunk = emb_item["chunk"]
+        chunk["embeddings"] = emb  # Update the existing field
+
+    # Now print the final image["chunks"] with embeddings
+   
+    
+    # Each chunk now has 'embeddings'
+    pinecone_records = []
+    for i, chunk in enumerate(image["chunks"]):
+        # Use a unique id for each chunk, e.g., based on image URL and index
+        record_id = f"{i}_{chunk.get('name', 'add-on')[:20].replace(' ', '_')}"
+        embedding = chunk["embeddings"]
+        # Remove the embedding from metadata to avoid duplication
+        metadata = {k: v for k, v in chunk.items() if k != "embeddings"}
+        pinecone_records.append({
+            "id": record_id,
+            "values": embedding,
+            "metadata": metadata
+        })
+
+    # Upsert to Pinecone
+    if pinecone_records:
+        index.upsert(vectors=pinecone_records)
+        print(f"Upserted {len(pinecone_records)} records to Pinecone.")
+    
+
