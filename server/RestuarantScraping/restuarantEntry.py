@@ -16,6 +16,7 @@ import json
 from models import db, Restaurant_Entry
 import uuid
 from RestuarantScraping.MenuCards import image_to_html, process_images_in_parallel
+from RestuarantScraping.RagEmbeddings import image_to_RAG_chunks, embedding_chunks, process_images_in_parallel
 # Load .env file
 load_dotenv()
 restuarantEntry = Blueprint('restuarantEntry', __name__)

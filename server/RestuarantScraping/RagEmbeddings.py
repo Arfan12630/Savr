@@ -13,7 +13,7 @@ import re
 from pinecone import Pinecone
 import cv2
 import numpy as np
-import pprint
+import threading
 pinecone_api_key = os.environ.get("PINECONE_API_KEY")
 pc = Pinecone(api_key="")
 index = pc.Index("savr")
@@ -82,11 +82,11 @@ def image_to_RAG_chunks(image_url):
         print(f"❌ Error processing {image_url}: {e}")
         return []
 
-def image_to_RAG_chunks_with_retry(image_url, retries=5):
-        print(f"\n🔄 Processing image: {image_url}")
-        chunks = image_to_RAG_chunks(image_url)
+# def image_to_RAG_chunks_with_retry(image_url, retries=5):
+#         print(f"\n🔄 Processing image: {image_url}")
+#         chunks = image_to_RAG_chunks(image_url)
 
-        return chunks  
+#         return chunks  
 
 def embedding_chunks(chunks):
     texts = []
@@ -115,7 +115,7 @@ def embedding_chunks(chunks):
 def process_images_in_parallel(image_urls, max_workers=80):
     results = []
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_url = {executor.submit(image_to_RAG_chunks_with_retry, url): url for url in image_urls}
+        future_to_url = {executor.submit(image_to_RAG_chunks, url): url for url in image_urls}
         for future in as_completed(future_to_url):
             url = future_to_url[future]
             try:
@@ -125,6 +125,12 @@ def process_images_in_parallel(image_urls, max_workers=80):
                 print(f"{url} generated an exception: {exc}")
                 results.append({ "chunks": []})
     return results
+
+def clean_metadata(metadata):
+    # Remove keys with None values or replace with empty string
+    return {k: (v if v is not None else "") for k, v in metadata.items()}
+    # Or, to remove keys with None values entirely:
+    # return {k: v for k, v in metadata.items() if v is not None}
 
 # === Main execution ===
 
@@ -149,22 +155,51 @@ for image in images:
    
     
     # Each chunk now has 'embeddings'
+    # pinecone_records = []
     pinecone_records = []
+    seen_ids = set()
     for i, chunk in enumerate(image["chunks"]):
-        # Use a unique id for each chunk, e.g., based on image URL and index
-        record_id = f"{i}_{chunk.get('name', 'add-on')[:20].replace(' ', '_')}"
-        embedding = chunk["embeddings"]
-        # Remove the embedding from metadata to avoid duplication
-        metadata = {k: v for k, v in chunk.items() if k != "embeddings"}
-        pinecone_records.append({
-            "id": record_id,
-            "values": embedding,
-            "metadata": metadata
-        })
+        record_id = chunk.get("name")
+        print(record_id)
+        fetched = index.fetch(ids=[record_id])
+        if record_id and fetched.vectors:  # only true if the ID exists
+            print(f"Duplicate found: {record_id}, skipping.")
+            continue
 
-    # Upsert to Pinecone
-    if pinecone_records:
-        index.upsert(vectors=pinecone_records)
-        print(f"Upserted {len(pinecone_records)} records to Pinecone.")
+        
+        else:
+            embedding = chunk["embeddings"]
+            metadata = {k: v for k, v in chunk.items() if k != "embeddings"}
+            metadata = clean_metadata(metadata)
+            pinecone_records.append({
+                "id": record_id,
+                "values": embedding,
+                "metadata": metadata
+            })
+            if pinecone_records:
+                index.upsert(vectors=pinecone_records)
+                print(f"Upserted {len(pinecone_records)} records to Pinecone.")
+    # seen_ids = set()
+    # for i, chunk in enumerate(image["chunks"]):
+    #     record_id = f"{i}_{chunk.get('name', 'add-on')[:20].replace(' ', '_')}"
+    #     embedding = chunk["embeddings"]
+    #     metadata = {k: v for k, v in chunk.items() if k != "embeddings"}
+    #     metadata = clean_metadata(metadata)
+    #     if record_id in seen_ids:
+    #         print(f"Duplicate found: {record_id}, skipping.")
+    #         continue  # Skip this duplicate
+    #     seen_ids.add(record_id)
+    #     pinecone_records.append({
+    #         "id": record_id,
+    #         "values": embedding,
+    #         "metadata": metadata
+    #     })
+
+    # # Upsert to Pinecone
+    # if pinecone_records:
+    #     index.upsert(vectors=pinecone_records)
+    #     print(f"Upserted {len(pinecone_records)} records to Pinecone.")
     
+
+    # index.delete(delete_all=True)
 
