@@ -16,12 +16,14 @@ openai_api_key = os.environ.get("OPENAI_API_KEY")
 menu_cards = Blueprint('menu_cards', __name__)
 image_urls = [
   "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c5e8c54.jpg",
-  "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c736763.jpg",
-  "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c80ba7c.jpg",
-  "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c964228.jpg",
-  "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c54bee4.jpg",
-  "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c689130.jpg",
+  
 ]
+
+# "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c736763.jpg",
+#   "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c80ba7c.jpg",
+#   "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c964228.jpg",
+#   "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c54bee4.jpg",
+#   "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c689130.jpg",
 
 def image_to_html(image_url):
     try:
@@ -33,17 +35,25 @@ def image_to_html(image_url):
                     "content": [
                         {
                             "type": "text",
-                            "text": (
-    "Extract this restaurant menu into structured HTML. "
-    "Use <div class='menu-category'> for categories, <h2> for headers, "
-    "<div class='menu-item'> for each dish, <h3> for the name, <p> for description, "
-    "and <span class='price'> for price. "
-    "IMPORTANT: If there are any add-on modifiers, enhancements, or optional extras "
-    "(e.g., protein upgrades, substitutions, toppings), include them inside "
-    "<div class='menu-addons'> blocks immediately after the <h2> of the category they apply to. "
-    "If the add-ons include a heading like 'ENHANCE any Salad with:', include that heading as an "
-    "<h4> inside the menu-addons block, followed by each item in a separate <p> tag. "
-    "Only include actual visible text. Avoid hallucination."
+                      "text": (
+  "Extract this restaurant menu into structured HTML.\n\n"
+  "Use the following HTML structure:\n"
+  "- <div class='menu-category'> for each category section\n"
+  "- <h2> for category headers (e.g., 'Appetizers', 'Lunch Special')\n"
+  "- <div class='menu-item'> for each individual dish\n"
+  "  - <h3> for the dish name\n"
+  "  - <p> for the dish description (if any)\n"
+  "  - <span class='price'> for the price (if any)\n\n"
+  "**Important Instructions:**\n"
+  "1. If a section (e.g., 'Lunch Special' or 'Wrap & Pop') contains multiple dishes in a list or paragraph, "
+  "split each item into its own <div class='menu-item'> block. Use the shared price for each dish if no individual price is given.\n"
+  "2. If there are any add-on sections (e.g., 'Enhance any Salad with:'), wrap them inside "
+  "<div class='menu-addons'> immediately after the corresponding <h2>.\n"
+  "  - Include <h4> for the heading (like 'Enhance...')\n"
+  "  - List each add-on in a separate <p> tag\n"
+  "3. Do not hallucinate text. Only use information that is clearly visible in the image.\n"
+  "4. Skip addresses, hours, or delivery info — only extract the menu.\n\n"
+  "Make sure the final HTML structure reflects one item per dish."
 )
 
                         },
