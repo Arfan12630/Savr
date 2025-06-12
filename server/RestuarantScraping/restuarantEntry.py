@@ -15,8 +15,9 @@ import time
 import json
 from models import db, Restaurant_Entry
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from RestuarantScraping.MenuCards import image_to_html, process_images_in_parallel
-from RestuarantScraping.RagEmbeddings import image_to_RAG_chunks, embedding_chunks, process_images_in_parallel
+from RestuarantScraping.RagEmbeddings import image_to_RAG_chunks, embedding_chunks, process_imagesRags_in_parallel, rag_embeddings
 # Load .env file
 load_dotenv()
 restuarantEntry = Blueprint('restuarantEntry', __name__)
@@ -185,12 +186,18 @@ def extract_menu_html():
     image_urls = data["image_urls"]
     restaurant_data = data["restaurant_data"]
     menu_html = process_images_in_parallel(image_urls)
-    
+    # executor = ThreadPoolExecutor(max_workers=10)
+    # executor.submit(rag_embeddings, image_urls)
     if not restaurant_data and not image_urls:
-        return jsonify({"message": "No data provided"})
+        return jsonify({"message": "No data provided", "status": "error"})
     
     # Just return the extracted HTML, don't save to DB yet
-    return jsonify({"menu_html": menu_html})  # Assuming single image
+    response = {"menu_html": menu_html,
+    "status": "HTML Extracted Successfully, Rag Remaining"}  # Assuming single image
+
+    executor = ThreadPoolExecutor(max_workers=10)
+    executor.submit(rag_embeddings, image_urls)
+    return jsonify(response)
 
 
 @restuarantEntry.route('/save-all-menu-html', methods=['POST'])

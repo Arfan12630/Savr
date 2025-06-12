@@ -23,11 +23,11 @@ load_dotenv()
 client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 menu_cards = Blueprint('menu_cards', __name__)
 file_path = "/Users/arfan/Desktop/Cuisine.jpg"
-# image_urls = [
-#     "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c5e8c54.jpg",
-# ]
+image_urls = [
+    "https://images.sirved.com/ChIJ6fQ1DvLzK4gRq6e8dG-jPjQ/5aaa82c5e8c54.jpg",
+]
 
-image_urls = ["https://images.sirved.com/ChIJmz57CmkqK4gRReNqmD9vPnQ/5efe6f0906735.jpg"]
+# image_urls = ["https://images.sirved.com/ChIJmz57CmkqK4gRReNqmD9vPnQ/5efe6f0906735.jpg"]
 
 
 
@@ -45,18 +45,20 @@ def image_to_RAG_chunks(image_url):
                     "content": [
                         {
                             "type": "text",
-                            "text": (
-                                "Extract the individual menu items from this image. "
-                                "Return a JSON array. Each object should have:\n"
-                                "- 'name': the dish name\n"
-                                "- 'description': description if available\n"
-                                "- 'price': e.g., '$18'\n"
-                                "- 'category': if any category headers exist like 'Pasta' or 'Appetizers'\n"
-                                "- 'embeddings': the embedding of the dish, keep it empty for now as I will add it later  should be an array \n"
-                                "**Additionally, extract any sections that list optional add-ons or extras (e.g. 'Enhance any Salad with...') "
-                                "and return these as a separate object with 'type': 'add-on' and a 'text' field containing the full string of add-ons.**\n"
-                                "Do NOT hallucinate. Only extract what is visually present."
+                            "text":(
+                            "Extract the individual menu items from this image. "
+                            "Return a JSON array. Each object should have:\n"
+                            "- 'name': the dish name\n"
+                            "- 'description': description if available\n"
+                            "- 'price': e.g., '$18'\n"
+                            "- 'category': if any category headers exist like 'Pasta' or 'Appetizers'\n"
+                            "- 'embeddings': the embedding of the dish, keep it empty for now as I will add it later (should be an array)\n\n"
+                            "**For sections like 'Lunch Special' or grouped items, split each listed item into its own object.**\n"
+                            "**If multiple items are grouped with a single price, apply the same price to each.**\n"
+                            "**Also extract any sections listing add-ons or extras (e.g. 'Enhance any Salad with...'), returning them as a separate object with 'type': 'add-on' and a 'text' field.**\n"
+                            "Do NOT hallucinate. Only extract what is visually present."
                             ),
+
                         },
                         {
                             "type": "image_url",
@@ -112,7 +114,7 @@ def embedding_chunks(chunks):
         print(f"❌ Error embedding chunks: {e}")
         return []
 
-def process_images_in_parallel(image_urls, max_workers=80):
+def process_imagesRags_in_parallel(image_urls, max_workers=80):
     results = []
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_url = {executor.submit(image_to_RAG_chunks, url): url for url in image_urls}
@@ -134,30 +136,19 @@ def clean_metadata(metadata):
 
 # === Main execution ===
 
-start_time = time.time()
-images = process_images_in_parallel(image_urls)
-end_time = time.time()
-print(f"\n✅ Time taken: {end_time - start_time:.2f} seconds")
-print("=== RAW DATA ===\n")
 
-print("=== LOOPED ACCESS ===")
-for image in images:
-    print("Image:")
-    print(image["chunks"])
-    embeddings = embedding_chunks(image["chunks"])
-    # Update the 'embeddings' field in each chunk:
-    for emb_item in embeddings:
-        emb = emb_item["embedding"]
-        chunk = emb_item["chunk"]
-        chunk["embeddings"] = emb  # Update the existing field
-
-    # Now print the final image["chunks"] with embeddings
-   
-    
-    # Each chunk now has 'embeddings'
-    # pinecone_records = []
+def rag_embeddings(image_urls):
+    images = process_imagesRags_in_parallel(image_urls)
+    for image in images:
+        print("Image:")
+        print(image["chunks"])
+        embeddings = embedding_chunks(image["chunks"])
+        # Update the 'embeddings' field in each chunk:
+        for emb_item in embeddings:
+            emb = emb_item["embedding"]
+            chunk = emb_item["chunk"]
+            chunk["embeddings"] = emb  # Update the existing field
     pinecone_records = []
-    seen_ids = set()
     for i, chunk in enumerate(image["chunks"]):
         record_id = chunk.get("name")
         print(record_id)
@@ -165,8 +156,6 @@ for image in images:
         if record_id and fetched.vectors:  # only true if the ID exists
             print(f"Duplicate found: {record_id}, skipping.")
             continue
-
-        
         else:
             embedding = chunk["embeddings"]
             metadata = {k: v for k, v in chunk.items() if k != "embeddings"}
@@ -179,27 +168,5 @@ for image in images:
             if pinecone_records:
                 index.upsert(vectors=pinecone_records)
                 print(f"Upserted {len(pinecone_records)} records to Pinecone.")
-    # seen_ids = set()
-    # for i, chunk in enumerate(image["chunks"]):
-    #     record_id = f"{i}_{chunk.get('name', 'add-on')[:20].replace(' ', '_')}"
-    #     embedding = chunk["embeddings"]
-    #     metadata = {k: v for k, v in chunk.items() if k != "embeddings"}
-    #     metadata = clean_metadata(metadata)
-    #     if record_id in seen_ids:
-    #         print(f"Duplicate found: {record_id}, skipping.")
-    #         continue  # Skip this duplicate
-    #     seen_ids.add(record_id)
-    #     pinecone_records.append({
-    #         "id": record_id,
-    #         "values": embedding,
-    #         "metadata": metadata
-    #     })
-
-    # # Upsert to Pinecone
-    # if pinecone_records:
-    #     index.upsert(vectors=pinecone_records)
-    #     print(f"Upserted {len(pinecone_records)} records to Pinecone.")
     
-
-    # index.delete(delete_all=True)
 
