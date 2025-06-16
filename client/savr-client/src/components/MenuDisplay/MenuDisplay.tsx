@@ -16,11 +16,16 @@ interface MenuItemInfo {
   name: string;
   price: string;
   description?: string;
+  section?: string;
+  options?: string[];
+  isCombo?: boolean;
 }
 
 const MenuDisplay: React.FC = () => {
   const [menuHtml, setMenuHtml] = useState<any[][]>([]); // should be array of arrays
   const [selectedItem, setSelectedItem] = useState<MenuItemInfo | null>(null);
+  const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
+  const [currentItemIndex, setCurrentItemIndex] = useState(0);
   const menuContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -32,33 +37,145 @@ const MenuDisplay: React.FC = () => {
       });
   }, []);
 
+  // Reset item index when group changes
+  useEffect(() => {
+    setCurrentItemIndex(0);
+  }, [currentGroupIndex]);
+
+  // Handle clicking on an option in the modal
+  const handleOptionClick = (option: string) => {
+    // Create a new menu item from the option
+    setSelectedItem({
+      name: option,
+      price: selectedItem?.price || '',
+      section: selectedItem?.name || '',
+    });
+  };
+
   // Define the handler outside useEffect
   const handleMenuItemClick = (event: React.MouseEvent) => {
     const target = event.target as HTMLElement;
     const menuItem = target.closest('.menu-item');
+    const menuCategory = target.closest('.menu-category');
     
     if (menuItem) {
       // Extract menu item information
       const nameElement = menuItem.querySelector('h3');
       const priceElement = menuItem.querySelector('.price');
-      const descElement = menuItem.querySelector('p:not(.price)');
       
-      const name = nameElement ? nameElement.textContent || '' : '';
-      const price = priceElement ? priceElement.textContent || '' : '';
-      const description = descElement ? descElement.textContent || '' : '';
+      // Get all paragraph elements that are not price elements
+      const allParagraphs = Array.from(menuItem.querySelectorAll('p:not(.price)'));
+      
+      // Find the closest section heading
+      const sectionElement = menuItem.closest('.menu-category')?.querySelector('h2');
+      
+      const name = nameElement?.textContent?.trim() || '';
+      const price = priceElement?.textContent?.trim() || '';
+      const section = sectionElement?.textContent?.trim() || '';
+      
+      // Extract all text content from paragraphs
+      let options: string[] = [];
+      let description = '';
+      
+      allParagraphs.forEach(p => {
+        const text = p.textContent?.trim() || '';
+        if (text) {
+          // Check if this looks like an option (short text that might be a food item)
+          if (text.length < 50 && !text.includes('.')) {
+            options.push(text);
+          } else {
+            // If it's longer, treat it as a description
+            description += text + ' ';
+          }
+        }
+      });
+      
+      description = description.trim();
+      
+      // Use section name as the name if no item name is found
+      const displayName = name || section || 'Menu Item';
+      
+      // Check if this is a family combo
+      const isCombo = displayName.toLowerCase().includes('combo') || 
+                      displayName.toLowerCase().includes('family') ||
+                      section.toLowerCase().includes('combo') ||
+                      section.toLowerCase().includes('family');
       
       // Log detailed information about the clicked item
       console.log('=== MENU ITEM CLICKED ===');
       console.log('Menu Item HTML:', menuItem.outerHTML);
-      console.log('Name:', name);
+      console.log('Name:', name || '(none)');
+      console.log('Section:', section);
       console.log('Price:', price);
+      console.log('Options:', options);
       console.log('Description:', description);
+      console.log('Display Name:', displayName);
+      console.log('Is Combo:', isCombo);
       console.log('========================');
       
-      setSelectedItem({ name, price, description });
+      setSelectedItem({ 
+        name: displayName, 
+        price, 
+        description,
+        section: name ? section : undefined, // Only include section if we're using a name
+        options: options.length > 0 ? options : undefined,
+        isCombo
+      });
       
       // Prevent event bubbling
       event.stopPropagation();
+    }
+    // Handle clicking on a section header directly
+    else if (menuCategory && !menuItem) {
+      const sectionElement = menuCategory.querySelector('h2');
+      if (sectionElement) {
+        const section = sectionElement.textContent?.trim() || 'Menu Section';
+        
+        // Check if this is a combo section
+        const isCombo = section.toLowerCase().includes('combo') || 
+                        section.toLowerCase().includes('family');
+        
+        console.log('=== MENU SECTION CLICKED ===');
+        console.log('Section:', section);
+        console.log('Is Combo:', isCombo);
+        console.log('========================');
+        
+        setSelectedItem({
+          name: section,
+          price: '',
+          section: 'Menu Category',
+          isCombo
+        });
+        
+        event.stopPropagation();
+      }
+    }
+  };
+
+  const handlePrevious = () => {
+    // If there are multiple items in the current group
+    if (currentItemIndex > 0) {
+      setCurrentItemIndex(currentItemIndex - 1);
+    } else {
+      // Move to the previous group
+      const prevGroupIndex = currentGroupIndex > 0 ? currentGroupIndex - 1 : menuHtml.length - 1;
+      setCurrentGroupIndex(prevGroupIndex);
+      // Set to the last item of the previous group
+      if (menuHtml[prevGroupIndex]) {
+        setCurrentItemIndex(menuHtml[prevGroupIndex].length - 1);
+      }
+    }
+  };
+
+  const handleNext = () => {
+    // If there are more items in the current group
+    if (menuHtml[currentGroupIndex] && currentItemIndex < menuHtml[currentGroupIndex].length - 1) {
+      setCurrentItemIndex(currentItemIndex + 1);
+    } else {
+      // Move to the next group
+      const nextGroupIndex = currentGroupIndex < menuHtml.length - 1 ? currentGroupIndex + 1 : 0;
+      setCurrentGroupIndex(nextGroupIndex);
+      setCurrentItemIndex(0);
     }
   };
 
@@ -71,34 +188,88 @@ const MenuDisplay: React.FC = () => {
     };
   }, []);
 
+  // Get current item to display
+  const currentItem = menuHtml[currentGroupIndex]?.[currentItemIndex];
+  
+  // Calculate total number of items across all groups
+  const totalItems = menuHtml.reduce((total, group) => total + group.length, 0);
+  
+  // Calculate current item number (across all groups)
+  const currentItemNumber = menuHtml.slice(0, currentGroupIndex).reduce(
+    (count, group) => count + group.length, 0
+  ) + currentItemIndex + 1;
+
   return (
     <>
       {selectedItem && (
         <div className="selected-item-modal">
           <div className="selected-item-content">
             <h2>{selectedItem.name}</h2>
-            <p className="selected-item-price">{selectedItem.price}</p>
-            {selectedItem.description && <p>{selectedItem.description}</p>}
+            {selectedItem.section && <p className="selected-item-section">{selectedItem.section}</p>}
+            {selectedItem.price && <p className="selected-item-price">{selectedItem.price}</p>}
+            
+            {selectedItem.options && selectedItem.options.length > 0 && !selectedItem.isCombo && (
+              <div className="selected-item-options">
+                <h3>Options</h3>
+                <ul>
+                  {selectedItem.options.map((option, index) => (
+                    <li 
+                      key={index} 
+                      onClick={() => handleOptionClick(option)}
+                      className="clickable-option"
+                    >
+                      {option}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
+            {selectedItem.isCombo && selectedItem.options && selectedItem.options.length > 0 && (
+              <div className="selected-item-combo">
+                <h3>Includes</h3>
+                <ul>
+                  {selectedItem.options.map((option, index) => (
+                    <li key={index}>{option}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            
+            {selectedItem.description && (
+              <p className="selected-item-description">{selectedItem.description}</p>
+            )}
+            
             <button onClick={() => setSelectedItem(null)}>Close</button>
           </div>
         </div>
       )}
       
-      <div ref={menuContainerRef} onClick={handleMenuItemClick}>
-        {menuHtml.map((group, groupIdx) => (
-          <div key={groupIdx} className="card">
-            {group.map((item: any, itemIdx: number) => {
-              const cleaned = cleanHTML(item.html);
-              return (
+      <div className="slideshow-container">
+        {menuHtml.length > 0 && (
+          <>
+            <div className="slideshow-card" ref={menuContainerRef} onClick={handleMenuItemClick}>
+              {currentItem && (
                 <div
                   className="menu-container"
-                  key={itemIdx}
-                  dangerouslySetInnerHTML={{ __html: cleaned }}
+                  dangerouslySetInnerHTML={{ __html: cleanHTML(currentItem.html) }}
                 />
-              );
-            })}
-          </div>
-        ))}
+              )}
+            </div>
+            
+            <div className="slideshow-controls">
+              <button className="slideshow-btn prev-btn" onClick={handlePrevious}>
+                &lt; Previous
+              </button>
+              <span className="slideshow-indicator">
+                {currentItemNumber} / {totalItems}
+              </span>
+              <button className="slideshow-btn next-btn" onClick={handleNext}>
+                Next &gt;
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </>
   );
