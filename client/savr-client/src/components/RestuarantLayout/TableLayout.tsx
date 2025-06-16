@@ -243,7 +243,7 @@ const TableLayout = ({
             bottom: 0,
             width: 16,
             height: 16,
-            background: '#3973db',
+            background: 'black',
             borderRadius: 4,
             cursor: 'nwse-resize',
             zIndex: 20,

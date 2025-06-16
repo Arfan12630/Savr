@@ -88,7 +88,8 @@ const RestaurantStoreLayout: React.FC = () => {
       >
         {restaurantData.results.map((r, i) => (
           <StyledCard key={i} variant="outlined">
-            <Box sx={{ position: 'relative', width: '100%', height: 160, overflow: 'hidden', borderRadius: '12px 12px 0 0' }}>
+            <Box sx={{ position: 'relative', width: '100%', height: 160, overflow: 'hidden', borderRadius: '12px 12px 0 0' }}
+            onClick={() => clickedImage(r)}>
               {r.logo && (
                 <img
                   src={r.logo}
@@ -106,7 +107,8 @@ const RestaurantStoreLayout: React.FC = () => {
                 <Bookmark />
               </IconButton>
             </Box>
-            <CardContent sx={{ p: 2, flexGrow: 1 }}>
+            <CardContent sx={{ p: 2, flexGrow: 1 }}
+            onClick={() => clickedImage(r)}>
               <Typography level="title-lg" sx={{ color: 'white', mb: 1 }}>
                 {r.name}
               </Typography>
