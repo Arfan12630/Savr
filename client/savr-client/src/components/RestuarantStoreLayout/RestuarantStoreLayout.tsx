@@ -60,11 +60,8 @@ const RestaurantStoreLayout: React.FC = () => {
 
   const clickedImage = (restaurant: any) => {
     console.log(restaurant)
-    // axios.post('http://127.0.0.1:5000/show_menus', { restaurant })
-    //   .then(res => {
-    //     navigate('/menu-layout', { state: { menu_html: res.data.menu_html } });
-    //   })
-    //   .catch(err => console.error(err));
+    navigate('/view', { state: { restaurantInfo: restaurant } });
+ 
   };
 
   return (

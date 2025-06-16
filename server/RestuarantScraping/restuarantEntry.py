@@ -225,5 +225,5 @@ def save_all_menu_html():
 
 @restuarantEntry.route('/get-all-menu-html', methods=['GET'])
 def get_all_menu_html():
-    entry = Restaurant_Entry.query.filter_by(name="Ennio's Pasta House").first()
+    entry = Restaurant_Entry.query.filter_by(name="Afghani Cuisine Restaurant").first()
     return jsonify({"menu_htmls": entry.menu_html})
