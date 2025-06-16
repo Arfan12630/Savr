@@ -172,7 +172,8 @@ def place_in_DB():
         address=data["address"],
         hours=data["hours"],
         logo=data["logo"],
-        created_at=datetime.now()
+        created_at=datetime.now(),
+        rag_ready=False
     )
     if Restaurant_Entry.query.filter_by(name=data["name"], address=data["address"]).first():
         return jsonify({"message": "Restaurant already exists"})
@@ -216,6 +217,7 @@ def save_all_menu_html():
     
     # Store as array of strings or concatenate them
     entry.menu_html = menu_htmls  # If your column is ARRAY(Text) or JSON
+    entry.rag_ready = True
     # OR concatenate: entry.menu_html = "\n\n".join(menu_htmls)
     
     db.session.commit()

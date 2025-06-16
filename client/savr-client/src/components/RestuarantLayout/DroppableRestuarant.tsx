@@ -302,9 +302,9 @@ const DroppableArea = () => {
             key={chair.id}
             id={chair.id}
             position={{ x: chair.x, y: chair.y }}
+            rotation={chair.rotation}
             onDelete={deleteChair}
             selected={selectedIds.includes(chair.id)}
-          
             onRotate={rotateChair}
             width={chair.width}
             height={chair.height}

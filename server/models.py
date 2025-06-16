@@ -26,3 +26,4 @@ class Restaurant_Entry(db.Model):
     menu_images = db.Column(db.JSON)
     menu_html = db.Column(db.JSON)
     created_at = db.Column(db.DateTime, default=db.func.now())
+    rag_ready = db.Column(db.Boolean, default=False)
