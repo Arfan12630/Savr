@@ -253,3 +253,56 @@
   border-radius: 6px;
   border-left: 3px solid #e1b382;
 }
+
+/* Add this to your existing CSS */
+
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+}
+
+.close-btn, .add-order-btn {
+  padding: 0.8rem 1.5rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+  border: none;
+}
+
+.close-btn {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+.close-btn:hover {
+  background-color: #d0d0d0;
+}
+
+.add-order-btn {
+  background-color: #4caf50;
+  color: white;
+}
+
+.add-order-btn:hover {
+  background-color: #3e8e41;
+}
+
+.selected-option {
+  margin: 1rem 0;
+  padding: 0.8rem;
+  background-color: #f0f8ff;
+  border-radius: 6px;
+  border-left: 3px solid #4caf50;
+}
+
+.selected-option p {
+  margin: 0;
+  color: #333;
+}
+
+.selected-option strong {
+  color: #4a2f12;
+}

@@ -19,6 +19,7 @@ interface MenuItemInfo {
   section?: string;
   options?: string[];
   isCombo?: boolean;
+  selectedOption?: string;
 }
 
 const MenuDisplay: React.FC = () => {
@@ -44,12 +45,24 @@ const MenuDisplay: React.FC = () => {
 
   // Handle clicking on an option in the modal
   const handleOptionClick = (option: string) => {
-    // Create a new menu item from the option
-    setSelectedItem({
-      name: option,
-      price: selectedItem?.price || '',
-      section: selectedItem?.name || '',
-    });
+    if (selectedItem) {
+      // Update the current item with the selected option
+      setSelectedItem({
+        ...selectedItem,
+        selectedOption: option
+      });
+    }
+  };
+
+  // Handle adding item to order
+  const handleAddToOrder = () => {
+    const itemToAdd = selectedItem?.selectedOption 
+      ? `${selectedItem.name} - ${selectedItem.selectedOption}` 
+      : selectedItem?.name;
+      
+    console.log('Adding to order:', itemToAdd, 'Price:', selectedItem?.price);
+    // Here you would implement the actual order functionality
+    alert(`Added to order: ${itemToAdd} - ${selectedItem?.price}`);
   };
 
   // Define the handler outside useEffect
@@ -199,6 +212,17 @@ const MenuDisplay: React.FC = () => {
     (count, group) => count + group.length, 0
   ) + currentItemIndex + 1;
 
+  // Determine if we should show the Add to Order button
+  const showAddToOrder = selectedItem && (
+    // Show for combos
+    selectedItem.isCombo || 
+    // Show for items with no options
+    !selectedItem.options || 
+    selectedItem.options.length === 0 || 
+    // Show for items where an option has been selected
+    selectedItem.selectedOption
+  );
+
   return (
     <>
       {selectedItem && (
@@ -208,7 +232,13 @@ const MenuDisplay: React.FC = () => {
             {selectedItem.section && <p className="selected-item-section">{selectedItem.section}</p>}
             {selectedItem.price && <p className="selected-item-price">{selectedItem.price}</p>}
             
-            {selectedItem.options && selectedItem.options.length > 0 && !selectedItem.isCombo && (
+            {selectedItem.selectedOption && (
+              <div className="selected-option">
+                <p>Selected: <strong>{selectedItem.selectedOption}</strong></p>
+              </div>
+            )}
+            
+            {selectedItem.options && selectedItem.options.length > 0 && !selectedItem.isCombo && !selectedItem.selectedOption && (
               <div className="selected-item-options">
                 <h3>Options</h3>
                 <ul>
@@ -240,7 +270,15 @@ const MenuDisplay: React.FC = () => {
               <p className="selected-item-description">{selectedItem.description}</p>
             )}
             
-            <button onClick={() => setSelectedItem(null)}>Close</button>
+            <div className="modal-buttons">
+              <button onClick={() => setSelectedItem(null)} className="close-btn">Close</button>
+              
+              {showAddToOrder && (
+                <button onClick={handleAddToOrder} className="add-order-btn">
+                  Add to Order
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}
