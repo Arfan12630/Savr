@@ -8,7 +8,7 @@ import TableLayout from './TableLayout';
 import axios from 'axios';
 
 const HEADER_HEIGHT = 100; // Adjust as needed
-const CHAIR_SIZE = 50;
+const CHAIR_SIZE = 40;
 const TABLE_WIDTH = 220;
 const TABLE_HEIGHT = 60;
 
@@ -323,7 +323,7 @@ const DroppableArea = () => {
     selected={selectedIds.includes(table.id)}
     width={table.width}
     height={table.height}
-    onResize={updateTableSize} // ✅ NEW!
+    onResize={updateTableSize} 
   />
 ))}
 
