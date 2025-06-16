@@ -37,24 +37,7 @@ const ChairLayout = ({
     scaleY: 1,
   };
 
-  const chairStyle: React.CSSProperties = {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    width: 60,
-    height: 60,
-    borderRadius: 10,
-    border: selected ? '2px solid #ff9800' : '1px solid black',
-    boxShadow: selected ? '0 0 8px #ff9800' : undefined,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    cursor: 'grab',
-    userSelect: 'none',
-    transform: `${CSS.Translate.toString(finalTransform)} rotate(${rotation}deg)`,
-    background: '#fff',
-    transition: 'box-shadow 0.2s, border 0.2s',
-  };
+
 
   const [size, setSize] = React.useState({ width, height});
   const [showDelete, setShowDelete] = React.useState(false);
@@ -112,18 +95,42 @@ const ChairLayout = ({
   };
 
   const [hovered, setHovered] = React.useState(false);
-
+  const chairStyle: React.CSSProperties = {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    width: size.width,
+    height: size.height,
+    borderRadius: 10,
+    border: selected ? '2px solid #ff9800' : '1px solid black',
+    boxShadow: selected ? '0 0 8px #ff9800' : undefined,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'grab',
+    userSelect: 'none',
+    transform: `${CSS.Translate.toString(finalTransform)} rotate(${rotation}deg)`,
+    background: '#fff',
+    transition: 'box-shadow 0.2s, border 0.2s',
+  };
 
   return (
     <>
     <div
-      ref={setNodeRef}
-      style={chairStyle}
-      {...attributes}
-      onMouseEnter={() => setShowDelete(true)}
-      onMouseLeave={() => setShowDelete(false)}
-      onContextMenu={handleContextMenu}
-    >
+          ref={setNodeRef}
+          style={chairStyle}
+          {...attributes}
+          onMouseEnter={() => {
+            setHovered(true);
+            if (!resizeOnly) setShowDelete(true);
+          }}
+          onMouseLeave={() => {
+            setHovered(false);
+            setResizeOnly(false);
+            setShowDelete(false);
+          }}
+          onContextMenu={handleContextMenu}
+        >
       <div {...listeners} style={{
         width: '100%',
         height: '100%',
@@ -143,7 +150,7 @@ const ChairLayout = ({
           </g>
         </svg>
       </div>
-      {showDelete && !viewOnly && (
+      {showDelete && !viewOnly &&!resizeOnly && (
         <>
           <button
             style={{
