@@ -7,6 +7,7 @@ const ChairLayout = ({
   onDelete,
   id,
   position,
+  rotation,
   viewOnly = false,
   selected = false,
   width,
@@ -17,6 +18,7 @@ const ChairLayout = ({
   onDelete: (id: string) => void,
   id: string,
   position: { x: number; y: number },
+  rotation: number,
   viewOnly?: boolean,
   selected?: boolean,
   width: number,  
@@ -49,7 +51,7 @@ const ChairLayout = ({
     justifyContent: 'center',
     cursor: 'grab',
     userSelect: 'none',
-    transform: CSS.Translate.toString(finalTransform),
+    transform: `${CSS.Translate.toString(finalTransform)} rotate(${rotation}deg)`,
     background: '#fff',
     transition: 'box-shadow 0.2s, border 0.2s',
   };
@@ -142,27 +144,50 @@ const ChairLayout = ({
         </svg>
       </div>
       {showDelete && !viewOnly && (
-        <button
-          style={{
-            position: 'absolute',
-            top: 2,
-            right: 2,
-            zIndex: 10,
-            background: 'red',
-            color: 'white',
-            border: 'none',
-            borderRadius: '50%',
-            width: 24,
-            height: 24,
-            cursor: 'pointer',
-          }}
-          onClick={e => {
-            e.stopPropagation();
-            onDelete(id);
-          }}
-        >
-          ×
-        </button>
+        <>
+          <button
+            style={{
+              position: 'absolute',
+              top: 2,
+              right: 2,
+              zIndex: 10,
+              background: 'red',
+              color: 'white',
+              border: 'none',
+              borderRadius: '50%',
+              width: 24,
+              height: 24,
+              cursor: 'pointer',
+            }}
+            onClick={e => {
+              e.stopPropagation();
+              onDelete(id);
+            }}
+          >
+            ×
+          </button>
+          <button
+            style={{
+              position: 'absolute',
+              top: 2,
+              left: 2,
+              zIndex: 10,
+              background: '#3973db',
+              color: 'white',
+              border: 'none',
+              borderRadius: '50%',
+              width: 24,
+              height: 24,
+              cursor: 'pointer',
+            }}
+            onClick={e => {
+              e.stopPropagation();
+              onRotate(id);
+            }}
+          >
+            ↻
+          </button>
+        </>
       )}
       {/* --- Resize handle --- */}
       {!viewOnly && (
