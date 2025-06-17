@@ -59,6 +59,8 @@ def get_layout():
     layout = Layout.query.order_by(Layout.id.desc()).first()
     if layout:
         return jsonify({
+            "name": layout.name,
+            "address": layout.address,
             "chairs": layout.chairs,
             "tables": layout.tables,
             "created_at": layout.created_at

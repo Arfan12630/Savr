@@ -62,7 +62,7 @@ const MenuDisplay: React.FC = () => {
       
     console.log('Adding to order:', itemToAdd, 'Price:', selectedItem?.price);
     // Here you would implement the actual order functionality
-    alert(`Added to order: ${itemToAdd} - ${selectedItem?.price}`);
+    //alert(`Added to order: ${itemToAdd} - ${selectedItem?.price}`);
   };
 
   // Define the handler outside useEffect
@@ -139,30 +139,30 @@ const MenuDisplay: React.FC = () => {
       event.stopPropagation();
     }
     // Handle clicking on a section header directly
-    else if (menuCategory && !menuItem) {
-      const sectionElement = menuCategory.querySelector('h2');
-      if (sectionElement) {
-        const section = sectionElement.textContent?.trim() || 'Menu Section';
+    // else if (menuCategory && !menuItem) {
+    //   const sectionElement = menuCategory.querySelector('h2');
+    //   if (sectionElement) {
+    //     const section = sectionElement.textContent?.trim() || 'Menu Section';
         
-        // Check if this is a combo section
-        const isCombo = section.toLowerCase().includes('combo') || 
-                        section.toLowerCase().includes('family');
+    //     // Check if this is a combo section
+    //     const isCombo = section.toLowerCase().includes('combo') || 
+    //                     section.toLowerCase().includes('family');
         
-        console.log('=== MENU SECTION CLICKED ===');
-        console.log('Section:', section);
-        console.log('Is Combo:', isCombo);
-        console.log('========================');
+    //     console.log('=== MENU SECTION CLICKED ===');
+    //     console.log('Section:', section);
+    //     console.log('Is Combo:', isCombo);
+    //     console.log('========================');
         
-        setSelectedItem({
-          name: section,
-          price: '',
-          section: 'Menu Category',
-          isCombo
-        });
+    //     setSelectedItem({
+    //       name: section,
+    //       price: '',
+    //       section: 'Menu Category',
+    //       isCombo
+    //     });
         
-        event.stopPropagation();
-      }
-    }
+    //     event.stopPropagation();
+    //   }
+    // }
   };
 
   const handlePrevious = () => {
