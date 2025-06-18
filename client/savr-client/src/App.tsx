@@ -11,6 +11,7 @@ import RestaurantStoreLayout from './components/RestuarantStoreLayout/Restuarant
 import RestuarantEntry from './components/RestuarantEntry/RestuarantEntry';
 import RestuarantMenuImageUpload from './components/RestuarantEntry/RestuarantMenuImageUpload';
 import MenuDisplay from './components/MenuDisplay/MenuDisplay';
+import MenuCardDisplay from './components/MenuDisplay/MenuCardDisplay';
 function App() {
   return (
     <Router>
@@ -20,7 +21,8 @@ function App() {
         <Route path="/chat" element={<Chat />} />
         <Route path="owner/restaurant-entry" element={<RestuarantEntry />} />
         <Route path="owner/restaurant-entry/menu-image-upload" element={<RestuarantMenuImageUpload />} />
-        <Route path="/menu-display" element={<MenuDisplay />} />
+        {/* <Route path="/menu-display" element={<MenuDisplay />} /> */}
+        <Route path="/menu-card-display" element={<MenuCardDisplay />} />
         <Route
           path="/edit"
           element={

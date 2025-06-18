@@ -16,7 +16,15 @@ const ReservationModal: React.FC<{
   onReserve: () => void;
   onCancel?: () => void;
   reserved?: boolean;
+  
+  
+
+
+
 }> = ({ open, onClose, onReserve, onCancel, reserved }) => {
+
+  const [name, setName] = React.useState('');
+  const [completedReservation, setCompletedReservation] = React.useState(false);
   return (
     <React.Fragment>
       <Modal open={open} onClose={onClose}>
@@ -34,8 +42,11 @@ const ReservationModal: React.FC<{
               event.preventDefault();
               if (reserved && onCancel) {
                 onCancel();
+        
               } else {
                 onReserve();
+                console.log("Reserved");
+  
               }
             }}
           >
@@ -52,9 +63,14 @@ const ReservationModal: React.FC<{
               </FormControl>
                 </>
               )}
-              <Button type="submit">
+              <Button type="submit" onClick={() => {
+
+              }}>
                 {reserved ? 'Cancel Reservation' : 'Reserve'}
+               
               </Button>
+           
+
             </Stack>
           </form>
         </ModalDialog>
