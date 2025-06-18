@@ -5,6 +5,7 @@ import table from '../../assets/Dining_Table_Image_Horizontal-removebg-preview.p
 import ReservationModal from '../RestuarantViewLayout/ReservationModal';
 
 const TableLayout = ({
+  restaurantCardData,
   onDelete,
   id,
   position,
@@ -16,6 +17,7 @@ const TableLayout = ({
   height,
   onResize,
 }: {
+  restaurantCardData: any,
   onDelete: (id: string) => void,
   id: string,
   position: { x: number; y: number },
@@ -83,7 +85,7 @@ const TableLayout = ({
     };
   }, [resizing, startPos, startSize]);
 
-  // --- Context menu and mouse leave logic ---
+
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     setResizeOnly(true);
@@ -113,7 +115,7 @@ const TableLayout = ({
     borderRadius: 18,
     border: selected ? '2px solid #ff9800' : '2.5px solid #274b8f',
     boxShadow: selected ? '0 0 8px #ff9800' : '0 4px 16px rgba(57, 115, 219, 0.10)',
-    background: '#3973db',
+    background: reserved ? '#ff9800' : '#3973db',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',

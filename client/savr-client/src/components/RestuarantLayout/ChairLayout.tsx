@@ -68,7 +68,7 @@ const ChairLayout = ({
         const newHeight = Math.max(30, startSize.height + dy);
         
         setSize({ width: newWidth, height: newHeight });
-        onResize?.(id, newWidth, newHeight); // 🔥 Notify parent
+        onResize?.(id, newWidth, newHeight); 
         
       }
     };
@@ -131,25 +131,18 @@ const ChairLayout = ({
           }}
           onContextMenu={handleContextMenu}
         >
-      <div {...listeners} style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column'
-      }}>
-        {/* SeatGeek-style chair SVG */}
-        <svg width="32" height="32" viewBox="0 0 40 40" fill="none">
-          <g>
-            <rect x="6" y="24" width="6" height="8" rx="2" fill="#3973db"/>
-            <rect x="28" y="24" width="6" height="8" rx="2" fill="#3973db"/>
-            <path d="M8 22 Q20 10 32 22" stroke="#3973db" strokeWidth="4" fill="none"/>
-            <rect x="12" y="18" width="16" height="10" rx="3" fill="#3973db"/>
-            <path d="M10 34 Q20 38 30 34" stroke="#3973db" strokeWidth="3" fill="none"/>
-          </g>
-        </svg>
-      </div>
+   <div {...listeners} style={{ width: '100%', height: '100%' }}>
+  <svg width="100%" height="100%" viewBox="0 0 40 40" preserveAspectRatio="xMidYMid meet" fill="none">
+    <g>
+      <rect x="6" y="24" width="6" height="8" rx="2" fill="#3973db"/>
+      <rect x="28" y="24" width="6" height="8" rx="2" fill="#3973db"/>
+      <path d="M8 22 Q20 10 32 22" stroke="#3973db" strokeWidth="4" fill="none"/>
+      <rect x="12" y="18" width="16" height="10" rx="3" fill="#3973db"/>
+      <path d="M10 34 Q20 38 30 34" stroke="#3973db" strokeWidth="3" fill="none"/>
+    </g>
+  </svg>
+</div>
+
       {showDelete && !viewOnly &&!resizeOnly && (
         <>
           <button

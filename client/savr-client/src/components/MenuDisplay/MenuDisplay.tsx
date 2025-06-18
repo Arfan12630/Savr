@@ -1,15 +1,50 @@
 import React, { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import './MenuDisplay.css';
+import { useShoppingCart } from './ShoppingCartContext';
+import ShoppingCart from './ShoppingCart';
+// Add this function to convert p tags with options to h3 tags
+const convertOptionParagraphsToH3 = (html: string): string => {
+  // Create a temporary DOM element to parse the HTML
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+  
+  // Find menu items
+  const menuItems = tempDiv.querySelectorAll('.menu-item');
+  
+  menuItems.forEach(menuItem => {
+    // Get all paragraph elements that are not price elements
+    const paragraphs = menuItem.querySelectorAll('p:not(.price)');
+    
+    paragraphs.forEach(p => {
+      const text = p.textContent?.trim() || '';
+      // Apply the same logic to identify options
+      if (text && text.length < 50 && !text.includes('.')) {
+        // Create a new h3 element
+        const h3 = document.createElement('h3');
+        h3.className = 'menu-option';
+        h3.textContent = text;
+        
+        // Replace the paragraph with the h3
+        p.parentNode?.replaceChild(h3, p);
+      }
+    });
+  });
+  
+  return tempDiv.innerHTML;
+};
 
+// Then modify the cleanHTML function to include this transformation
 const cleanHTML = (raw: string): string => {
-  return raw
+  const cleaned = raw
     .replace(/```html\n?/, '')
     .replace(/```$/, '')
     .replace(/\\n/g, '')
     .replace(/\\"/g, '"')
     .replace(/\\'/g, "'")
     .trim();
+    
+  return convertOptionParagraphsToH3(cleaned);
 };
 
 interface MenuItemInfo {
@@ -22,12 +57,20 @@ interface MenuItemInfo {
   selectedOption?: string;
 }
 
+export interface MenuItem  extends MenuItemInfo{
+  selectedOption?: string;
+  quantity?: number;
+}
+
 const MenuDisplay: React.FC = () => {
   const [menuHtml, setMenuHtml] = useState<any[][]>([]); // should be array of arrays
   const [selectedItem, setSelectedItem] = useState<MenuItemInfo | null>(null);
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
+  const [item, setItem] = useState({any:[]})
   const menuContainerRef = useRef<HTMLDivElement>(null);
+
+  const { addItem } = useShoppingCart();
 
   useEffect(() => {
     axios.get('http://127.0.0.1:5000/get-all-menu-html')
@@ -56,13 +99,18 @@ const MenuDisplay: React.FC = () => {
 
   // Handle adding item to order
   const handleAddToOrder = () => {
-    const itemToAdd = selectedItem?.selectedOption 
-      ? `${selectedItem.name} - ${selectedItem.selectedOption}` 
-      : selectedItem?.name;
-      
-    console.log('Adding to order:', itemToAdd, 'Price:', selectedItem?.price);
-    // Here you would implement the actual order functionality
-    //alert(`Added to order: ${itemToAdd} - ${selectedItem?.price}`);
+    if (!selectedItem) return;
+    
+    const itemToAdd: MenuItem = {
+      ...selectedItem,
+      quantity: 1
+    };
+    
+    addItem(itemToAdd);
+    console.log('Added to cart:', itemToAdd.name, 'Price:', itemToAdd.price);
+    
+    // Close the modal after adding to cart
+    setSelectedItem(null);
   };
 
   // Define the handler outside useEffect
@@ -78,6 +126,8 @@ const MenuDisplay: React.FC = () => {
       
       // Get all paragraph elements that are not price elements
       const allParagraphs = Array.from(menuItem.querySelectorAll('p:not(.price)'));
+      // Get all h3 elements with menu-option class (our converted options)
+      const optionH3s = Array.from(menuItem.querySelectorAll('h3.menu-option'));
       
       // Find the closest section heading
       const sectionElement = menuItem.closest('.menu-category')?.querySelector('h2');
@@ -103,6 +153,14 @@ const MenuDisplay: React.FC = () => {
         }
       });
       
+      // Add all h3.menu-option texts as options
+      optionH3s.forEach(h3 => {
+        const text = h3.textContent?.trim() || '';
+        if (text) {
+          options.push(text);
+        }
+      });
+      
       description = description.trim();
       
       // Use section name as the name if no item name is found
@@ -114,6 +172,21 @@ const MenuDisplay: React.FC = () => {
                       section.toLowerCase().includes('combo') ||
                       section.toLowerCase().includes('family');
       
+      // For combo items, make sure we use the full combo name
+      // This ensures the modal shows the complete combo name as the header
+      let finalName = displayName;
+      if (isCombo && name) {
+        // For combos, we want to use the full name which might include the combo items
+        // If the name doesn't already include "combo" but the section does, prepend the section
+        if (!name.toLowerCase().includes('combo') && section.toLowerCase().includes('combo') || section.toLowerCase().includes('family')) {
+          finalName = `${section} `;
+        }
+
+        if (!name.toLowerCase().includes('combo') && section.toLowerCase().includes('combo') || section.toLowerCase().includes('family') && name.toLowerCase().includes('kids')) {
+          finalName = `${section} - ${name}`;
+        }
+      }
+      
       // Log detailed information about the clicked item
       console.log('=== MENU ITEM CLICKED ===');
       console.log('Menu Item HTML:', menuItem.outerHTML);
@@ -122,15 +195,15 @@ const MenuDisplay: React.FC = () => {
       console.log('Price:', price);
       console.log('Options:', options);
       console.log('Description:', description);
-      console.log('Display Name:', displayName);
+      console.log('Display Name:', finalName);
       console.log('Is Combo:', isCombo);
       console.log('========================');
       
       setSelectedItem({ 
-        name: displayName, 
+        name: finalName, 
         price, 
         description,
-        section: name ? section : undefined, // Only include section if we're using a name
+        section: isCombo ? undefined : (name ? section : undefined), // Don't show section for combos
         options: options.length > 0 ? options : undefined,
         isCombo
       });
@@ -225,11 +298,13 @@ const MenuDisplay: React.FC = () => {
 
   return (
     <>
+      <ShoppingCart />
+      
       {selectedItem && (
         <div className="selected-item-modal">
           <div className="selected-item-content">
             <h2>{selectedItem.name}</h2>
-            {selectedItem.section && <p className="selected-item-section">{selectedItem.section}</p>}
+            {selectedItem.section && !selectedItem.isCombo && <p className="selected-item-section">{selectedItem.section}</p>}
             {selectedItem.price && <p className="selected-item-price">{selectedItem.price}</p>}
             
             {selectedItem.selectedOption && (
@@ -257,7 +332,7 @@ const MenuDisplay: React.FC = () => {
             
             {selectedItem.isCombo && selectedItem.options && selectedItem.options.length > 0 && (
               <div className="selected-item-combo">
-                <h3>Includes</h3>
+                <h3>For and Includes</h3>
                 <ul>
                   {selectedItem.options.map((option, index) => (
                     <li key={index}>{option}</li>
@@ -275,7 +350,7 @@ const MenuDisplay: React.FC = () => {
               
               {showAddToOrder && (
                 <button onClick={handleAddToOrder} className="add-order-btn">
-                  Add to Order
+                  Add to Cart
                 </button>
               )}
             </div>
@@ -308,6 +383,10 @@ const MenuDisplay: React.FC = () => {
             </div>
           </>
         )}
+      </div>
+      <div className="corner-buttons">
+        <button className="bottom-left-btn">📝 UnReserve</button>
+        <button className="bottom-right-btn">💾 Proceed toCheckout</button>
       </div>
     </>
   );

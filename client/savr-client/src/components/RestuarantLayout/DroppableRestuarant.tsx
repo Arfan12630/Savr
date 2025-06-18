@@ -313,6 +313,7 @@ const DroppableArea = () => {
         ))}
        {tables.map((table) => (
   <TableLayout
+  restaurantCardData={restaurantCardData}
     viewOnly={false}
     key={table.id}
     id={table.id}
