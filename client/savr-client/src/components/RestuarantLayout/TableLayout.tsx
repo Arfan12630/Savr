@@ -3,7 +3,8 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import table from '../../assets/Dining_Table_Image_Horizontal-removebg-preview.png';
 import ReservationModal from '../RestuarantViewLayout/ReservationModal';
-
+import DoubleClickedText from './DoubleClickedText';
+import Box from '@mui/joy/Box';
 const TableLayout = ({
   restaurantCardData,
   onDelete,
@@ -16,6 +17,7 @@ const TableLayout = ({
   width,
   height,
   onResize,
+  shape,
 }: {
   restaurantCardData: any,
   onDelete: (id: string) => void,
@@ -28,6 +30,7 @@ const TableLayout = ({
   width: number,
   height: number,
   onResize: (id: string, width: number, height: number) => void,
+  shape: string,
 }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
@@ -112,10 +115,10 @@ const TableLayout = ({
     top: 0,
     width: size.width,
     height: size.height,
-    borderRadius: 18,
+    borderRadius: 0,
     border: selected ? '2px solid #ff9800' : '2.5px solid #274b8f',
     boxShadow: selected ? '0 0 8px #ff9800' : '0 4px 16px rgba(57, 115, 219, 0.10)',
-    background: reserved ? '#ff9800' : '#3973db',
+    background: reserved ? '#ff9800' : 'white',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
@@ -130,6 +133,7 @@ const TableLayout = ({
       ref={setNodeRef}
       style={tableStyle}
       {...attributes}
+
       onMouseEnter={() => {
         setHovered(true);
         if (!resizeOnly) setShowDelete(true);
@@ -141,6 +145,31 @@ const TableLayout = ({
       }}
       onContextMenu={handleContextMenu}
     >
+    
+      <Box
+      sx={{
+ 
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        position: 'absolute',
+        background: 'transparent',
+        border: 'none',
+        outline: 'none',
+        fontSize: '14px',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        color: 'black',
+        borderRadius: 0,
+        
+
+      }}
+      > 
+      <DoubleClickedText handleDoubleClickDelete={()=>{
+        console.log("double clicked");
+      }} />
+      </Box>
+ 
       <div {...listeners} style={{
         width: '100%',
         height: '100%',
