@@ -53,6 +53,11 @@ const TableLayout = ({
   // --- Reservation Modal State ---
   const [modalOpen, setModalOpen] = React.useState(false);
 
+  // --- Double Clicked Text State ---
+  const [showText, setShowText] = React.useState(false);
+  const [doubleClicked, setDoubleClicked] = React.useState(false);
+
+
   // --- Mouse down on resize handle ---
   const handleResizeMouseDown = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -109,6 +114,8 @@ const TableLayout = ({
     scaleY: 1,
   };
 
+  const isActuallyDragging = !!(transform && (transform.x !== 0 || transform.y !== 0));
+
   const tableStyle: React.CSSProperties = {
     position: 'absolute',
     left: 0,
@@ -125,8 +132,16 @@ const TableLayout = ({
     cursor: 'grab',
     userSelect: 'none',
     transform: CSS.Translate.toString(finalTransform) + ` rotate(${rotation}deg)`,
-    transition: 'box-shadow 0.2s, border 0.2s, background 0.2s',
+    transition: isActuallyDragging
+      ? 'transform 0.15s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s, border 0.2s, background 0.2s'
+      : 'transform 0.35s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s, border 0.2s, background 0.2s',
   };
+  if (shape == 'circle') {
+    tableStyle.borderRadius = '50%';
+  }
+  const handleDoubleClickDelete = () => {
+    setShowText(true);
+  }
 
   return (
     <div
@@ -144,8 +159,11 @@ const TableLayout = ({
         setShowDelete(false);
       }}
       onContextMenu={handleContextMenu}
+      onDoubleClick ={ () => {
+        setShowText(true)
+        setDoubleClicked(true)
+      }}
     >
-    
       <Box
       sx={{
  
@@ -165,9 +183,12 @@ const TableLayout = ({
 
       }}
       > 
-      <DoubleClickedText handleDoubleClickDelete={()=>{
-        console.log("double clicked");
-      }} />
+      {doubleClicked && showText && (
+        <DoubleClickedText handleDoubleClickDelete={()=>{
+          setShowText(false)
+          setDoubleClicked(false)
+        }} />
+      )}
       </Box>
  
       <div {...listeners} style={{
