@@ -24,11 +24,11 @@ const ViewRestaurantLayout: React.FC = () => {
 
   return (
     <div style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0 }}>
-      {layout.chairs.map(chair => (
+      {/* {layout.chairs.map(chair => (
         <ChairLayout viewOnly={true} key={chair.id} id={chair.id} position={{ x: chair.x, y: chair.y }} onDelete={() => {}} width={chair.width} height={chair.height} onResize={() => {}} rotation={chair.rotation} onRotate={() => {}}/>
-      ))}
+      ))} */}
       {layout.tables.map(table => (
-        <TableLayout restaurantCardData={layout} viewOnly={true} key={table.id} id={table.id} position={{ x: table.x, y: table.y }} onDelete={() => {}} width={table.width} height={table.height} onResize={()=>{}} />
+        <TableLayout restaurantCardData={layout} viewOnly={true} key={table.id} id={table.id} position={{ x: table.x, y: table.y }} onDelete={() => {}} width={table.width} height={table.height} onResize={()=>{}} shape={table.shape}/>
       ))}
       <NavBar restaurantCardData={layout} addChair={() => {}} isChairPressed={false} setIsChairPressed={() => {}} addTable={() => {}} isTablePressed={false} setIsTablePressed={() => {}} saveLayout={() => {}}/>
     </div>

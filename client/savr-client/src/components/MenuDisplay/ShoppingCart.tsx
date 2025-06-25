@@ -10,6 +10,10 @@ const ShoppingCart: React.FC = () => {
     setIsOpen(!isOpen);
   };
 
+  const handleCheckout = () => {
+    console.log('Checkout clicked');
+  };
+
   return (
     <div className="shopping-cart-container">
       <div className="cart-icon" onClick={toggleCart}>
@@ -76,7 +80,7 @@ const ShoppingCart: React.FC = () => {
                   <button onClick={clearItems} className="clear-cart-btn">
                     Clear Cart
                   </button>
-                  <button className="checkout-btn">
+                  <button className="checkout-btn" onClick={handleCheckout}>
                     Checkout
                   </button>
                 </div>

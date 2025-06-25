@@ -9,8 +9,8 @@ import axios from 'axios';
 
 const HEADER_HEIGHT = 100; // Adjust as needed
 const CHAIR_SIZE = 40;
-const TABLE_WIDTH = 220;
-const TABLE_HEIGHT = 60;
+const TABLE_WIDTH = 70;
+const TABLE_HEIGHT = 70;
 
 function isOverlapping(
   x1: number, y1: number, w1: number, h1: number,
@@ -33,7 +33,7 @@ const DroppableArea = () => {
   });
   const [touchedBoundary, setTouchedBoundary] = useState(false);
   const [chairs, setChairs] = useState<{ id: string; x: number; y: number, rotation: number, width: number, height: number }[]>([]);
-  const [tables, setTables] = useState<{ id: string; x: number; y: number; rotation: number, height: number, width: number }[]>([]);
+  const [tables, setTables] = useState<{ id: string; x: number; y: number; rotation: number, height: number, width: number, shape: string }[]>([]);
   const [isChairPressed, setIsChairPressed] = useState(false);
 
   const [isTablePressed, setIsTablePressed] = useState(false);
@@ -148,10 +148,10 @@ const DroppableArea = () => {
     setIsChairPressed(true);
   };
 
-  const addTable = () => {
+  const addTable = (shape:string) => {
     setTables((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), x: 100 + prev.length * 30, y: 100, rotation: 0, height: TABLE_HEIGHT, width: TABLE_WIDTH }
+      { id: crypto.randomUUID(), x: 100 + prev.length * 30, y: 100, rotation: 0, height: TABLE_HEIGHT, width: TABLE_WIDTH, shape: shape}
     ]);
     setIsTablePressed(true);
   };
@@ -176,11 +176,14 @@ const DroppableArea = () => {
   const style: React.CSSProperties = {
     width: '100vw',
     height: '100vh',
-    background: isOver ? '#e0ffe0' : '#f0f0f0',
+    background: '#e9f1fa', // light blue/gray
     position: 'fixed',
     top: 0,
     left: 0,
     overflow: 'hidden',
+    boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+    borderRadius: 16,
+    border: '1.5px solid #d0e2f2',
   };
 
   const deleteTable = (id: string) => {
@@ -294,7 +297,16 @@ const DroppableArea = () => {
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
       >
-        <NavBar restaurantCardData={restaurantCardData.restaurantCardData} addChair={addChair} isChairPressed={isChairPressed} setIsChairPressed={setIsChairPressed} addTable={addTable} isTablePressed={isTablePressed} setIsTablePressed={setIsTablePressed} saveLayout={saveLayout}/>
+        <NavBar 
+          restaurantCardData={restaurantCardData.restaurantCardData} 
+          addChair={addChair}
+          isChairPressed={isChairPressed} 
+          setIsChairPressed={setIsChairPressed} 
+          addTable={addTable}
+          isTablePressed={isTablePressed} 
+          setIsTablePressed={setIsTablePressed} 
+          saveLayout={saveLayout}
+        />
       
         {chairs.map((chair) => (
           <ChairLayout
@@ -325,6 +337,7 @@ const DroppableArea = () => {
     width={table.width}
     height={table.height}
     onResize={updateTableSize} 
+    shape={table.shape}
   />
 ))}
 
