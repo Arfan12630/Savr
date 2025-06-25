@@ -24,7 +24,7 @@ const DoubleClickedText = ({ handleDoubleClickDelete }: { handleDoubleClickDelet
         <Textarea
           name="Primary"
           placeholder="Type in here…"
-          variant="outlined"
+          variant="plain"
           color="primary"
           sx={{
             width: '100%',
@@ -41,6 +41,7 @@ const DoubleClickedText = ({ handleDoubleClickDelete }: { handleDoubleClickDelet
             fontWeight: 'bold',
             color: 'black',
             backgroundColor: 'transparent',
+            borderColor: 'transparent',
             borderRadius: '10px',
           }}
         />
