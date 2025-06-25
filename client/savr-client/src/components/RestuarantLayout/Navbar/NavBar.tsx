@@ -4,7 +4,8 @@ import Drawer from '@mui/joy/Drawer';
 import Button from '@mui/joy/Button';
 import Snackbar from '@mui/material/Snackbar';
 import Avatar from '@mui/joy/Avatar';
-const NavBar = ({restaurantCardData, addChair, isChairPressed, setIsChairPressed, addTable, isTablePressed, setIsTablePressed, saveLayout}: {restaurantCardData: any, addChair: () => void, isChairPressed: boolean, setIsChairPressed: (isChairPressed: boolean) => void, addTable: () => void, isTablePressed: boolean, setIsTablePressed: (isTablePressed: boolean) => void, saveLayout: () => void}) => {
+import IconButton from '@mui/joy/IconButton';
+const NavBar = ({restaurantCardData, addChair, isChairPressed, setIsChairPressed, addTable, isTablePressed, setIsTablePressed, saveLayout}: {restaurantCardData: any, addChair: () => void, isChairPressed: boolean, setIsChairPressed: (isChairPressed: boolean) => void, addTable: (shape:string) => void, isTablePressed: boolean, setIsTablePressed: (isTablePressed: boolean) => void, saveLayout: () => void}) => {
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer =
@@ -25,6 +26,7 @@ const NavBar = ({restaurantCardData, addChair, isChairPressed, setIsChairPressed
     <>
       <Box
         sx={{
+          height: '60px',
           width: '100%',
           display: 'flex',
           alignItems: 'center',
@@ -67,15 +69,20 @@ const NavBar = ({restaurantCardData, addChair, isChairPressed, setIsChairPressed
           Save Layout
         </Button>
     
-        <Box sx={{ width: 120 }} />
       </Box>
-      <Drawer open={open} onClose={toggleDrawer(false)}>
+      <Drawer open={open} onClose={toggleDrawer(false)}
+      size = "sm"
+      sx={{
+        width: '300px',
+      }}
+  
+    >
         <Box
           role="presentation"
           sx={{
-            minWidth: 260,
             bgcolor: 'background.body',
             height: '100%',
+            width: '100%',
             boxShadow: 3,
             borderRadius: 2,
             p: 2,
@@ -92,9 +99,9 @@ const NavBar = ({restaurantCardData, addChair, isChairPressed, setIsChairPressed
            
           </Box>
 
-          <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <Box sx={{ width: '90%', display: 'flex', flexDirection: 'column', gap: 2 }}> 
             <Button
-              onClick={() => addChair()}
+              onClick={() => addTable("circle")}
               variant="soft"
               color="primary"
               sx={{
@@ -112,10 +119,11 @@ const NavBar = ({restaurantCardData, addChair, isChairPressed, setIsChairPressed
               }}
               fullWidth
             >
-              Add Chair
+              Add Round Table
             </Button>
+
             <Button
-              onClick={() => addTable()}
+              onClick={() => addTable("rectangle")}
               variant="soft"
               color="primary"
               sx={{
@@ -155,7 +163,27 @@ const NavBar = ({restaurantCardData, addChair, isChairPressed, setIsChairPressed
             >
               Add Table 2nd option 
             </Button>
-
+            <Button
+  onClick={() => addTable("pentagon")}
+  variant="soft"
+  color="primary"
+  sx={{
+    borderRadius: 3,
+    fontWeight: 500,
+    fontSize: 16,
+    boxShadow: 1,
+    transition: 'all 0.2s',
+    '&:hover': {
+      bgcolor: 'primary.solidBg',
+      color: 'white',
+      boxShadow: 3,
+      transform: 'translateY(-2px) scale(1.03)',
+    },
+  }}
+  fullWidth
+>
+  Add Pentagon Table
+</Button>
             <Button
               variant="soft"
               color="primary"

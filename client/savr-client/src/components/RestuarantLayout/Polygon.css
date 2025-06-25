@@ -1,0 +1,9 @@
+.pentagon-shape {
+  clip-path: polygon(
+    50% 0%,    /* top center */
+    100% 38%,  /* right upper */
+    82% 100%,  /* right lower */
+    18% 100%,  /* left lower */
+    0% 38%     /* left upper */
+  );
+}
