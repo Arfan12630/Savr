@@ -89,6 +89,19 @@ def image_to_RAG_chunks(image_url):
 #         chunks = image_to_RAG_chunks(image_url)
 
 #         return chunks  
+def process_imagesRags_in_parallel(image_urls, max_workers=80):
+    results = []
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_url = {executor.submit(image_to_RAG_chunks, url): url for url in image_urls}
+        for future in as_completed(future_to_url):
+            url = future_to_url[future]
+            try:
+                chunks = future.result()
+                results.append({"chunks": chunks})
+            except Exception as exc:
+                print(f"{url} generated an exception: {exc}")
+                results.append({ "chunks": []})
+    return results
 
 def embedding_chunks(chunks):
     texts = []
@@ -114,19 +127,6 @@ def embedding_chunks(chunks):
         print(f"❌ Error embedding chunks: {e}")
         return []
 
-def process_imagesRags_in_parallel(image_urls, max_workers=80):
-    results = []
-    with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        future_to_url = {executor.submit(image_to_RAG_chunks, url): url for url in image_urls}
-        for future in as_completed(future_to_url):
-            url = future_to_url[future]
-            try:
-                chunks = future.result()
-                results.append({"chunks": chunks})
-            except Exception as exc:
-                print(f"{url} generated an exception: {exc}")
-                results.append({ "chunks": []})
-    return results
 
 def clean_metadata(metadata):
     # Remove keys with None values or replace with empty string
@@ -134,39 +134,65 @@ def clean_metadata(metadata):
     # Or, to remove keys with None values entirely:
     # return {k: v for k, v in metadata.items() if v is not None}
 
-# === Main execution ===
 
 
 def rag_embeddings(image_urls):
     images = process_imagesRags_in_parallel(image_urls)
+
     for image in images:
-        print("Image:")
+        print("\n📸 Image result:")
         print(image["chunks"])
+
         embeddings = embedding_chunks(image["chunks"])
-        # Update the 'embeddings' field in each chunk:
         for emb_item in embeddings:
             emb = emb_item["embedding"]
             chunk = emb_item["chunk"]
-            chunk["embeddings"] = emb  # Update the existing field
-    pinecone_records = []
-    for i, chunk in enumerate(image["chunks"]):
-        record_id = chunk.get("name")
-        print(record_id)
-        fetched = index.fetch(ids=[record_id])
-        if record_id and fetched.vectors:  # only true if the ID exists
-            print(f"Duplicate found: {record_id}, skipping.")
-            continue
-        else:
-            embedding = chunk["embeddings"]
-            metadata = {k: v for k, v in chunk.items() if k != "embeddings"}
-            metadata = clean_metadata(metadata)
+            chunk["embeddings"] = emb  # Update in-place
+
+        pinecone_records = []
+
+        for i, chunk in enumerate(image["chunks"]):
+            record_id = chunk.get("name", chunk.get("text", f"item-{i}"))
+            if not record_id:
+                print(f"⚠️ Skipping item {i}: no valid record ID.")
+                continue
+
+            embedding = chunk.get("embeddings", [])
+            if not embedding:
+                print(f"⚠️ Skipping {record_id}: empty embedding.")
+                continue
+
+            try:
+                fetched = index.fetch(ids=[record_id])
+            except Exception as e:
+                print(f"❌ Error fetching {record_id}: {e}")
+                continue
+
+            if fetched.vectors:
+                print(f"🔁 Duplicate found: {record_id}, skipping.")
+                continue
+
+            metadata = clean_metadata({k: v for k, v in chunk.items() if k != "embeddings"})
+
             pinecone_records.append({
                 "id": record_id,
                 "values": embedding,
                 "metadata": metadata
             })
-            if pinecone_records:
-                index.upsert(vectors=pinecone_records)
-                print(f"Upserted {len(pinecone_records)} records to Pinecone.")
-    
 
+            # Temporary debug: upsert immediately
+            if len(pinecone_records) >= 1:
+                try:
+                    index.upsert(vectors=pinecone_records)
+                    print(f"✅ Upserted {len(pinecone_records)} records to Pinecone.")
+                except Exception as e:
+                    print(f"❌ Upsert failed: {e}")
+                pinecone_records = []
+
+        # Final flush
+        if pinecone_records:
+            try:
+                index.upsert(vectors=pinecone_records)
+                print(f"✅ Final upsert: {len(pinecone_records)} records.")
+            except Exception as e:
+                print(f"❌ Final upsert failed: {e}")
