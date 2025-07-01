@@ -5,6 +5,8 @@ import table from '../../assets/Dining_Table_Image_Horizontal-removebg-preview.p
 import ReservationModal from '../RestuarantViewLayout/ReservationModal';
 import DoubleClickedText from './DoubleClickedText';
 import Box from '@mui/joy/Box';
+import List from './List';
+import DoorSlidingOutlinedIcon from '@mui/icons-material/DoorSlidingOutlined';
 const TableLayout = ({
   restaurantCardData,
   onDelete,
@@ -122,7 +124,7 @@ const TableLayout = ({
     top: 0,
     width: size.width,
     height: size.height,
-    borderRadius: 0,
+    borderRadius: 12,
     border: selected ? '2px solid #ff9800' : '2.5px solid #274b8f',
     boxShadow: selected ? '0 0 8px #ff9800' : '0 4px 16px rgba(57, 115, 219, 0.10)',
     background: reserved ? '#ff9800' : 'white',
@@ -139,15 +141,66 @@ const TableLayout = ({
   if (shape == 'circle') {
     tableStyle.borderRadius = '50%';
   }
+  if (shape == 'Door') {
+    tableStyle.background = reserved ? '#ff9800' : 'rgb(82, 86, 93)'
+  }
+  if(shape == 'Kitchen') {
+    tableStyle.background = reserved ? '#ff9800' : 'rgb(185, 188, 194)'
+    tableStyle.borderRadius = 12
+  }
+  if(shape == 'Patio-Area') {
+    tableStyle.background = reserved ? '#ff9800' : 'rgb(185, 188, 194)'
+    tableStyle.overflow = 'hidden'
+  }
+
+  if(shape == 'Editable-Area') {
+    tableStyle.background = reserved ? '#ff9800' : 'rgb(185, 188, 194)'
+    tableStyle.overflow = 'hidden'
+    tableStyle.borderRadius = 0
+    tableStyle.border = 'none'
+  }
+  const [rightClick, setRightClick] = React.useState(false);
+  const [contextMenu, setContextMenu] = React.useState<{
+    x: number;
+    y: number;
+  } | null>(null);
+ 
+ const menuRef = React.useRef<HTMLUListElement>(null);
+  React.useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setContextMenu(null); // close the menu
+      }
+    };
+  
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [contextMenu]);
+  
+
   const handleDoubleClickDelete = () => {
     setShowText(true);
   }
+ // Right Click functionality
 
+  const contextMenuRef = React.useRef<HTMLUListElement>(null);
+  const handleRightClick = (e: React.MouseEvent) => {
+
+    console.log('right click', e)
+    e.preventDefault()
+    setContextMenu({
+      x: e.nativeEvent.offsetX,
+      y: e.nativeEvent.offsetY,
+    })
+  }
   return (
     <div
       ref={setNodeRef}
       style={tableStyle}
       {...attributes}
+      
 
       onMouseEnter={() => {
         setHovered(true);
@@ -158,12 +211,17 @@ const TableLayout = ({
         setResizeOnly(false);
         setShowDelete(false);
       }}
-      onContextMenu={handleContextMenu}
+      onClick={handleContextMenu}
       onDoubleClick ={ () => {
         setShowText(true)
         setDoubleClicked(true)
       }}
+    onContextMenu = {handleRightClick}
     >
+
+{contextMenu && (
+  <List contextMenu={contextMenu} setContextMenu={setContextMenu}/>
+)}
       <Box
       sx={{
  
@@ -179,8 +237,6 @@ const TableLayout = ({
         fontWeight: 'bold',
         color: 'black',
         borderRadius: 0,
-        
-
       }}
       > 
       {doubleClicked && showText && (
@@ -190,7 +246,8 @@ const TableLayout = ({
         }} />
       )}
       </Box>
- 
+
+
       <div {...listeners} style={{
         width: '100%',
         height: '100%',
@@ -198,6 +255,42 @@ const TableLayout = ({
         alignItems: 'center',
         justifyContent: 'center',
       }}>
+            {shape === 'Door' && (
+       <DoorSlidingOutlinedIcon
+         sx={{
+           position: 'absolute',
+           top: 0,
+           left: 0,
+           width: '100%',
+           height: '100%',
+         }}
+       />
+      )}
+
+      {shape === "Kitchen" && (
+      
+          
+        <img src={"https://www.shutterstock.com/image-vector/kitchen-icon-design-260nw-1066631165.jpg"} style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          borderRadius: 12,
+        }} />
+      )}
+
+      {shape === "Patio" && (
+        <img src={"https://static.vecteezy.com/system/resources/previews/017/325/866/non_2x/bar-counter-table-icon-simple-cafe-pub-vector.jpg"} style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'red',
+        }} />
+      )}
+
         {viewOnly && (
           <>
             <div

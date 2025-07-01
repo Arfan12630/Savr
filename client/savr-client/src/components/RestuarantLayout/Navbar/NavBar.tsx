@@ -5,7 +5,7 @@ import Button from '@mui/joy/Button';
 import Snackbar from '@mui/material/Snackbar';
 import Avatar from '@mui/joy/Avatar';
 import IconButton from '@mui/joy/IconButton';
-const NavBar = ({restaurantCardData, addChair, isChairPressed, setIsChairPressed, addTable, isTablePressed, setIsTablePressed, saveLayout}: {restaurantCardData: any, addChair: () => void, isChairPressed: boolean, setIsChairPressed: (isChairPressed: boolean) => void, addTable: (shape:string) => void, isTablePressed: boolean, setIsTablePressed: (isTablePressed: boolean) => void, saveLayout: () => void}) => {
+const NavBar = ({style,restaurantCardData, addChair, isChairPressed, setIsChairPressed, addTable, isTablePressed, setIsTablePressed, saveLayout}: {style: React.CSSProperties, restaurantCardData: any, addChair: () => void, isChairPressed: boolean, setIsChairPressed: (isChairPressed: boolean) => void, addTable: (shape:string) => void, isTablePressed: boolean, setIsTablePressed: (isTablePressed: boolean) => void, saveLayout: () => void}) => {
   const [open, setOpen] = React.useState(false);
 
   const toggleDrawer =
@@ -25,6 +25,7 @@ const NavBar = ({restaurantCardData, addChair, isChairPressed, setIsChairPressed
   return (
     <>
       <Box
+        style={style}
         sx={{
           height: '60px',
           width: '100%',
@@ -143,28 +144,9 @@ const NavBar = ({restaurantCardData, addChair, isChairPressed, setIsChairPressed
             >
               Add Table
             </Button>
+          
             <Button
-              variant="soft"
-              color="primary"
-              sx={{
-                borderRadius: 3,
-                fontWeight: 500,
-                fontSize: 16,
-                boxShadow: 1,
-                transition: 'all 0.2s',
-                '&:hover': {
-                  bgcolor: 'primary.solidBg',
-                  color: 'white',
-                  boxShadow: 3,
-                  transform: 'translateY(-2px) scale(1.03)',
-                },
-              }}
-              fullWidth
-            >
-              Add Table 2nd option 
-            </Button>
-            <Button
-  onClick={() => addTable("pentagon")}
+  onClick={() => addTable("Door")}
   variant="soft"
   color="primary"
   sx={{
@@ -182,28 +164,112 @@ const NavBar = ({restaurantCardData, addChair, isChairPressed, setIsChairPressed
   }}
   fullWidth
 >
-  Add Pentagon Table
+  Add Entrance
 </Button>
-            <Button
-              variant="soft"
-              color="primary"
-              sx={{
-                borderRadius: 3,
-                fontWeight: 500,
-                fontSize: 16,
-                boxShadow: 1,
-                transition: 'all 0.2s',
-                '&:hover': {
-                  bgcolor: 'primary.solidBg',
-                  color: 'white',
-                  boxShadow: 3,
-                  transform: 'translateY(-2px) scale(1.03)',
-                },
-              }}
-              fullWidth
-            >
-              Add Round Table
-            </Button>
+         
+<Button
+  onClick={() => addTable("Kitchen")}
+  variant="soft"
+  color="primary"
+  sx={{
+    borderRadius: 3,
+    fontWeight: 500,
+    fontSize: 16,
+    boxShadow: 1,
+    transition: 'all 0.2s',
+    '&:hover': {
+      bgcolor: 'primary.solidBg',
+      color: 'white',
+      boxShadow: 3,
+      transform: 'translateY(-2px) scale(1.03)',
+    },
+  }}
+  fullWidth
+>
+  Add Kitchen
+</Button>
+
+
+
+<Button
+  onClick={() => addTable("Patio")}
+  variant="soft"
+  color="primary"
+  sx={{
+    borderRadius: 3,
+    fontWeight: 500,
+    fontSize: 16,
+    boxShadow: 1,
+    transition: 'all 0.2s',
+    '&:hover': {
+      bgcolor: 'primary.solidBg',
+      color: 'white',
+      boxShadow: 3,
+      transform: 'translateY(-2px) scale(1.03)',
+    },
+  }}
+  fullWidth
+>
+  Add Patio
+</Button>
+
+
+<Button
+  onClick={() => addTable("Patio-Area")}
+  variant="soft"
+  color="primary"
+  sx={{
+    borderRadius: 3,
+    fontWeight: 500,
+    fontSize: 16,
+    boxShadow: 1,
+    transition: 'all 0.2s',
+    '&:hover': {
+      bgcolor: 'primary.solidBg',
+      color: 'white',
+      boxShadow: 3,
+      transform: 'translateY(-2px) scale(1.03)',
+    },
+  }}
+  fullWidth
+>
+  Add Patio Area 
+</Button>
+
+
+<Button
+  onClick={() => addTable("Editable-Area")}
+  variant="soft"
+  color="primary"
+  sx={{
+    borderRadius: 3,
+    fontWeight: 500,
+    fontSize: 16,
+    boxShadow: 1,
+    transition: 'all 0.2s',
+    '&:hover': {
+      bgcolor: 'primary.solidBg',
+      color: 'white',
+      boxShadow: 3,
+      transform: 'translateY(-2px) scale(1.03)',
+    },
+  }}
+  fullWidth
+>
+  Add Editable Area
+</Button>
+
+
+
+
+
+
+
+
+
+
+
+
           </Box>
         </Box>
         <Snackbar
