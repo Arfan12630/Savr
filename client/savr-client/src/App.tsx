@@ -13,6 +13,7 @@ import RestuarantMenuImageUpload from './components/RestuarantEntry/RestuarantMe
 import MenuDisplay from './components/MenuDisplay/MenuDisplay';
 import MenuCardDisplay from './components/MenuDisplay/MenuCardDisplay';
 import PolygonTest from './components/RestuarantLayout/PolygonTest';
+import SignIn from './components/LoginFunctionality/SignIn';
 function App() {
   return (
     <Router>
@@ -38,6 +39,10 @@ function App() {
           element={
               <ViewRestaurantLayout />
           }
+        />
+        <Route
+          path="/sign-in"
+          element={<SignIn />}
         />
         <Route
           path="/restaurant-display"
