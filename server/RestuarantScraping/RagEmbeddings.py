@@ -15,7 +15,7 @@ import cv2
 import numpy as np
 import threading
 pinecone_api_key = os.environ.get("PINECONE_API_KEY")
-pc = Pinecone(api_key="")
+pc = Pinecone(api_key=pinecone_api_key)
 index = pc.Index("savr")
 
 
@@ -75,13 +75,13 @@ def image_to_RAG_chunks(image_url):
         try:
             menu_chunks = json.loads(content)
         except json.JSONDecodeError:
-            print("⚠️ GPT-4o response could not be parsed as JSON.")
+            print("GPT-4o response could not be parsed as JSON.")
             print(content)
             return []
         return menu_chunks
 
     except Exception as e:
-        print(f"❌ Error processing {image_url}: {e}")
+        print(f"Error processing {image_url}: {e}")
         return []
 
 # def image_to_RAG_chunks_with_retry(image_url, retries=5):
@@ -124,7 +124,7 @@ def embedding_chunks(chunks):
             for chunk, emb in zip(chunks, embeddings)
         ]
     except Exception as e:
-        print(f"❌ Error embedding chunks: {e}")
+        print(f"Error embedding chunks: {e}")
         return []
 
 
@@ -140,7 +140,7 @@ def rag_embeddings(image_urls):
     images = process_imagesRags_in_parallel(image_urls)
 
     for image in images:
-        print("\n📸 Image result:")
+        print("\n Image result:")
         print(image["chunks"])
 
         embeddings = embedding_chunks(image["chunks"])
@@ -154,22 +154,22 @@ def rag_embeddings(image_urls):
         for i, chunk in enumerate(image["chunks"]):
             record_id = chunk.get("name", chunk.get("text", f"item-{i}"))
             if not record_id:
-                print(f"⚠️ Skipping item {i}: no valid record ID.")
+                print(f"Skipping item {i}: no valid record ID.")
                 continue
 
             embedding = chunk.get("embeddings", [])
             if not embedding:
-                print(f"⚠️ Skipping {record_id}: empty embedding.")
+                print(f"Skipping {record_id}: empty embedding.")
                 continue
 
             try:
                 fetched = index.fetch(ids=[record_id])
             except Exception as e:
-                print(f"❌ Error fetching {record_id}: {e}")
+                print(f"Error fetching {record_id}: {e}")
                 continue
 
             if fetched.vectors:
-                print(f"🔁 Duplicate found: {record_id}, skipping.")
+                print(f"Duplicate found: {record_id}, skipping.")
                 continue
 
             metadata = clean_metadata({k: v for k, v in chunk.items() if k != "embeddings"})
@@ -184,15 +184,15 @@ def rag_embeddings(image_urls):
             if len(pinecone_records) >= 1:
                 try:
                     index.upsert(vectors=pinecone_records)
-                    print(f"✅ Upserted {len(pinecone_records)} records to Pinecone.")
+                    print(f"Upserted {len(pinecone_records)} records to Pinecone.")
                 except Exception as e:
-                    print(f"❌ Upsert failed: {e}")
+                    print(f" Upsert failed: {e}")
                 pinecone_records = []
 
         # Final flush
         if pinecone_records:
             try:
                 index.upsert(vectors=pinecone_records)
-                print(f"✅ Final upsert: {len(pinecone_records)} records.")
+                print(f"Final upsert: {len(pinecone_records)} records.")
             except Exception as e:
-                print(f"❌ Final upsert failed: {e}")
+                print(f" Final upsert failed: {e}")
