@@ -14,6 +14,7 @@ import MenuDisplay from './components/MenuDisplay/MenuDisplay';
 import MenuCardDisplay from './components/MenuDisplay/MenuCardDisplay';
 import PolygonTest from './components/RestuarantLayout/PolygonTest';
 import SignIn from './components/LoginFunctionality/SignIn';
+import SignUp from './components/LoginFunctionality/SignUp';
 function App() {
   return (
     <Router>
@@ -43,6 +44,10 @@ function App() {
         <Route
           path="/sign-in"
           element={<SignIn />}
+        />
+        <Route
+          path="/sign-up"
+          element={<SignUp />}
         />
         <Route
           path="/restaurant-display"

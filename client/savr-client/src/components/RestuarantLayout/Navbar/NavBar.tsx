@@ -33,7 +33,8 @@ const NavBar = ({style,restaurantCardData, addChair, isChairPressed, setIsChairP
           alignItems: 'center',
           justifyContent: 'space-between',
           bgcolor: '#ede7f6', // light background, optional
-          borderBottom: '2px solid #512da8', // underline, optional
+          borderBottom: '2px solidrgb(3, 1, 10)', // underline, optional
+          color: 'white',
           px: 3,
           py: 2,
         }}

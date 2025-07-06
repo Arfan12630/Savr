@@ -1,19 +1,19 @@
 import React, { useState, useRef } from 'react';
 import { DndContext, useDroppable } from '@dnd-kit/core';
 import { data, useLocation } from 'react-router-dom';
-
+import ChairLayout from './ChairLayout';
 import NavBar from './Navbar/NavBar';
 import Snackbar from '@mui/material/Snackbar';
 import TableLayout from './TableLayout';
 import axios from 'axios';
-import List from './List';
-import Box from '@mui/joy/Box';
-const HEADER_HEIGHT = 100; // Adjust as needed
+import './Resize.css'
+import WashroomLayout from './WashroomLayout';
+import KitchenLayout from './KitchenLayout';
+
+const HEADER_HEIGHT = 60; // Adjust as needed
 const CHAIR_SIZE = 40;
-const TABLE_WIDTH = 70;
-const TABLE_HEIGHT = 70;
-const CONTAINER_WIDTH = 1900;
-const CONTAINER_HEIGHT = 900;
+const TABLE_WIDTH = 40;
+const TABLE_HEIGHT = 40;
 
 function isOverlapping(
   x1: number, y1: number, w1: number, h1: number,
@@ -27,10 +27,8 @@ function isOverlapping(
   );
 }
 
-const DroppableArea = () => {
+const RestuarantLayoutPlan = () => {
   const location = useLocation();
-  const restaurantCardData = location.state;
- 
   const { setNodeRef, isOver } = useDroppable({
     id: 'droppable-area',
   });
@@ -50,21 +48,20 @@ const DroppableArea = () => {
   } | null>(null);
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-
-
- 
+  const [dragDelta, setDragDelta] = useState<{ x: number; y: number } | null>(null);
+  const [activeDragId, setActiveDragId] = useState<string | null>(null);
+  const [washrooms, setWashrooms] = useState<{ id: string; x: number; y: number; rotation: number; width: number; height: number; shape: string }[]>([]);
+  const [kitchens, setKitchens] = useState<{ id: string; x: number; y: number; rotation: number; width: number; height: number; shape: string }[]>([]);
+  const [doors, setDoors] = useState<{ id: string; x: number; y: number; rotation: number; width: number; height: number; shape: string }[]>([]);
+  const degtoRad = (deg: number) => {
+    return (deg/180)*Math.PI;
+  }
   const handleDragEnd = (event: any) => {
     const { active, delta } = event;
 
     // If the dragged item is selected, move all selected items of the same type
     if (selectedIds.includes(active.id)) {
-      setChairs((prev) =>
-        prev.map((chair) =>
-          selectedIds.includes(chair.id)
-            ? { ...chair, x: chair.x + delta.x, y: chair.y + delta.y }
-            : chair
-        )
-      );
+    
       setTables((prev) =>
         prev.map((table) =>
           selectedIds.includes(table.id)
@@ -79,11 +76,8 @@ const DroppableArea = () => {
     setChairs((prev) =>
       prev.map((chair) => {
         if (chair.id === active.id) {
-          let newX = chair.x + delta.x;
-          let newY = chair.y + delta.y;
-          // Restrict to bounds
-          newX = Math.max(0, Math.min(newX, CONTAINER_WIDTH - chair.width));
-          newY = Math.max(HEADER_HEIGHT, Math.min(newY, CONTAINER_HEIGHT - chair.height));
+          const newX = chair.x + delta.x;
+          const newY = chair.y + delta.y;
           if (newY < HEADER_HEIGHT) {
             setTouchedBoundary(true);
             return chair;
@@ -116,15 +110,12 @@ const DroppableArea = () => {
     setTables((prev) => 
       prev.map((table) => {
         if (table.id === active.id) {
-          let newX = table.x + delta.x;
-          let newY = table.y + delta.y;
-          // Restrict to bounds
-          // newX = Math.max(0, Math.min(newX, CONTAINER_WIDTH - table.width +50));
-          // newY = Math.max(HEADER_HEIGHT, Math.min(newY, CONTAINER_HEIGHT - table.height + 50));
-          // if (newY >= HEADER_HEIGHT) {
-          //   setTouchedBoundary(true);
-          //   return table;
-          // }
+          const newX = table.x + delta.x;
+          const newY = table.y + delta.y;
+          if (newY == HEADER_HEIGHT) {
+            setTouchedBoundary(true);
+            return table;
+          }
           const overlapWithTables = tables.some(
             (t) =>
               t.id !== table.id &&
@@ -148,6 +139,33 @@ const DroppableArea = () => {
         }
         return table;
       })
+    );
+
+    // Washrooms
+    setWashrooms((prev) =>
+      prev.map((washroom) =>
+        washroom.id === active.id
+          ? { ...washroom, x: washroom.x + delta.x, y: washroom.y + delta.y }
+          : washroom
+      )
+    );
+
+    // Kitchens
+    setKitchens((prev) =>
+      prev.map((kitchen) =>
+        kitchen.id === active.id
+          ? { ...kitchen, x: kitchen.x + delta.x, y: kitchen.y + delta.y }
+          : kitchen
+      )
+    );
+
+    // Doors
+    setDoors((prev) =>
+      prev.map((door) =>
+        door.id === active.id
+          ? { ...door, x: door.x + delta.x, y: door.y + delta.y }
+          : door
+      )
     );
   };
 
@@ -184,6 +202,18 @@ const DroppableArea = () => {
   const deleteChair = (id: string) => {
     setChairs((prev) => prev.filter((chair) => chair.id !== id));
   };
+  const style: React.CSSProperties = {
+    width: '100vw',
+    height: '100vh',
+    background: '#e9f1fa', // light blue/gray
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    overflow: 'hidden',
+    boxShadow: '0 2px 12px rgba(0,0,0,0.04)',
+    borderRadius: 16,
+    border: '1.5px solid #d0e2f2',
+  };
 
   const deleteTable = (id: string) => {
     setTables((prev) => prev.filter((table) => table.id !== id));
@@ -191,33 +221,7 @@ const DroppableArea = () => {
 
   const saveLayout = () => {
 
-    //TODO: Add a restuarant Name to the layout when we scrape 
-    const layout = {
-      chairs: [...chairs],
-      tables: [...tables]
-    }
-    console.log(layout)
-    axios({
-      method: 'post',
-      url: 'http://127.0.0.1:5000/save-layout',
-      data: {
-        layout,
-        restaurantCardData
-      },
-      headers: {
-        'Content-Type': 'application/json'
-      }
-    })
-    
-    .then((response) => {
-      console.log(data)
-
-      console.log(response)
-    })
-    .catch((error) => {
-      console.error('Error saving layout:', error);
-    });
-
+  
   }
 
   const rotateTable = (id: string) => {
@@ -287,54 +291,31 @@ const DroppableArea = () => {
     }
   };
 
-  
-  const containerStyle: React.CSSProperties = {
-    width: '100vw',
-    height: '100vh',
-    background: 'linear-gradient(120deg, #f6d365 0%, #fda085 100%)',
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    overflow: 'auto',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+  const addWashroom = () => {
+    setWashrooms(prev => [
+      ...prev,
+      { id: crypto.randomUUID(), x: 100 + prev.length * 30, y: 100, rotation: 0, width: 40, height: 40, shape: 'rectangle' }
+    ]);
   };
 
-  const dragAreaStyle: React.CSSProperties = {
-    width: CONTAINER_WIDTH,
-    height: CONTAINER_HEIGHT,
-    background: 'rgb(208, 212, 229)',
-    borderRadius: '24px',
-    boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
-    border: '1.5px solid rgba(255,255,255,0.18)',
-    position: 'relative',
-    overflow: 'hidden',
-    backdropFilter: 'blur(6px)',
-    WebkitBackdropFilter: 'blur(6px)',
-    marginTop: '80px',
+  const addKitchen = () => {
+    setKitchens(prev => [
+      ...prev,
+      { id: crypto.randomUUID(), x: 100 + prev.length * 30, y: 100, rotation: 0, width: 40, height: 40, shape: 'rectangle' }
+    ]);
   };
 
-  const navBarStyle: React.CSSProperties = {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    width: '100vw',
-    zIndex: 100,
-    background: 'rgba(210, 197, 238, 0.95)',
-    boxShadow: '0 2px 8px rgba(57, 115, 219, 0.10)',
-    borderBottom: '1.5px solid #bdbdfc',
-    padding: '0.5rem 2rem',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+  const addDoor = () => {
+    setDoors(prev => [
+      ...prev,
+      { id: crypto.randomUUID(), x: 100 + prev.length * 30, y: 100, rotation: 0, width: 40, height: 40, shape: 'rectangle' }
+    ]);
   };
 
   return (
     <DndContext onDragEnd={handleDragEnd}>
-      <div style={containerStyle}>
-        <NavBar 
-          restaurantCardData={restaurantCardData.restaurantCardData} 
+          {/* <NavBar 
+          restaurantCardData={() => {}} 
           addChair={addChair}
           isChairPressed={isChairPressed} 
           setIsChairPressed={setIsChairPressed} 
@@ -343,61 +324,106 @@ const DroppableArea = () => {
           setIsTablePressed={setIsTablePressed} 
           saveLayout={saveLayout}
           style={navBarStyle}
-        />
-        <div
-          ref={setNodeRef}
-          style={dragAreaStyle}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-      >
-         {tables.map((table) => (
-    <TableLayout
-    restaurantCardData={restaurantCardData}
-      viewOnly={false}
-      key={table.id}
-      id={table.id}
-      position={{ x: table.x, y: table.y }}
-      rotation={table.rotation}
-      onDelete={deleteTable}
-      onRotate={rotateTable}
-      selected={selectedIds.includes(table.id)}
-      width={table.width}
-      height={table.height}
-      onResize={updateTableSize} 
-      shape={table.shape}
-    />
-  ))}
-
-          {touchedBoundary && (
-            <Snackbar
-              open={touchedBoundary}
-              autoHideDuration={4000}
-              onClose={() => setTouchedBoundary(false)}
-              message="Can't place object there!"
-              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            />
-          )}
          
-          {selectionBox && selectionBox.active && (
-            <div
-              style={{
-                position: 'fixed',
-                left: Math.min(selectionBox.startX, selectionBox.endX),
-                top: Math.min(selectionBox.startY, selectionBox.endY),
-                width: Math.abs(selectionBox.endX - selectionBox.startX),
-                height: Math.abs(selectionBox.endY - selectionBox.startY),
-                background: 'rgba(100, 149, 237, 0.2)',
-                border: '1.5px solid #3973db',
-                zIndex: 1000,
-                pointerEvents: 'none',
-              }}
-            />
-          )}
-        </div>
+         
+        /> */}
+        
+        
+      <div
+        ref={setNodeRef}
+        style={style}
+        className="droppable-area"
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+      >
+    
+      
+       {tables.map((table) => (
+  <TableLayout
+  restaurantCardData={() => {}}
+    viewOnly={false}
+    key={table.id}
+    id={table.id}
+    position={{ x: table.x, y: table.y }}
+    rotation={table.rotation}
+    onDelete={deleteTable}
+    onRotate={rotateTable}
+    selected={selectedIds.includes(table.id)}
+    width={table.width}
+    height={table.height}
+    onResize={() => {}}
+    shape={table.shape}
+  />
+))}
+
+        {washrooms.map((washroom) => (
+          <WashroomLayout
+            key={washroom.id}
+            id={washroom.id}
+            position={{ x: washroom.x, y: washroom.y }}
+            rotation={washroom.rotation}
+            onDelete={id => setWashrooms(prev => prev.filter(w => w.id !== id))}
+            onRotate={id => setWashrooms(prev => prev.map(w => w.id === id ? { ...w, rotation: (w.rotation + 90) % 360 } : w))}
+            selected={selectedIds.includes(washroom.id)}
+            width={washroom.width}
+            height={washroom.height}
+            onResize={(id, width, height) => setWashrooms(prev => prev.map(w => w.id === id ? { ...w, width, height } : w))}
+            shape={washroom.shape}
+            viewOnly={false}
+          />
+        ))}
+
+        {kitchens.map((kitchen) => (
+          <KitchenLayout
+            key={kitchen.id}
+            id={kitchen.id}
+            position={{ x: kitchen.x, y: kitchen.y }}
+            rotation={kitchen.rotation}
+            onDelete={id => setKitchens(prev => prev.filter(k => k.id !== id))}
+            onRotate={id => setKitchens(prev => prev.map(k => k.id === id ? { ...k, rotation: (k.rotation + 90) % 360 } : k))}
+            selected={selectedIds.includes(kitchen.id)}
+            width={kitchen.width}
+            height={kitchen.height}
+            onResize={(id, width, height) => setKitchens(prev => prev.map(k => k.id === id ? { ...k, width, height } : k))}
+            shape={kitchen.shape}
+            viewOnly={false}
+          />
+        ))}
+
+        
+
+        {touchedBoundary && (
+          <Snackbar
+            open={touchedBoundary}
+            autoHideDuration={4000}
+            onClose={() => setTouchedBoundary(false)}
+            message="Can't place object there!"
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+          />
+        )}
+       
+        {selectionBox && selectionBox.active && (
+          <div
+            style={{
+              position: 'fixed',
+              left: Math.min(selectionBox.startX, selectionBox.endX),
+              top: Math.min(selectionBox.startY, selectionBox.endY),
+              width: Math.abs(selectionBox.endX - selectionBox.startX),
+              height: Math.abs(selectionBox.endY - selectionBox.startY),
+              background: 'rgba(100, 149, 237, 0.2)',
+              border: '1.5px solid #3973db',
+              zIndex: 1000,
+              pointerEvents: 'none',
+            }}
+          />
+        )}
       </div>
+  
+   
+      
     </DndContext>
   );
 };
 
-export default DroppableArea;
+export default RestuarantLayoutPlan;
