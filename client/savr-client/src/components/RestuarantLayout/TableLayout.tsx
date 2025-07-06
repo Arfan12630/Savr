@@ -124,8 +124,9 @@ const TableLayout = ({
     top: 0,
     width: size.width,
     height: size.height,
-    borderRadius: 12,
-    border: selected ? '2px solid #ff9800' : '2.5px solid #274b8f',
+    borderRadius: 4,
+    // border: selected ? '2px solid #ff9800' : '2.5px solid #274b8f',
+    border:selected ? '2px solid #ff9800' : '1px solid black',
     boxShadow: selected ? '0 0 8px #ff9800' : '0 4px 16px rgba(57, 115, 219, 0.10)',
     background: reserved ? '#ff9800' : 'white',
     display: 'flex',
@@ -135,7 +136,7 @@ const TableLayout = ({
     userSelect: 'none',
     transform: CSS.Translate.toString(finalTransform) + ` rotate(${rotation}deg)`,
     transition: isActuallyDragging
-      ? 'transform 0.15s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s, border 0.2s, background 0.2s'
+      ? 'box-shadow 0.2s, border 0.2s, background 0.2s'
       : 'transform 0.35s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s, border 0.2s, background 0.2s',
   };
   if (shape == 'circle') {
@@ -219,7 +220,7 @@ const TableLayout = ({
     onContextMenu = {handleRightClick}
     >
 
-{contextMenu && (
+{!viewOnly && contextMenu && (
   <List contextMenu={contextMenu} setContextMenu={setContextMenu}/>
 )}
       <Box

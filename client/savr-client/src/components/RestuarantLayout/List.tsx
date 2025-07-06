@@ -14,16 +14,19 @@ export default function SizesList({contextMenu, setContextMenu}: {contextMenu: {
     }}>
     <Box
       sx={{
-        backgroundColor: 'white',
         position: 'absolute',
         top: contextMenu.y,
         left: contextMenu.x,
-  
-        color: 'white',
-        padding: '10px',
-        borderRadius: '6px',
-        listStyle: 'none',
-        zIndex: 999,
+        minWidth: '220px',
+        backgroundColor: 'white',
+        borderRadius: '10px',
+        padding: '8px 0',
+        boxShadow: '0px 4px 16px rgba(0, 0, 0, 0.12)',
+        border: '1px solid #e0e0e0',
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '14px',
+        color: '#2e2e2e',
+        zIndex: 1000,
       }}
     >
         

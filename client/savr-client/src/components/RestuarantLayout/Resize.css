@@ -1,0 +1,14 @@
+.droppable-area {
+    width: 80vw;         /* or a fixed px value */
+    height: 80vh;        /* or a fixed px value */
+    max-width: 1200vw;   /* optional */
+    max-height: 100vh;   /* optional */
+    margin: 52px auto;   /* center on page */
+    margin-right:auto;
+    background: #e9f1fa;
+    border-radius: 16px;
+    border: 2px solid #d0e2f2;
+    position: relative;
+    overflow: auto;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+  }

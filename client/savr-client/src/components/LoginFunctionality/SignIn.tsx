@@ -61,12 +61,6 @@ const SignIn: React.FC = () => {
       
   return (
 
-
-
-
-
-
-
     <CssVarsProvider theme={customTheme} disableTransitionOnChange>
     <CssBaseline />
     <GlobalStyles
