@@ -1,233 +1,259 @@
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
-import CssBaseline from '@mui/material/CssBaseline';
-import Divider from '@mui/material/Divider';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormLabel from '@mui/material/FormLabel';
-import FormControl from '@mui/material/FormControl';
-import Link from '@mui/material/Link';
-import TextField from '@mui/material/TextField';
-import Typography from '@mui/material/Typography';
-import Stack from '@mui/material/Stack';
-import MuiCard from '@mui/material/Card';
-import { styled, ThemeProvider, createTheme } from '@mui/material/styles';
-import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import { CssVarsProvider, extendTheme, useColorScheme } from '@mui/joy/styles';
+import GlobalStyles from '@mui/joy/GlobalStyles';
+import CssBaseline from '@mui/joy/CssBaseline';
+import Box from '@mui/joy/Box';
+import Button from '@mui/joy/Button';
+import Checkbox from '@mui/joy/Checkbox';
+import Divider from '@mui/joy/Divider';
+import FormControl from '@mui/joy/FormControl';
+import FormLabel from '@mui/joy/FormLabel';
+import IconButton, { IconButtonProps } from '@mui/joy/IconButton';
+import Link from '@mui/joy/Link';
+import Input from '@mui/joy/Input';
+import Typography from '@mui/joy/Typography';
+import Stack from '@mui/joy/Stack';
+import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
+import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
+import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
+import GoogleIcon from '../LoginFunctionality/GoogleIcon';
+import { useNavigate } from 'react-router-dom';
 
+const SignUp: React.FC = () => {
+  const navigate = useNavigate();
 
-const Card = styled(MuiCard)(({ theme }) => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignSelf: 'center',
-  width: '100%',
-  padding: theme.spacing(4),
-  gap: theme.spacing(2),
-  margin: 'auto',
-  boxShadow:
-    'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
-  [theme.breakpoints.up('sm')]: {
-    width: '450px',
-  },
-  ...theme.applyStyles('dark', {
-    boxShadow:
-      'hsla(220, 30%, 5%, 0.5) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.08) 0px 15px 35px -5px',
-  }),
-}));
+  interface FormElements extends HTMLFormControlsCollection {
+    name: HTMLInputElement;
+    email: HTMLInputElement;
+    password: HTMLInputElement;
+    confirmPassword: HTMLInputElement;
+    terms: HTMLInputElement;
+  }
+  interface SignUpFormElement extends HTMLFormElement {
+    readonly elements: FormElements;
+  }
+  function ColorSchemeToggle(props: IconButtonProps) {
+    const { onClick, ...other } = props;
+    const { mode, setMode } = useColorScheme();
+    const [mounted, setMounted] = React.useState(false);
+    React.useEffect(() => setMounted(true), []);
 
-const SignUpContainer = styled(Stack)(({ theme }) => ({
-  height: 'calc((1 - var(--template-frame-height, 0)) * 100dvh)',
-  minHeight: '100%',
-  padding: theme.spacing(2),
-  [theme.breakpoints.up('sm')]: {
-    padding: theme.spacing(4),
-  },
-  '&::before': {
-    content: '""',
-    display: 'block',
-    position: 'absolute',
-    zIndex: -1,
-    inset: 0,
-    backgroundImage:
-      'radial-gradient(ellipse at 50% 50%, hsl(210, 100%, 97%), hsl(0, 0%, 100%))',
-    backgroundRepeat: 'no-repeat',
-    ...theme.applyStyles('dark', {
-      backgroundImage:
-        'radial-gradient(at 50% 50%, hsla(210, 100%, 16%, 0.5), hsl(220, 30%, 5%))',
-    }),
-  },
-}));
+    return (
+      <IconButton
+        aria-label="toggle light/dark mode"
+        size="sm"
+        variant="outlined"
+        disabled={!mounted}
+        onClick={(event) => {
+          setMode(mode === 'light' ? 'dark' : 'light');
+          onClick?.(event);
+        }}
+        {...other}
+      >
+        {mode === 'light' ? <DarkModeRoundedIcon /> : <LightModeRoundedIcon />}
+      </IconButton>
+    );
+  }
 
-export default function SignUp(props: { disableCustomTheme?: boolean }) {
-  const [emailError, setEmailError] = React.useState(false);
-  const [emailErrorMessage, setEmailErrorMessage] = React.useState('');
-  const [passwordError, setPasswordError] = React.useState(false);
-  const [passwordErrorMessage, setPasswordErrorMessage] = React.useState('');
-  const [nameError, setNameError] = React.useState(false);
-  const [nameErrorMessage, setNameErrorMessage] = React.useState('');
-
-  const validateInputs = () => {
-    const email = document.getElementById('email') as HTMLInputElement;
-    const password = document.getElementById('password') as HTMLInputElement;
-    const name = document.getElementById('name') as HTMLInputElement;
-
-    let isValid = true;
-
-    if (!email.value || !/\S+@\S+\.\S+/.test(email.value)) {
-      setEmailError(true);
-      setEmailErrorMessage('Please enter a valid email address.');
-      isValid = false;
-    } else {
-      setEmailError(false);
-      setEmailErrorMessage('');
+  const customTheme = extendTheme({
+    colorSchemes: {
+      dark: {
+        palette: {}
+      }
     }
-
-    if (!password.value || password.value.length < 6) {
-      setPasswordError(true);
-      setPasswordErrorMessage('Password must be at least 6 characters long.');
-      isValid = false;
-    } else {
-      setPasswordError(false);
-      setPasswordErrorMessage('');
-    }
-
-    if (!name.value || name.value.length < 1) {
-      setNameError(true);
-      setNameErrorMessage('Name is required.');
-      isValid = false;
-    } else {
-      setNameError(false);
-      setNameErrorMessage('');
-    }
-
-    return isValid;
-  };
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    if (nameError || emailError || passwordError) {
-      event.preventDefault();
-      return;
-    }
-    const data = new FormData(event.currentTarget);
-    console.log({
-      name: data.get('name'),
-      lastName: data.get('lastName'),
-      email: data.get('email'),
-      password: data.get('password'),
-    });
-  };
+  });
 
   return (
-    <ThemeProvider theme={createTheme()}>
-      <CssBaseline enableColorScheme />
-      <SignUpContainer direction="column" justifyContent="space-between">
-        <Card variant="outlined">
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', mb: 1 }}>
-            <PersonAddAlt1Icon sx={{ fontSize: 48, color: '#3973db' }} />
-          </Box>
-          <Typography
-            component="h1"
-            variant="h4"
-            sx={{ width: '100%', fontSize: 'clamp(2rem, 10vw, 2.15rem)' }}
-          >
-            Sign up
-          </Typography>
+    <CssVarsProvider theme={customTheme} disableTransitionOnChange>
+      <CssBaseline />
+      <GlobalStyles
+        styles={{
+          ':root': {
+            '--Form-maxWidth': '800px',
+            '--Transition-duration': '0.4s',
+          },
+        }}
+      />
+      <Box
+        sx={(theme) => ({
+          width: { xs: '100%', md: '50vw' },
+          transition: 'width var(--Transition-duration)',
+          transitionDelay: 'calc(var(--Transition-duration) + 0.1s)',
+          position: 'relative',
+          zIndex: 1,
+          display: 'flex',
+          justifyContent: 'flex-end',
+          backdropFilter: 'blur(12px)',
+          backgroundColor: 'rgba(255 255 255 / 0.2)',
+          [theme.getColorSchemeSelector('dark')]: {
+            backgroundColor: 'rgba(19 19 24 / 0.4)',
+          },
+        })}
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            minHeight: '100dvh',
+            width: '100%',
+            px: 2,
+          }}
+        >
           <Box
-            component="form"
-            onSubmit={handleSubmit}
-            sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+            component="header"
+            sx={{ py: 3, display: 'flex', justifyContent: 'space-between' }}
           >
-            <FormControl>
-              <FormLabel htmlFor="name">Full name</FormLabel>
-              <TextField
-                autoComplete="name"
-                name="name"
-                required
-                fullWidth
-                id="name"
-                placeholder="Jon Snow"
-                error={nameError}
-                helperText={nameErrorMessage}
-                color={nameError ? 'error' : 'primary'}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="email">Email</FormLabel>
-              <TextField
-                required
-                fullWidth
-                id="email"
-                placeholder="your@email.com"
-                name="email"
-                autoComplete="email"
-                variant="outlined"
-                error={emailError}
-                helperText={emailErrorMessage}
-                color={passwordError ? 'error' : 'primary'}
-              />
-            </FormControl>
-            <FormControl>
-              <FormLabel htmlFor="password">Password</FormLabel>
-              <TextField
-                required
-                fullWidth
-                name="password"
-                placeholder="••••••"
-                type="password"
-                id="password"
-                autoComplete="new-password"
-                variant="outlined"
-                error={passwordError}
-                helperText={passwordErrorMessage}
-                color={passwordError ? 'error' : 'primary'}
-              />
-            </FormControl>
-            <FormControlLabel
-              control={<Checkbox value="allowExtraEmails" color="primary" />}
-              label="I want to receive updates via email."
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              onClick={validateInputs}
-            >
-              Sign up
-            </Button>
+            <Box sx={{ gap: 2, display: 'flex', alignItems: 'center' }}>
+              <IconButton variant="soft" color="primary" size="sm">
+                <BadgeRoundedIcon />
+              </IconButton>
+              <Typography level="title-lg">Company logo</Typography>
+            </Box>
+            <ColorSchemeToggle />
           </Box>
-          <Divider>
-            <Typography sx={{ color: 'text.secondary' }}>or</Typography>
-          </Divider>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign up with Google')}
-            //   startIcon={<GoogleIcon />}
-            >
-              Sign up with Google
-            </Button>
-            <Button
-              fullWidth
-              variant="outlined"
-              onClick={() => alert('Sign up with Facebook')}
-              //startIcon={<FacebookIcon />}
-            >
-              Sign up with Facebook
-            </Button>
-            <Typography sx={{ textAlign: 'center' }}>
-              Already have an account?{' '}
-              <Link
-                href="/material-ui/getting-started/templates/sign-in/"
-                variant="body2"
-                sx={{ alignSelf: 'center' }}
+          <Box
+            component="main"
+            sx={{
+              my: 'auto',
+              py: 2,
+              pb: 5,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+              width: 400,
+              maxWidth: '100%',
+              mx: 'auto',
+              borderRadius: 'sm',
+              '& form': {
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 2,
+              },
+              [`& .MuiFormLabel-asterisk`]: {
+                visibility: 'hidden',
+              },
+            }}
+          >
+            <Stack sx={{ gap: 4, mb: 2 }}>
+              <Stack sx={{ gap: 1 }}>
+                <Typography component="h1" level="h3">
+                  Sign up
+                </Typography>
+                <Typography level="body-sm">
+                  Already  an account?{' '}
+                  <Link href="#replace-with-signin-link" level="title-sm">
+                    Sign in!
+                  </Link>
+                </Typography>
+              </Stack>
+              <Button
+                variant="soft"
+                color="neutral"
+                fullWidth
+                startDecorator={<GoogleIcon />}
               >
-                Sign in
-              </Link>
+                Continue with Google
+              </Button>
+            </Stack>
+            <Divider
+              sx={(theme) => ({
+                [theme.getColorSchemeSelector('light')]: {
+                  color: { xs: '#FFF', md: 'text.tertiary' },
+                },
+              })}
+            >
+              or
+            </Divider>
+            <Stack sx={{ gap: 4, mt: 2 }}>
+              <form
+                onSubmit={(event: React.FormEvent<SignUpFormElement>) => {
+                  event.preventDefault();
+                  const formElements = event.currentTarget.elements;
+                  const data = {
+                    name: formElements.name.value,
+                    email: formElements.email.value,
+                    password: formElements.password.value,
+                    confirmPassword: formElements.confirmPassword.value,
+                    terms: formElements.terms.checked,
+                  };
+                  navigate('/role-selection');
+
+                  if (data.password !== data.confirmPassword) {
+                    alert("Passwords do not match!");
+                    return;
+                  }
+                 
+                  
+                }}
+                
+              >
+                <FormControl required>
+                  <FormLabel>Name</FormLabel>
+                  <Input type="text" name="name" />
+                </FormControl>
+                <FormControl required>
+                  <FormLabel>Email</FormLabel>
+                  <Input type="email" name="email" />
+                </FormControl>
+                <FormControl required>
+                  <FormLabel>Password</FormLabel>
+                  <Input type="password" name="password" />
+                </FormControl>
+                <FormControl required>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <Input type="password" name="confirmPassword" />
+                </FormControl>
+                <Stack sx={{ gap: 4, mt: 2 }}>
+                  <Box
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <Checkbox size="sm" name="terms" required />
+                    <Typography level="body-sm" sx={{ ml: 1 }}>
+                      I agree to the terms and conditions
+                    </Typography>
+                  </Box>
+                  <Button type="submit" fullWidth>
+                    Sign up
+                  </Button>
+                </Stack>
+              </form>
+            </Stack>
+          </Box>
+          <Box component="footer" sx={{ py: 3 }}>
+            <Typography level="body-xs" sx={{ textAlign: 'center' }}>
+              © Your company {new Date().getFullYear()}
             </Typography>
           </Box>
-        </Card>
-      </SignUpContainer>
-    </ThemeProvider>
+        </Box>
+      </Box>
+      <Box
+        sx={(theme) => ({
+          height: '100%',
+          position: 'fixed',
+          right: 0,
+          top: 0,
+          bottom: 0,
+          left: { xs: 0, md: '50vw' },
+          transition:
+            'background-image var(--Transition-duration), left var(--Transition-duration) !important',
+          transitionDelay: 'calc(var(--Transition-duration) + 0.1s)',
+          backgroundColor: 'background.level1',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundImage:
+            'url(https://images.unsplash.com/photo-1527181152855-fc03fc7949c8?auto=format&w=1000&dpr=2)',
+          [theme.getColorSchemeSelector('dark')]: {
+            backgroundImage:
+              'url(https://images.unsplash.com/photo-1572072393749-3ca9c8ea0831?auto=format&w=1000&dpr=2)',
+          },
+        })}
+      />
+    </CssVarsProvider>
   );
-}
+};
+
+export default SignUp;

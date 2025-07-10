@@ -14,7 +14,8 @@ import MenuDisplay from './components/MenuDisplay/MenuDisplay';
 import MenuCardDisplay from './components/MenuDisplay/MenuCardDisplay';
 import PolygonTest from './components/RestuarantLayout/PolygonTest';
 import SignIn from './components/LoginFunctionality/SignIn';
-import SignUp from './components/LoginFunctionality/SignUp';
+import SignUp from './components/SignUpFunctionality/SignUp';
+import RoleSelection from './components/SignUpFunctionality/RoleSelection';
 function App() {
   return (
     <Router>
@@ -26,6 +27,7 @@ function App() {
         <Route path="owner/restaurant-entry/menu-image-upload" element={<RestuarantMenuImageUpload />} />
         {/* <Route path="/menu-display" element={<MenuDisplay />} /> */}
         <Route path="/menu-card-display" element={<MenuCardDisplay />} />
+        <Route path="/role-selection" element={<RoleSelection />} />
 <Route path="/polygon-test" element={<PolygonTest label="Kitchen" top={100} left={100} width={300} height={200}  />} />
         <Route
           path="/edit"
