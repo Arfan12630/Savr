@@ -19,6 +19,11 @@ import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
 import GoogleIcon from './GoogleIcon';
 
 const SignIn: React.FC = () => {
+
+//Add Regex logic and stuff here boy
+
+
+
     interface FormElements extends HTMLFormControlsCollection {
         email: HTMLInputElement;
         password: HTMLInputElement;

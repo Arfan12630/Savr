@@ -176,7 +176,7 @@ const SignUp: React.FC = () => {
                     confirmPassword: formElements.confirmPassword.value,
                     terms: formElements.terms.checked,
                   };
-                  navigate('/role-selection');
+                  navigate('/role-selection', { state: { data: data } });
 
                   if (data.password !== data.confirmPassword) {
                     alert("Passwords do not match!");
