@@ -21,6 +21,8 @@ import { useNavigate } from 'react-router-dom';
 
 const SignUp: React.FC = () => {
   const navigate = useNavigate();
+  const [emailError, setEmailError] = React.useState('');
+  const [passwordError, setPasswordError] = React.useState('');
 
   interface FormElements extends HTMLFormControlsCollection {
     name: HTMLInputElement;
@@ -62,6 +64,31 @@ const SignUp: React.FC = () => {
       }
     }
   });
+
+  const validateEmail = (email: string): boolean => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const isValid = emailRegex.test(email);
+    setEmailError(isValid ? '' : 'Please enter a valid email address');
+    return isValid;
+  };
+
+  const validatePassword = (password: string): boolean => {
+    const hasMinLength = password.length >= 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    
+    const isValid = hasMinLength && hasUpperCase && hasLowerCase && hasNumber && hasSpecialChar;
+    
+    if (!isValid) {
+      setPasswordError('Password must be at least 8 characters with uppercase, lowercase, number, and special character');
+    } else {
+      setPasswordError('');
+    }
+    
+    return isValid;
+  };
 
   return (
     <CssVarsProvider theme={customTheme} disableTransitionOnChange>
@@ -176,16 +203,21 @@ const SignUp: React.FC = () => {
                     confirmPassword: formElements.confirmPassword.value,
                     terms: formElements.terms.checked,
                   };
-                  navigate('/role-selection', { state: { data: data } });
+                  
+                  const isEmailValid = validateEmail(data.email);
+                  const isPasswordValid = validatePassword(data.password);
+                  
+                  if (!isEmailValid || !isPasswordValid) {
+                    return;
+                  }
 
                   if (data.password !== data.confirmPassword) {
                     alert("Passwords do not match!");
                     return;
                   }
-                 
                   
+                  navigate('/role-selection', { state: { data: data } });
                 }}
-                
               >
                 <FormControl required>
                   <FormLabel>Name</FormLabel>
@@ -193,11 +225,31 @@ const SignUp: React.FC = () => {
                 </FormControl>
                 <FormControl required>
                   <FormLabel>Email</FormLabel>
-                  <Input type="email" name="email" />
+                  <Input 
+                    type="email" 
+                    name="email" 
+                    onChange={(e) => validateEmail(e.target.value)}
+                    error={!!emailError}
+                  />
+                  {emailError && (
+                    <Typography level="body-xs" color="danger">
+                      {emailError}
+                    </Typography>
+                  )}
                 </FormControl>
                 <FormControl required>
                   <FormLabel>Password</FormLabel>
-                  <Input type="password" name="password" />
+                  <Input 
+                    type="password" 
+                    name="password" 
+                    onChange={(e) => validatePassword(e.target.value)}
+                    error={!!passwordError}
+                  />
+                  {passwordError && (
+                    <Typography level="body-xs" color="danger">
+                      {passwordError}
+                    </Typography>
+                  )}
                 </FormControl>
                 <FormControl required>
                   <FormLabel>Confirm Password</FormLabel>
