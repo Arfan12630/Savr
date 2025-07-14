@@ -16,6 +16,7 @@ import PolygonTest from './components/RestuarantLayout/PolygonTest';
 import SignIn from './components/LoginFunctionality/SignIn';
 import SignUp from './components/SignUpFunctionality/SignUp';
 import RoleSelection from './components/SignUpFunctionality/RoleSelection';
+import GoogleAuth from './components/LoginFunctionality/GoogleAuth';
 function App() {
   return (
     <Router>
@@ -28,6 +29,7 @@ function App() {
         {/* <Route path="/menu-display" element={<MenuDisplay />} /> */}
         <Route path="/menu-card-display" element={<MenuCardDisplay />} />
         <Route path="/role-selection" element={<RoleSelection />} />
+        <Route path="/google-auth" element={<GoogleAuth />} />
 <Route path="/polygon-test" element={<PolygonTest label="Kitchen" top={100} left={100} width={300} height={200}  />} />
         <Route
           path="/edit"

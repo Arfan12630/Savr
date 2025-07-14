@@ -14,10 +14,17 @@ services:
       - FLASK_ENV=development
 
   frontend:
-    build: ./client/savr-client
+    # For development, use a simpler approach that supports hot reloading
+    image: node:18
     container_name: savr-frontend
+    working_dir: /app
+    volumes:
+      - ./client/savr-client:/app
     ports:
-      - "3000:80"
+      - "3000:3000"
+    environment:
+      - WATCHPACK_POLLING=true
+    command: sh -c "npm install && npm start"
     depends_on:
       - backend
     env_file:
