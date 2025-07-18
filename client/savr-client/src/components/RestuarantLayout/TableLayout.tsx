@@ -7,6 +7,7 @@ import DoubleClickedText from './DoubleClickedText';
 import Box from '@mui/joy/Box';
 import List from './List';
 import DoorSlidingOutlinedIcon from '@mui/icons-material/DoorSlidingOutlined';
+import DetailsModal from './DetailsModal';
 const TableLayout = ({
   restaurantCardData,
   onDelete,
@@ -51,6 +52,13 @@ const TableLayout = ({
 
   // -- Reserving State ---
   const [reserved, setReserved] = React.useState(false);
+
+
+// --- Add Details State ---
+const [clickedAddDetails, setClickedAddDetails] = React.useState(false);
+const[clickedContextMenu, setClickedContextMenu] =React.useState<{ x: number; y: number } | null>(null);
+
+
 
   // --- Reservation Modal State ---
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -195,6 +203,7 @@ const TableLayout = ({
       x: e.nativeEvent.offsetX,
       y: e.nativeEvent.offsetY,
     })
+   
   }
   return (
     <div
@@ -220,9 +229,26 @@ const TableLayout = ({
     onContextMenu = {handleRightClick}
     >
 
-{!viewOnly && contextMenu && (
-  <List contextMenu={contextMenu} setContextMenu={setContextMenu}/>
+
+
+
+
+
+{!viewOnly && contextMenu && !doubleClicked && (
+  <List onAddDetails={() => setClickedAddDetails(true)} contextMenu={contextMenu} setContextMenu={setContextMenu}/>
 )}
+{clickedAddDetails && (
+  <DetailsModal
+    open={clickedAddDetails}
+    onClose={() => setClickedAddDetails(false)}
+    onReserve={() => {
+      console.log("reserved from TableLayout");
+    }}
+    addDetails={true}
+  />
+)}
+
+
       <Box
       sx={{
  
@@ -240,7 +266,7 @@ const TableLayout = ({
         borderRadius: 0,
       }}
       > 
-      {doubleClicked && showText && (
+      {doubleClicked && showText && !clickedAddDetails && (
         <DoubleClickedText handleDoubleClickDelete={()=>{
           setShowText(false)
           setDoubleClicked(false)
