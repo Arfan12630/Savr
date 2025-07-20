@@ -234,7 +234,7 @@ const[clickedContextMenu, setClickedContextMenu] =React.useState<{ x: number; y:
 
 
 
-{!viewOnly && contextMenu && !doubleClicked && (
+{!viewOnly && contextMenu &&  (
   <List onAddDetails={() => setClickedAddDetails(true)} contextMenu={contextMenu} setContextMenu={setContextMenu}/>
 )}
 {clickedAddDetails && (
@@ -266,7 +266,7 @@ const[clickedContextMenu, setClickedContextMenu] =React.useState<{ x: number; y:
         borderRadius: 0,
       }}
       > 
-      {doubleClicked && showText && !clickedAddDetails && (
+      {doubleClicked && showText && (
         <DoubleClickedText handleDoubleClickDelete={()=>{
           setShowText(false)
           setDoubleClicked(false)
