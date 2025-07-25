@@ -181,10 +181,11 @@ def get_restaurants():
         # Extract restaurant and city from user input
         chatdata = chatbot_response(function_scheme(), input_text)
         
-        if not hasattr(chatdata.choices[0].message, 'function_call'):
+        # Check if function_call exists in the response
+        if not hasattr(chatdata.choices[0].message, 'function_call') or chatdata.choices[0].message.function_call is None:
             return jsonify({
                 "status": "invalid",
-                "message": "Could not extract restaurant and city information from your message. Please try again."
+                "message": "Could not understand your request. Please try again with more details about restaurant, city, party size, and time."
             })
             
         args_str = chatdata.choices[0].message.function_call.arguments

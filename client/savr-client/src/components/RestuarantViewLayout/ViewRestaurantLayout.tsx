@@ -74,6 +74,12 @@ const ViewRestaurantLayout: React.FC = () => {
             height={table.height}
             onResize={() => {}}
             shape={table.shape}
+            description={table.description}
+            maxPartySizeRange={table.maxPartySizeRange}
+            updateTableDetails={() => {}}
+            tableNumberforTable={table.tableNumber}
+            updateTableNumber={() => {}}
+           
           />
         ))}
       </div>

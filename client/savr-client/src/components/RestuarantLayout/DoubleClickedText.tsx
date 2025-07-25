@@ -2,8 +2,15 @@ import React, { useState } from "react";
 import Textarea from '@mui/joy/Textarea';
 import Box from '@mui/joy/Box';
 
-const DoubleClickedText = ({ handleDoubleClickDelete }: { handleDoubleClickDelete: () => void }) => {
+const DoubleClickedText = ({ handleDoubleClickDelete, tableNumber, setTableNumber, handleTableNumberSubmit }:
+  
+  { handleDoubleClickDelete: () => void,
+    tableNumber:string,
+    setTableNumber: (tableNumber:string) => void,
+    handleTableNumberSubmit: (tableNumber:string) => void
+  }) => {
   const [isHovered, setIsHovered] = useState(false);
+ 
 
   return (
     <div
@@ -44,6 +51,9 @@ const DoubleClickedText = ({ handleDoubleClickDelete }: { handleDoubleClickDelet
             borderColor: 'transparent',
             borderRadius: '10px',
           }}
+          value={tableNumber}
+          onChange={(e) => setTableNumber(e.target.value)}
+          onBlur={() => handleTableNumberSubmit(tableNumber)}
         />
       </Box>
       {isHovered && (

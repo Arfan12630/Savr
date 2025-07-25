@@ -36,7 +36,7 @@ const DroppableArea = () => {
   });
   const [touchedBoundary, setTouchedBoundary] = useState(false);
   const [chairs, setChairs] = useState<{ id: string; x: number; y: number, rotation: number, width: number, height: number }[]>([]);
-  const [tables, setTables] = useState<{ id: string; x: number; y: number; rotation: number, height: number, width: number, shape: string }[]>([]);
+  const [tables, setTables] = useState<{ id: string; x: number; y: number; rotation: number, height: number, width: number, shape: string, description: string, maxPartySizeRange: string, tableNumber: string }[]>([]);
   const [isChairPressed, setIsChairPressed] = useState(false);
 
   const [isTablePressed, setIsTablePressed] = useState(false);
@@ -162,7 +162,7 @@ const DroppableArea = () => {
   const addTable = (shape:string) => {
     setTables((prev) => [
       ...prev,
-      { id: crypto.randomUUID(), x: 100 + prev.length * 30, y: 100, rotation: 0, height: TABLE_HEIGHT, width: TABLE_WIDTH, shape: shape}
+      { id: crypto.randomUUID(), x: 100 + prev.length * 30, y: 100, rotation: 0, height: TABLE_HEIGHT, width: TABLE_WIDTH, shape: shape, description: "", maxPartySizeRange: "", tableNumber: ""}
     ]);
     setIsTablePressed(true);
   };
@@ -171,6 +171,21 @@ const DroppableArea = () => {
     setTables(prev =>
       prev.map(table =>
         table.id === id ? { ...table, width, height } : table
+      )
+    );
+  };
+
+  const updateTableDetails = (id: string, description: string, maxPartySizeRange: string) => {
+    setTables(prev =>
+      prev.map(table =>
+        table.id === id ? { ...table, description, maxPartySizeRange } : table
+      )
+    );
+  };
+  const updateTableNumber = (id: string, tableNumber: string) => {
+    setTables(prev =>
+      prev.map(table =>
+        table.id === id ? { ...table, tableNumber } : table
       )
     );
   };
@@ -364,8 +379,14 @@ const DroppableArea = () => {
       selected={selectedIds.includes(table.id)}
       width={table.width}
       height={table.height}
+      description={table.description}
+      maxPartySizeRange={table.maxPartySizeRange}
       onResize={updateTableSize} 
       shape={table.shape}
+      updateTableDetails = {updateTableDetails}
+      tableNumberforTable={table.tableNumber}
+      updateTableNumber={updateTableNumber}
+    
     />
   ))}
 
