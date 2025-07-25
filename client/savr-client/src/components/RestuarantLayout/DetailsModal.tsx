@@ -15,19 +15,14 @@ const DetailsModal: React.FC<{
   onClose: () => void;
   onReserve: () => void;
   addDetails?: boolean;
-}> = ({ open, onClose, onReserve, addDetails }) => {
+  onSubmitDetails: (formData:{description:string, maxPartySizeRange:string}) => void;
+}> = ({ open, onClose, onReserve, addDetails, onSubmitDetails }) => {
   const [formData, setFormData] = React.useState({
     description: '',
     maxPartySizeRange: '',
   });
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log("Form submitted!", formData);
-
-    onReserve();
-    onClose(); 
-  };
+ 
 
   return (
     <Modal open={open} onClose={onClose}>
@@ -62,6 +57,7 @@ const DetailsModal: React.FC<{
         e.preventDefault();                   
         console.log("Finish clicked");      
         console.log("Form submitted", formData);
+        onSubmitDetails(formData)
         onReserve();                           
         onClose();                             
       }}

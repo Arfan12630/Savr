@@ -21,6 +21,12 @@ const TableLayout = ({
   height,
   onResize,
   shape,
+  description,
+  maxPartySizeRange,
+  updateTableDetails,
+  tableNumberforTable,
+  updateTableNumber
+
 }: {
   restaurantCardData: any,
   onDelete: (id: string) => void,
@@ -34,6 +40,11 @@ const TableLayout = ({
   height: number,
   onResize: (id: string, width: number, height: number) => void,
   shape: string,
+  description: string,
+  maxPartySizeRange: string,
+  updateTableDetails: (id: string, description: string, maxPartySizeRange: string) => void,
+  tableNumberforTable: string,
+  updateTableNumber: (id: string, tableNumber: string) => void,
 }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
@@ -58,7 +69,7 @@ const TableLayout = ({
 const [clickedAddDetails, setClickedAddDetails] = React.useState(false);
 const[clickedContextMenu, setClickedContextMenu] =React.useState<{ x: number; y: number } | null>(null);
 
-
+const [tableNumber, setTableNumber] = React.useState('');
 
   // --- Reservation Modal State ---
   const [modalOpen, setModalOpen] = React.useState(false);
@@ -205,6 +216,14 @@ const[clickedContextMenu, setClickedContextMenu] =React.useState<{ x: number; y:
     })
    
   }
+
+  const handleDetailsSubmit = (formData:{description:string, maxPartySizeRange:string}) => {
+    console.log("formData", formData)
+    updateTableDetails(id, formData.description, formData.maxPartySizeRange)
+  }
+  const handleTableNumberSubmit = (tableNumber: string) => {
+    updateTableNumber(id, tableNumber)
+  }
   return (
     <div
       ref={setNodeRef}
@@ -245,6 +264,8 @@ const[clickedContextMenu, setClickedContextMenu] =React.useState<{ x: number; y:
       console.log("reserved from TableLayout");
     }}
     addDetails={true}
+    onSubmitDetails={handleDetailsSubmit}
+
   />
 )}
 
@@ -270,7 +291,16 @@ const[clickedContextMenu, setClickedContextMenu] =React.useState<{ x: number; y:
         <DoubleClickedText handleDoubleClickDelete={()=>{
           setShowText(false)
           setDoubleClicked(false)
-        }} />
+       
+        }}
+        tableNumber={tableNumber}
+        setTableNumber={setTableNumber}
+        handleTableNumberSubmit={handleTableNumberSubmit}
+       
+        
+        
+        
+        />
       )}
       </Box>
 
