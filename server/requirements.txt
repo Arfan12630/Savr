@@ -30,6 +30,7 @@ decorator
 distro
 dnspython
 dotenv
+dateparser==1.1.8
 einops
 et_xmlfile
 exceptiongroup
