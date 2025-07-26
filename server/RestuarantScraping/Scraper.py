@@ -13,8 +13,11 @@ import requests
 from requests.structures import CaseInsensitiveDict
 from models import db, Restaurant
 import datetime
-from dateutil import parser as date_parser
+#from dateutil import parser as date_parser
+import dateparser
+
 from datetime import datetime, date, time as dt_time
+
 
 load_dotenv()
 
@@ -206,8 +209,11 @@ def get_restaurants():
         # Try to parse the time string
         try:
             now = datetime.now()
-            parsed_time = date_parser.parse(time, default=now)
-            formatted_time = parsed_time.strftime('%Y-%m-%d %H:%M:%S')
+            parsed_time = dateparser.parse(time, settings={'RELATIVE_BASE': now})
+            if parsed_time:
+                formatted_time = parsed_time.strftime('%Y-%m-%d %H:%M:%S')
+            else:
+                formatted_time = time
         except Exception as e:
             print(f"Could not parse time '{time}': {e}")
             formatted_time = time
