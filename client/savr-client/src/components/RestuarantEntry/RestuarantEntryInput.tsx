@@ -4,7 +4,8 @@ const RestuarantEntryInput: React.FC<{
     onSend: (message: any) => void;
     placeholder: string;
     disabled: boolean;
-}> = ({ onSend, placeholder, disabled }) => {
+    showFileInput?: boolean;
+}> = ({ onSend, placeholder, disabled, showFileInput }) => {
     const [message, setMessage] = useState("");
 
     const handleSubmit = () => {
@@ -13,19 +14,38 @@ const RestuarantEntryInput: React.FC<{
         setMessage("");
     };
 
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files.length > 0) {
+            const file = e.target.files[0];
+            console.log("File selected:", file.name, file.type, file.size);
+            onSend(file);
+            e.target.value = "";
+        }
+    };
+
     return (
         <div className="chat-input-container">
-            <button className="icon-button" title="Drop Images or send links">📂 🔗</button>
+            <label className="icon-button" title="Upload Image">
+                📂
+                <input
+                    type="file"
+                    accept="image/*"
+                    style={{ display: "none" }}
+                    onChange={handleFileChange}
+                    disabled={disabled}
+                />
+            </label>
             <input
                 className="chat-input"
                 type="text"
-                placeholder= {placeholder}
+                placeholder={placeholder}
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+                disabled={disabled}
             />
-            <button className="icon-button" title="Voice">🎤</button>
-            <button className="icon-button" title="Send" onClick={handleSubmit}>⬆️</button>
+            <button className="icon-button" title="Voice" disabled={disabled}>🎤</button>
+            <button className="icon-button" title="Send" onClick={handleSubmit} disabled={disabled}>⬆️</button>
         </div>
     );
 };
