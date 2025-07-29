@@ -7,13 +7,13 @@ import CircularProgress from "@mui/joy/CircularProgress";
 import axios from "axios";
 import RestuarantEntryInput from "./RestuarantEntryInput";
 
-const fields = ["restaurant", "city"];
+const fields = ["restaurant", "city", "logo"];
 type Field = (typeof fields)[number];
 
 const RestuarantEntry: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [userMessage, setUserMessage] = useState<string>("");
-  const [inputs, setInputs] = useState<{ [K in Field]?: string }>({});
+  const [inputs, setInputs] = useState<{ [K in Field]?: string | File }>({});
   const [responseMessage, setResponseMessage] = useState<string>("");
   const [cards, setCards] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -25,31 +25,66 @@ const RestuarantEntry: React.FC = () => {
 
   const currentField = fields[currentStep];
 
-  const handleSend = async (value: string) => {
+
+  const processFile = (file: File) => {
+    console.log("Processing file:", file.name, file.type, file.size);
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      const base64DataUrl = e.target?.result;
+      if (typeof base64DataUrl === "string") {
+        console.log("Base64 conversion complete. First 50 chars:");
+        // Store the base64 string as the logo field
+        console.log(base64DataUrl);
+        const updatedInputs = { ...inputs, logo: base64DataUrl };
+        setInputs(updatedInputs);
+
+        setUserMessage("Logo image uploaded");
+        setEntryMessages("");
+        // Now, continue the flow as if all fields are collected
+        // (You may want to send to backend here if this is the last step)
+        // Example:
+        // sendToBackend(updatedInputs);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+
+
+  const handleSend = async (value: string | File) => {
     setIsLoading(true);
+
+    // If we're on the logo step and value is a File, process it
+    if (currentField === "logo" && value instanceof File) {
+      processFile(value);
+      setIsLoading(false);
+      return;
+    }
+
     const updatedInputs = { ...inputs, [currentField]: value };
     setInputs(updatedInputs);
 
-    setUserMessage(value);
+    setUserMessage(value instanceof File ? "Logo file selected" : value);
     setEntryMessages("");
-
-    if (currentStep < fields.length - 1) {
+    if (currentStep < fields.length - 2) {
       setCurrentStep(currentStep + 1);
       setIsLoading(false);
       setResponseMessage(`Please enter ${fields[currentStep + 1]} name`);
     } else {
       // Only send to backend when all fields are collected
       try {
+        
         setResponseMessage("");
-        const response = await axios.post(
-          "http://127.0.0.1:5000/get-address-options",
-          updatedInputs
-        );
-        setResponseMessage(
-          response.data.response ||
-            "Are these addresses correct?, If so which one are you located in?"
-        );
-        setCards(response.data.cards);
+        // const response = await axios.post(
+        //   "http://127.0.0.1:5000/get-address-options",
+        //   updatedInputs
+        // );
+        // setResponseMessage(
+        //   response.data.response ||
+        //     "Are these addresses correct?, If so which one are you located in?"
+        // );
+        setResponseMessage(`Please paste your logo`);
+     //   setCards(response.data.cards);
       } catch (error) {
         setResponseMessage("Error connecting to server. Please try again.");
       } finally {
@@ -207,7 +242,11 @@ const RestuarantEntry: React.FC = () => {
             onSend={handleSend}
             placeholder={`Enter ${currentField}...`}
             disabled={isLoading}
+            showFileInput={currentField == "logo"}
           />
+
+
+          
         </Box>
       </Box>
     </Box>

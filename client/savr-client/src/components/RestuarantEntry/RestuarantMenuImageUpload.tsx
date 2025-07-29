@@ -40,11 +40,9 @@ const RestuarantMenuImageUpload: React.FC = () => {
           image_urls: [base64DataUrl]
         }).then((response) => {
           console.log(response.data);
-          // Add the extracted HTML to our list
           if (response.data.menu_html) {
             setExtractedMenus(prev => [...prev, response.data.menu_html]);
           }
-          // Show confirmation dialog
           setShowConfirmation(true);
         }).catch((error) => {
           console.error("Error extracting menu HTML:", error);
