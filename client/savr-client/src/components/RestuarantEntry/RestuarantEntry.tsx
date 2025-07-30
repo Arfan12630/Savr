@@ -6,8 +6,9 @@ import Typography from "@mui/joy/Typography";
 import CircularProgress from "@mui/joy/CircularProgress";
 import axios from "axios";
 import RestuarantEntryInput from "./RestuarantEntryInput";
+import { createStrictEquality } from "typescript";
 
-const fields = ["restaurant", "city", "logo"];
+const fields = ["restaurant", "city"];
 type Field = (typeof fields)[number];
 
 const RestuarantEntry: React.FC = () => {
@@ -16,12 +17,14 @@ const RestuarantEntry: React.FC = () => {
   const [inputs, setInputs] = useState<{ [K in Field]?: string | File }>({});
   const [responseMessage, setResponseMessage] = useState<string>("");
   const [cards, setCards] = useState<any[]>([]);
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [entryMessages, setEntryMessages] = useState<string>(
     "Please enter the name of the restaurant"
   );
   const [hovered, setHovered] = useState<boolean>(false);
   const navigate = useNavigate();
+  const [showLogoStep, setShowLogoStep] = useState(false);
 
   const currentField = fields[currentStep];
 
@@ -54,37 +57,58 @@ const RestuarantEntry: React.FC = () => {
   const handleSend = async (value: string | File) => {
     setIsLoading(true);
 
-    // If we're on the logo step and value is a File, process it
-    if (currentField === "logo" && value instanceof File) {
-      processFile(value);
-      setIsLoading(false);
+    if (showLogoStep && value instanceof File) {
+      // Handle logo upload
+      const reader = new FileReader();
+      reader.onload = async function (e) {
+        const base64DataUrl = e.target?.result;
+        if (typeof base64DataUrl === "string") {
+          try {
+            const response = await axios.post(
+              "http://127.0.0.1:5000/upload-logo",
+              { ...inputs, logo: base64DataUrl }
+            );
+            console.log(response.data);
+            setCards([response.data])
+            setResponseMessage("Logo uploaded successfully!");
+            
+           
+          } catch (error) {
+            setResponseMessage("Error uploading logo.");
+          } finally {
+            setIsLoading(false);
+
+          }
+        }
+      };
+      setEntryMessages("")
+      reader.readAsDataURL(value);
       return;
     }
 
-    const updatedInputs = { ...inputs, [currentField]: value };
+    // Normal flow for restaurant and city
+    const updatedInputs = { ...inputs, [fields[currentStep]]: value };
     setInputs(updatedInputs);
-
-    setUserMessage(value instanceof File ? "Logo file selected" : value);
     setEntryMessages("");
-    if (currentStep < fields.length - 2) {
+
+    if (currentStep < fields.length - 1) {
       setCurrentStep(currentStep + 1);
       setIsLoading(false);
       setResponseMessage(`Please enter ${fields[currentStep + 1]} name`);
     } else {
-      // Only send to backend when all fields are collected
+      // Send restaurant and city to backend
       try {
-        
         setResponseMessage("");
-        // const response = await axios.post(
-        //   "http://127.0.0.1:5000/get-address-options",
-        //   updatedInputs
-        // );
-        // setResponseMessage(
-        //   response.data.response ||
-        //     "Are these addresses correct?, If so which one are you located in?"
-        // );
-        setResponseMessage(`Please paste your logo`);
-     //   setCards(response.data.cards);
+        const response = await axios.post(
+          "http://127.0.0.1:5000/get-address-options",
+          updatedInputs
+        );
+        console.log(response.data);
+       
+        setShowLogoStep(true); // Now prompt for logo
+        setEntryMessages("Please upload your restaurant logo");
+        
+        
       } catch (error) {
         setResponseMessage("Error connecting to server. Please try again.");
       } finally {
@@ -94,6 +118,7 @@ const RestuarantEntry: React.FC = () => {
   };
 
   const handleCardClick = async (card: any) => {
+    console.log(card);
     setIsLoading(true);
     try {
       const response = await axios.post(
@@ -217,18 +242,28 @@ const RestuarantEntry: React.FC = () => {
                   key={card.name ? card.name + idx : idx}
                   sx={{ mb: 1 }}
                 >
-                  <Typography level="body-md" sx={{ fontWeight: "bold" }}>
-                    {card.name}
-                  </Typography>
-                  <Typography level="body-sm">{card.address}</Typography>
-                  <Typography level="body-xs">{card.hours}</Typography>
-                  {card.logo && (
+                    {card.logo && (
                     <img
                       src={card.logo}
                       alt={card.name}
                       style={{ maxWidth: 50, maxHeight: 50 }}
                     />
                   )}
+                  <Typography level="body-md" sx={{ fontWeight: "bold" }}>
+                    {card.name}
+                  </Typography>
+                  <Typography level="body-sm">{card.address}</Typography>
+                  <Typography level="body-sm">Opening Hours:</Typography>
+                  {Array.isArray(card.opening_hours) ? (
+                    card.opening_hours.map((entry: string, i: number) => (
+                      <Typography level="body-xs" key={i}>
+                        {entry}
+                      </Typography>
+                    ))
+                  ) : (
+                    <Typography level="body-xs">{card.opening_hours}</Typography>
+                  )}
+                
                 </Box>
               ))}
             </Box>
@@ -240,9 +275,13 @@ const RestuarantEntry: React.FC = () => {
         <Box sx={{ mt: 1 }}>
           <RestuarantEntryInput
             onSend={handleSend}
-            placeholder={`Enter ${currentField}...`}
+            placeholder={
+              showLogoStep
+                ? "Upload your logo..."
+                : `Enter ${fields[currentStep]}...`
+            }
             disabled={isLoading}
-            showFileInput={currentField == "logo"}
+            showFileInput={showLogoStep}
           />
 
 

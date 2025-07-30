@@ -11,6 +11,7 @@ const RestuarantMenuImageUpload: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const restaurantCardData = location.state;
+  console.log(restaurantCardData);
   const [isLoading, setIsLoading] = useState(false);
   const [extractedMenus, setExtractedMenus] = useState<string[]>([]);
   const [showConfirmation, setShowConfirmation] = useState(false);
