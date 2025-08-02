@@ -154,7 +154,7 @@ const RestaurantStoreLayout: React.FC = () => {
             {restaurantData.address}
           </Typography>
           <Typography level="body-xs" sx={{ color: '#888' }}>
-            Hours: {restaurantData.hours || 'Not available'}
+            Hours: {restaurantData.Opening_hours || 'Not available'}
           </Typography>
         </CardContent>
       </StyledCard>
