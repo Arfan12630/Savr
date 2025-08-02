@@ -3,7 +3,7 @@ import axios from 'axios';
 import ChairLayout from '../RestuarantLayout/ChairLayout';
 import TableLayout from '../RestuarantLayout/TableLayout';
 import NavBar from '../RestuarantLayout/Navbar/NavBar';
-
+import { useLocation } from 'react-router-dom';
 const CONTAINER_WIDTH = 1900;
 const CONTAINER_HEIGHT = 900;
 
@@ -36,7 +36,13 @@ const viewAreaStyle: React.CSSProperties = {
 
 const ViewRestaurantLayout: React.FC = () => {
   const [layout, setLayout] = useState<{ name: any, chairs: any[]; tables: any[] } | null>(null);
+  const [autoAssignedTable, setAutoAssignedTable] = useState<any>(null);
+  const location = useLocation();
+  const reservationData = location.state?.reservationData 
+  const restaurantInfo = location.state?.restaurantInfo 
 
+  
+  // First useEffect - fetch layout
   useEffect(() => {
     axios.get('http://127.0.0.1:5000/get-layout')
       .then(response => {
@@ -45,23 +51,24 @@ const ViewRestaurantLayout: React.FC = () => {
       .catch(error => console.error('Error fetching layout:', error));
   }, []);
 
-  if (!layout) return <div>Loading...</div>;
+  // Second useEffect - auto assign table
+  useEffect(() => {
+    if (layout && reservationData && restaurantInfo) {
+      axios.get(`http://127.0.0.1:5000/auto-assign-tables?name=${restaurantInfo.name}&address=${restaurantInfo.address}&party_size=${reservationData.party_size}&time=${reservationData.time}&occasion=${reservationData.occasion}`)
+        .then(response => {
+          console.log(response.data)
+          setAutoAssignedTable(response.data)
+        })
+        .catch(error => console.error('Error fetching layout:', error));
+    }
+  }, [reservationData, restaurantInfo, layout]);
 
+  // Render loading state if layout is not yet loaded
+  if (!layout) return <div>Loading...</div>;
+  
   return (
     <div style={containerStyle}>
-      {/* <NavBar
-        restaurantCardData={layout}
-        addChair={() => {}}
-        isChairPressed={false}
-        setIsChairPressed={() => {}}
-        addTable={() => {}}
-        isTablePressed={false}
-        setIsTablePressed={() => {}}
-        saveLayout={() => {}}
-        style={{ marginBottom: 24 }}
-      /> */}
       <div style={viewAreaStyle}>
- 
         {layout.tables.map(table => (
           <TableLayout
             restaurantCardData={layout}
@@ -79,7 +86,8 @@ const ViewRestaurantLayout: React.FC = () => {
             updateTableDetails={() => {}}
             tableNumberforTable={table.tableNumber}
             updateTableNumber={() => {}}
-           
+            // Add this to highlight the assigned table
+            selected={autoAssignedTable && autoAssignedTable.id === table.id}
           />
         ))}
       </div>

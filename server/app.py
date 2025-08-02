@@ -68,6 +68,34 @@ def get_layout():
     else:
         return jsonify({"message": "No layout found"}), 404
 
+@app.route('/auto-assign-tables', methods=['GET'])
+def auto_assign_tables():
+    name = request.args.get('name')
+    address = request.args.get('address')
+    party_size = request.args.get('party_size')
+    time = request.args.get('time')
+    occasion = request.args.get('occasion')
+   
+    layout = Layout.query.filter_by(name=name, address=address).first()
+    if layout:
+        
+
+        for table in layout.tables:
+            party_size_range = table['maxPartySizeRange'].split('-')
+            print(party_size_range)
+            if occasion in table['description'] and int(party_size) >= int(party_size_range[0]) and int(party_size) <= int(party_size_range[1]):
+                print(table['description'])
+                return jsonify({
+                    "id": layout.id,
+                    "name": layout.name,
+                    "address": layout.address,
+                    "tables": table,
+                    "created_at": layout.created_at
+                })
+            else:
+                return jsonify({"message": "Let User choose own table"}), 200
+    else:
+        return jsonify({"message": "No layout found"}), 404
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
