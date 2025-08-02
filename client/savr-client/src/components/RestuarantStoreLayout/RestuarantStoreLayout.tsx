@@ -61,7 +61,7 @@ const RestaurantStoreLayout: React.FC = () => {
 
   const clickedImage = (restaurant: any) => {
     console.log(restaurant)
-    navigate('/view', { state: { restaurantInfo: restaurant } });
+    navigate('/view', { state: { reservationData: reservationData, restaurantInfo: restaurant } });
  
   };
 
