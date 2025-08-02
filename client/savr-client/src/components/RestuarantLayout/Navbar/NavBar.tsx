@@ -5,8 +5,24 @@ import Button from '@mui/joy/Button';
 import Snackbar from '@mui/material/Snackbar';
 import Avatar from '@mui/joy/Avatar';
 import IconButton from '@mui/joy/IconButton';
+import CalendarTodaySharpIcon from '@mui/icons-material/CalendarTodaySharp';
 const NavBar = ({style,restaurantCardData, addChair, isChairPressed, setIsChairPressed, addTable, isTablePressed, setIsTablePressed, saveLayout}: {style: React.CSSProperties, restaurantCardData: any, addChair: () => void, isChairPressed: boolean, setIsChairPressed: (isChairPressed: boolean) => void, addTable: (shape:string) => void, isTablePressed: boolean, setIsTablePressed: (isTablePressed: boolean) => void, saveLayout: () => void}) => {
+  
   const [open, setOpen] = React.useState(false);
+  const [currentDate, setCurrentDate] = React.useState('');
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentDate(
+        new Date().toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric'
+        })
+      );
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const toggleDrawer =
     (inOpen: boolean) => (event: React.KeyboardEvent | React.MouseEvent) => {
@@ -57,7 +73,8 @@ const NavBar = ({style,restaurantCardData, addChair, isChairPressed, setIsChairP
           flex: 1,
           textAlign: 'center'
         }}>
-         {restaurantCardData.name}
+         <CalendarTodaySharpIcon sx={{marginRight: 1}} />
+         {currentDate}
         </h1>
         {/* Empty Box to balance the flex layout, or you can put another button here */}
         <Button sx = {{

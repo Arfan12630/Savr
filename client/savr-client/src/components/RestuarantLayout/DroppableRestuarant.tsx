@@ -12,8 +12,8 @@ const HEADER_HEIGHT = 100; // Adjust as needed
 const CHAIR_SIZE = 40;
 const TABLE_WIDTH = 70;
 const TABLE_HEIGHT = 70;
-const CONTAINER_WIDTH = 1900;
-const CONTAINER_HEIGHT = 900;
+const CONTAINER_WIDTH = 1700;
+const CONTAINER_HEIGHT = 800;
 
 function isOverlapping(
   x1: number, y1: number, w1: number, h1: number,
@@ -30,7 +30,7 @@ function isOverlapping(
 const DroppableArea = () => {
   const location = useLocation();
   const restaurantCardData = location.state;
- 
+  console.log(restaurantCardData)
   const { setNodeRef, isOver } = useDroppable({
     id: 'droppable-area',
   });
@@ -51,6 +51,15 @@ const DroppableArea = () => {
 
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const getContainerSize = () => {
+    const rect = containerRef.current?.getBoundingClientRect();
+    return {
+      width: rect?.width || 0,
+      height: rect?.height || 0,
+    };
+  };
 
  
   const handleDragEnd = (event: any) => {
@@ -76,14 +85,15 @@ const DroppableArea = () => {
     }
 
     // Otherwise, move just the single item as before
+    const { width: containerWidth, height: containerHeight } = getContainerSize();
     setChairs((prev) =>
       prev.map((chair) => {
         if (chair.id === active.id) {
           let newX = chair.x + delta.x;
           let newY = chair.y + delta.y;
           // Restrict to bounds
-          newX = Math.max(0, Math.min(newX, CONTAINER_WIDTH - chair.width));
-          newY = Math.max(HEADER_HEIGHT, Math.min(newY, CONTAINER_HEIGHT - chair.height));
+          newX = Math.max(0, Math.min(newX, containerWidth - chair.width));
+          newY = Math.max(0, Math.min(newY, containerHeight - chair.height));
           if (newY < HEADER_HEIGHT) {
             setTouchedBoundary(true);
             return chair;
@@ -119,8 +129,8 @@ const DroppableArea = () => {
           let newX = table.x + delta.x;
           let newY = table.y + delta.y;
           // Restrict to bounds
-          // newX = Math.max(0, Math.min(newX, CONTAINER_WIDTH - table.width +50));
-          // newY = Math.max(HEADER_HEIGHT, Math.min(newY, CONTAINER_HEIGHT - table.height + 50));
+          newX = Math.max(0, Math.min(newX, containerWidth - table.width));
+          newY = Math.max(0, Math.min(newY, containerHeight - table.height));
           // if (newY >= HEADER_HEIGHT) {
           //   setTouchedBoundary(true);
           //   return table;
@@ -317,8 +327,12 @@ const DroppableArea = () => {
   };
 
   const dragAreaStyle: React.CSSProperties = {
-    width: CONTAINER_WIDTH,
-    height: CONTAINER_HEIGHT,
+    width: '80vw',           // 80% of the viewport width
+    height: '80vh',          // 80% of the viewport height
+    minWidth: 320,           // Minimum width in px
+    minHeight: 320,          // Minimum height in px
+    maxWidth: 1700,          // Maximum width in px (optional)
+    maxHeight: 900,          // Maximum height in px (optional)
     background: 'rgb(208, 212, 229)',
     borderRadius: '24px',
     boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
@@ -327,7 +341,7 @@ const DroppableArea = () => {
     overflow: 'hidden',
     backdropFilter: 'blur(6px)',
     WebkitBackdropFilter: 'blur(6px)',
-    marginTop: '80px',
+    marginTop: '0px',
   };
 
   const navBarStyle: React.CSSProperties = {
@@ -360,7 +374,10 @@ const DroppableArea = () => {
           style={navBarStyle}
         />
         <div
-          ref={setNodeRef}
+          ref={el => {
+            setNodeRef(el);
+            containerRef.current = el;
+          }}
           style={dragAreaStyle}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
