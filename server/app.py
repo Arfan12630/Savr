@@ -45,7 +45,7 @@ def save_layout():
     layout = Layout(id = uuid.uuid4(), 
                     chairs=data['layout']['chairs'], 
                     tables=data['layout']['tables'], 
-                    name=data['restaurantCardData']['restaurantCardData']['name'], 
+                    name=data['restaurantCardData']['restaurantCardData']['restaurant'], 
                     address=data['restaurantCardData']['restaurantCardData']['address'], 
                     created_at=datetime.now())
     

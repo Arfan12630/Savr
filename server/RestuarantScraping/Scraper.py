@@ -11,24 +11,77 @@ from flask_cors import CORS
 import base64
 import requests
 from requests.structures import CaseInsensitiveDict
-from models import db, Restaurant
+from models import db, Restaurant, Restaurant_Entry
 import datetime
 #from dateutil import parser as date_parser
 import dateparser
-
+import selenium
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from datetime import datetime, date, time as dt_time
+import time
+from selenium.webdriver.chrome.service import Service
 
 
 load_dotenv()
 
 openai_api_key = os.environ.get("OPENAI_API_KEY")
 geography_api_key = os.environ.get("GEOGRAPHY_API_KEY")
+google_api_key = os.environ.get("GOOGLE_API_KEY")
+search_engine = "00bcf26a28ef24fe6"
 client = OpenAI(api_key=openai_api_key)
 
 scraper = Blueprint('scraper', __name__)
+
+
+
+
+# Call the function with your query
+
+
+
+def google_places_script(api_key, query, language_code='en', location_bias=None, included_type=None):
+
+# Base URL for Text Search (New)
+    BASE_URL = "https://places.googleapis.com/v1/places:searchText"
+
+
+    headers = {
+        "Content-Type": "application/json",
+        "X-Goog-Api-Key": api_key,
+        "X-Goog-FieldMask": "*"
+    }
+
+    data = {
+        "textQuery": query,
+        "languageCode": language_code,
+    }
+
+    if location_bias:
+        data["locationBias"] = location_bias
+
+    if included_type:
+        data["includedType"] = included_type
+
+    try:
+        response = requests.post(BASE_URL, headers=headers, json=data)
+        response.raise_for_status()  # Raise an exception for HTTP errors
+        return response.json()
+    except requests.exceptions.RequestException as e:
+        print(f"Error making API request: {e}")
+        return None
+
+    return None
+
+
 #Country will be canada for now
 def url_manipulation(city, province, restuarantName,country = "canada"):
     new_url = f"https://www.sirved.com/city/{city}-{province}-{country}/all?keyword={restuarantName}"
+   
     restuarant_data = scrape_restaurant_data(new_url)
     return restuarant_data
 
@@ -72,34 +125,6 @@ def chatbot_response(function_schema, user_input):
 
     return response
 
-# def get_city_and_country():
-#     chatdata = chatbot_response(function_scheme(), "I want to eat from Ennios in Waterloo")
-#     args_str = chatdata.choices[0].message.function_call.arguments
-#     args = json.loads(args_str)
-#     city = args["city"] #pass this guy to the geography api
-#     restaurant = args["restaurant"]
-
-#     headers = CaseInsensitiveDict()
-#     headers["Accept"] = "application/json"
-#     autocompletion_url = f"https://api.geoapify.com/v1/geocode/autocomplete?text={city}&apiKey={geography_api_key}"
-#     autocompletion_response = requests.get(autocompletion_url, headers=headers)
-#     autocompletion_data = autocompletion_response.json() 
-
-#     # Check if there are any features
-#     if autocompletion_data.get("features"):
-#         first_feature = autocompletion_data["features"][0]
-#         properties = first_feature.get("properties", {})
-#         # Now you can access fields like:
-#         country = properties.get("country")
-#         state = properties.get("state")
-#         city = properties.get("city")  # May not always be present, sometimes 'county' or 'formatted' is used
-#         print("Country:", country)
-#         print("State/Province:", state)
-#         print("City:", city)
-#         print("All properties:", properties)
-#     else:
-#         print("No features found in autocompletion data.")
-#     url_manipulation(city, state, restaurant)
 
 def save_restaurant_data(restaurants):
     for restaurant in restaurants:
@@ -124,6 +149,7 @@ def scrape_restaurant_data(url):
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
     }
     response = requests.get(url, headers=headers)
+    #print(response.text[:1000])  # <-- Add this line to print the first 1000 characters of the HTML
     soup = BeautifulSoup(response.text, 'html.parser')
     
     # Find all restaurant cards
@@ -164,6 +190,8 @@ def scrape_restaurant_data(url):
         restaurants.append(restaurant)
     save_restaurant_data(restaurants)
     return restaurants
+
+
 
 #Post request to get the text from frontend
 @scraper.route('/chat', methods=['POST', 'OPTIONS'])
@@ -245,25 +273,52 @@ def get_restaurants():
             })
             
         # Get restaurant data
-        restaurant_data = url_manipulation(city, state, restaurant)
+        #restaurant_data = url_manipulation(city, state, restaurant)
+       
+        search_query = f"{restaurant} {city}"
+        results = google_places_script("", search_query)
+
+        if results and 'places' in results:
+            print(f"--- Results for '{search_query}' ---")
+            result = results['places'][0]
+
+            # Extract directly into separate variables
+            name = result.get("displayName", {}).get("text", "")
+            phone_number = result.get("nationalPhoneNumber", "")
+            address = result.get("formattedAddress", "")
+            opening_hours = result.get("regularOpeningHours", {}).get("weekdayDescriptions", [])
+
+            # Print the individual variables
+            print("Name:", name)
+            print("Phone Number:", phone_number)
+            print("Address:", address)
+            print("Opening Hours:")
+            for day in opening_hours:
+                print("", day)
+        else:
+            print("No results found.")  
+        message = Restaurant_Entry.query.filter_by(
+            name=name, 
+            address=address
+        ).first()
         
-        if not restaurant_data:
-            return jsonify({
-                "status": "invalid",
-                "message": f"Could not find '{restaurant}' in {city}, {state}. Please check spelling or try another restaurant."
-            })
-            
         return jsonify({
             "status": "valid",
             "message": f"Found information for {restaurant} in {city}, {state} at {formatted_time} for {party_size} people",
             "data": {
-                "restaurant": restaurant,
+                "restaurant": name,
+                "address": address,
                 "city": city_name,
                 "state": state,
                 "country": country,
                 "party_size": party_size,
                 "time": formatted_time,
-                "results": restaurant_data
+            },
+            "Restaurant_info":{
+                "name":message.name,
+                "address":message.address,
+                "Opening_hours":message.hours,
+                "logo":message.logo,
             }
         })
         

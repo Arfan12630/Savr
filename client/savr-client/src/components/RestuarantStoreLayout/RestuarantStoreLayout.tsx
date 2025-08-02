@@ -5,7 +5,9 @@ import { styled, keyframes } from "@mui/system";
 import Bookmark from '@mui/icons-material/BookmarkBorder';
 import axios from "axios";
 
-interface RestaurantData {
+
+
+interface ReservationData {
   restaurant: string;
   city: string;
   state: string;
@@ -15,11 +17,8 @@ interface RestaurantData {
     address: string;
     hours: string;
     logo: string;
-    link: string;
-    menu_images: string[];
   }>;
 }
-
 // Fade-in animation
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(30px); }
@@ -45,8 +44,10 @@ const StyledCard = styled(Card)`
 const RestaurantStoreLayout: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const restaurantData = location.state?.restaurantData as RestaurantData;
-
+  const restaurantData = location.state?.restaurantData 
+  const reservationData = location.state?.reservationData 
+  console.log(reservationData);
+  console.log(restaurantData);
   if (!restaurantData) {
     return (
       <Box sx={{ p: 4, textAlign: 'center', color: '#ccc' }}>
@@ -73,17 +74,94 @@ const RestaurantStoreLayout: React.FC = () => {
       }}
     >
       <Typography level="h2" sx={{ color: 'white', textAlign: 'center', mb: 4 }}>
-        Results for {restaurantData.restaurant} in {restaurantData.city}, {restaurantData.state}
+        Results for 
       </Typography>
 
-      <Box
-        sx={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-        }}
-      >
-        {restaurantData.results.map((r, i) => (
+  
+
+
+
+
+
+
+
+<Box>
+{Array.isArray(restaurantData)
+  ? restaurantData.map((r, i) => (
+      <StyledCard key={r.name || i} variant="outlined">
+        <Box
+          sx={{ position: 'relative', width: '100%', height: 160, overflow: 'hidden', borderRadius: '12px 12px 0 0' }}
+          onClick={() => clickedImage(r)}
+        >
+          {r.logo && (
+            <img
+              src={r.logo}
+              alt={r.name}
+              onClick={() => clickedImage(r)}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
+            />
+          )}
+          <IconButton
+            size="sm"
+            variant="plain"
+            color="neutral"
+            sx={{ position: 'absolute', top: 8, right: 8, color: '#bbb' }}
+          >
+            <Bookmark />
+          </IconButton>
+        </Box>
+        <CardContent sx={{ p: 2, flexGrow: 1 }} onClick={() => clickedImage(r)}>
+          <Typography level="title-lg" sx={{ color: 'white', mb: 1 }}>
+            {r.name}
+          </Typography>
+          <Typography level="body-sm" sx={{ color: '#aaa', mb: 1 }}>
+            {r.address}
+          </Typography>
+          <Typography level="body-xs" sx={{ color: '#888' }}>
+            Hours: {r.hours || 'Not available'}
+          </Typography>
+        </CardContent>
+      </StyledCard>
+    ))
+  : restaurantData && (
+      <StyledCard key={restaurantData.name} variant="outlined">
+        <Box
+          sx={{ position: 'relative', width: '100%', height: 160, overflow: 'hidden', borderRadius: '12px 12px 0 0' }}
+          onClick={() => clickedImage(restaurantData)}
+        >
+          {restaurantData.logo && (
+            <img
+              src={restaurantData.logo}
+              alt={restaurantData.name}
+              onClick={() => clickedImage(restaurantData)}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', cursor: 'pointer' }}
+            />
+          )}
+          <IconButton
+            size="sm"
+            variant="plain"
+            color="neutral"
+            sx={{ position: 'absolute', top: 8, right: 8, color: '#bbb' }}
+          >
+            <Bookmark />
+          </IconButton>
+        </Box>
+        <CardContent sx={{ p: 2, flexGrow: 1 }} onClick={() => clickedImage(restaurantData)}>
+          <Typography level="title-lg" sx={{ color: 'white', mb: 1 }}>
+            {restaurantData.name}
+          </Typography>
+          <Typography level="body-sm" sx={{ color: '#aaa', mb: 1 }}>
+            {restaurantData.address}
+          </Typography>
+          <Typography level="body-xs" sx={{ color: '#888' }}>
+            Hours: {restaurantData.hours || 'Not available'}
+          </Typography>
+        </CardContent>
+      </StyledCard>
+    )
+}
+
+        {/* {restaurantData.results.map((r, i) => (
           <StyledCard key={i} variant="outlined">
             <Box sx={{ position: 'relative', width: '100%', height: 160, overflow: 'hidden', borderRadius: '12px 12px 0 0' }}
             onClick={() => clickedImage(r)}>
@@ -117,7 +195,7 @@ const RestaurantStoreLayout: React.FC = () => {
               </Typography>
             </CardContent>
           </StyledCard>
-        ))}
+        ))} */}
       </Box>
 
       <Box sx={{ textAlign: 'center', mt: 6 }}>

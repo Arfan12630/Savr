@@ -1,5 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.dialects.postgresql import UUID, ARRAY
+from sqlalchemy.dialects.postgresql import UUID, ARRAY, JSON
 import uuid
 
 db = SQLAlchemy()
@@ -30,7 +30,18 @@ class Restaurant_Entry(db.Model):
     rag_ready = db.Column(db.Boolean, default=False)
     logo = db.Column(db.Text)
 
-
+class Reservations(db.Model):
+    __tablename__ = 'reservations'
+    reservation_id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    user_id = db.Column(UUID(as_uuid=True), primary_key=True)
+    restaurant_name = db.Column(db.String(255), nullable=False)
+    restaurant_address = db.Column(db.Text)
+    table_id = db.Column(UUID(as_uuid=True), primary_key=True)
+    reservation_date = db.Column(db.DateTime, nullable=False)
+    reservation_time = db.Column(db.DateTime, nullable=False)
+    reservation_status = db.Column(db.String(255), default='pending')
+    start_cooking = db.Column(db.Text, nullable=False)
+    order = db.Column(JSON)
 # class Order(db.Model):
 #     __tablename__ = 'orders'
 #     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)

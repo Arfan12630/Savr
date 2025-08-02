@@ -16,6 +16,12 @@ interface ResponseData {
     country: string;
     results: any[];
   };
+  Restaurant_info: {
+    name: string;
+    address: string;
+    Opening_hours: string;
+    logo: string;
+  };
 }
 
 const Chat: React.FC = () => {
@@ -33,8 +39,10 @@ const Chat: React.FC = () => {
         const data: ResponseData = res.data;
         setResponseMessage(data.message);
         if (data.status === 'valid' && data.data) {
+          
+          console.log(data.Restaurant_info);
           console.log(data.data);
-          navigate('/restaurant-display', { state: { restaurantData: data.data } });
+         navigate('/restaurant-display', { state: { restaurantData: data.Restaurant_info, reservationData: data.data } });
         }
       })
       .catch(() => {

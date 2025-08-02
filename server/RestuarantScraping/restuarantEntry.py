@@ -17,6 +17,7 @@ from models import db, Restaurant_Entry
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 from RestuarantScraping.MenuCards import image_to_html, process_images_in_parallel
+from RestuarantScraping.Scraper import google_places_script
 from RestuarantScraping.RagEmbeddings import image_to_RAG_chunks, embedding_chunks, process_imagesRags_in_parallel, rag_embeddings
 # Load .env file
 load_dotenv()
@@ -46,8 +47,9 @@ Only include JSON. No extra commentary. Your response must match this schema exa
 Current Info:
 Restaurant: {restaurant}
 City: {city}
+Logo: {logo}
 """,
-    input_variables=["restaurant", "city", "current_field", "format_instructions"]
+    input_variables=["restaurant", "city", "current_field", "format_instructions", "logo"]
 )
 
 
@@ -89,14 +91,35 @@ def get_address_info(restaurant, city):
             "status": "invalid", 
             "message": f"Could not determine state/province for '{city}'. Please be more specific."
         }
-    restaurant_data = url_maker(city, state, country, restaurant)
-    restaurant_info = {
-        "restaurant": restaurant,
-        "city": city,
-        "address": "",
-        "cards": restaurant_data
+    #restaurant_data = url_maker(city, state, country, restaurant)
+    address_search_query = f"{restaurant} {city}"
+    results = google_places_script("", address_search_query)
+    if results and 'places' in results:
+            print(f"--- Results for '{address_search_query}' ---")
+            result = results['places'][0]
+
+            # Extract directly into separate variables
+            name = result.get("displayName", {}).get("text", "")
+            phone_number = result.get("nationalPhoneNumber", "")
+            address = result.get("formattedAddress", "")
+            opening_hours = result.get("regularOpeningHours", {}).get("weekdayDescriptions", [])
+
+            # Print the individual variables
+            print("Name:", name)
+            print("Phone Number:", phone_number)
+            print("Address:", address)
+            print("Opening Hours:")
+            for day in opening_hours:
+                print("", day)
+    else:
+            print("No results found.")
+    address_search_info = {
+        "name": name,
+        "phone_number": phone_number,
+        "address": address,
+        "opening_hours": opening_hours
     }
-    return restaurant_info
+    return address_search_info
 
 def scrape_restaurant_data(url):
     print("REACHED SCRAPE RESTAURANT DATA")
@@ -131,7 +154,9 @@ def scrape_restaurant_data(url):
 restaurant_info = {
     "restaurant": "",
     "city": "",
+    "logo": "",
     "address": "",
+    "opening_hours": ""
 }
 
 
@@ -139,16 +164,18 @@ restaurant_info = {
 @restuarantEntry.route('/get-address-options', methods=['POST'])
 def get_address_options():
     data = request.json
-    for field in ["restaurant", "city"]:
+    for field in ["restaurant", "city", "logo"]:
        restaurant_info[field] = data.get(field)
     address_info = get_address_info(restaurant_info["restaurant"], restaurant_info["city"])
     restaurant_info["address"] = address_info["address"]
-    restaurant_info["cards"] = address_info["cards"]
+    restaurant_info["restaurant"] = address_info["name"]
+    restaurant_info["opening_hours"] = address_info["opening_hours"]
     if all(restaurant_info.values()):
         print("RESTAURANT INFO", restaurant_info)
     result = chain.run(
         restaurant=restaurant_info["restaurant"],
         city=restaurant_info["city"],
+        logo=restaurant_info["logo"],
         current_field=field,  # This will be the last field entered
         format_instructions=parser.get_format_instructions()
     )
@@ -159,23 +186,31 @@ def get_address_options():
 
     # Step 8: Parse the final result into a structured Python object
     parsed = parser.parse(result)
-    print("✅ Final Parsed Output:")
-    print(parsed.dict())
+    # print("✅ Final Parsed Output:")
+    # print(parsed.dict())
     return jsonify(restaurant_info)
+@restuarantEntry.route('/upload-logo', methods=['POST'])
+def upload_logo():
+    data = request.json
+    logo = data["logo"]
+    if logo:
+        restaurant_info["logo"] = logo
+        print("RESTAURANT INFO", restaurant_info["logo"][:20])
+        return jsonify( restaurant_info)
 
 @restuarantEntry.route('/get-address-info', methods=['POST'])
 def place_in_DB():
     data = request.json
     restaurant_entry = Restaurant_Entry(
         id=uuid.uuid4(),
-        name=data["name"],
+        name=data["restaurant"],
         address=data["address"],
-        hours=data["hours"],
+        hours=data["opening_hours"],
         logo=data["logo"],
         created_at=datetime.now(),
         rag_ready=False
     )
-    if Restaurant_Entry.query.filter_by(name=data["name"], address=data["address"]).first():
+    if Restaurant_Entry.query.filter_by(name=data["restaurant"], address=data["address"]).first():
         return jsonify({"message": "Restaurant already exists"})
     db.session.add(restaurant_entry)
     db.session.commit()
@@ -184,8 +219,8 @@ def place_in_DB():
 @restuarantEntry.route('/extract-menu-html', methods=['POST'])
 def extract_menu_html():
     data = request.json
-    image_urls = data["image_urls"]
     restaurant_data = data["restaurant_data"]
+    image_urls = data["image_urls"]
     menu_html = process_images_in_parallel(image_urls)
     # executor = ThreadPoolExecutor(max_workers=10)
     # executor.submit(rag_embeddings, image_urls)
@@ -208,7 +243,7 @@ def save_all_menu_html():
     menu_htmls = data["menu_htmls"]  # List of HTML strings
     
     entry = Restaurant_Entry.query.filter_by(
-        name=restaurant_data["name"], 
+        name=restaurant_data["restaurant"], 
         address=restaurant_data["address"]
     ).first()
     
