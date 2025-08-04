@@ -57,10 +57,10 @@ const ReservationModal: React.FC<{
                 <FormLabel>Name</FormLabel>
                 <Input autoFocus required />
               </FormControl>
-              <FormControl>
+              {/* <FormControl>
                 <FormLabel>Description</FormLabel>
                 <Input required />
-              </FormControl>
+              </FormControl> */}
                 </>
               )}
               <Button type="submit" onClick={() => {

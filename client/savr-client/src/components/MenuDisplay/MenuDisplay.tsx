@@ -55,11 +55,14 @@ interface MenuItemInfo {
   options?: string[];
   isCombo?: boolean;
   selectedOption?: string;
+  enhancements?: string[]; // Add enhancements array
+  selectedEnhancements?: string[]; // Track selected enhancements
 }
 
-export interface MenuItem  extends MenuItemInfo{
+export interface MenuItem extends MenuItemInfo {
   selectedOption?: string;
   quantity?: number;
+  selectedEnhancements?: string[]; // Include in MenuItem interface
 }
 
 const MenuDisplay: React.FC = () => {
@@ -69,6 +72,7 @@ const MenuDisplay: React.FC = () => {
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
   const [item, setItem] = useState({any:[]})
   const menuContainerRef = useRef<HTMLDivElement>(null);
+  const [selectedEnhancements, setSelectedEnhancements] = useState<string[]>([]);
 
   const { addItem } = useShoppingCart();
 
@@ -85,6 +89,19 @@ const MenuDisplay: React.FC = () => {
   useEffect(() => {
     setCurrentItemIndex(0);
   }, [currentGroupIndex]);
+
+  // Handle clicking on an enhancement
+  const handleEnhancementClick = (enhancement: string) => {
+    setSelectedEnhancements(prev => {
+      if (prev.includes(enhancement)) {
+        // Remove if already selected
+        return prev.filter(e => e !== enhancement);
+      } else {
+        // Add if not selected
+        return [...prev, enhancement];
+      }
+    });
+  };
 
   // Handle clicking on an option in the modal
   const handleOptionClick = (option: string) => {
@@ -103,13 +120,15 @@ const MenuDisplay: React.FC = () => {
     
     const itemToAdd: MenuItem = {
       ...selectedItem,
-      quantity: 1
+      quantity: 1,
+      selectedEnhancements: selectedEnhancements.length > 0 ? selectedEnhancements : undefined
     };
     
     addItem(itemToAdd);
-    console.log('Added to cart:', itemToAdd.name, 'Price:', itemToAdd.price);
+    console.log('Added to cart:', itemToAdd.name, 'Price:', itemToAdd.price, 'Enhancements:', selectedEnhancements);
     
-    // Close the modal after adding to cart
+    // Reset and close
+    setSelectedEnhancements([]);
     setSelectedItem(null);
   };
 
@@ -296,6 +315,17 @@ const MenuDisplay: React.FC = () => {
     selectedItem.selectedOption
   );
 
+  // Extract enhancements from the page (add-ons)
+  const extractEnhancements = (): string[] => {
+    if (!menuContainerRef.current) return [];
+    
+    const addonsSection = menuContainerRef.current.querySelector('.menu-addons');
+    if (!addonsSection) return [];
+    
+    const enhancementElements = addonsSection.querySelectorAll('p');
+    return Array.from(enhancementElements).map(p => p.textContent?.trim() || '');
+  };
+
   return (
     <>
       <ShoppingCart />
@@ -340,13 +370,45 @@ const MenuDisplay: React.FC = () => {
                 </ul>
               </div>
             )}
+
+            {/* Enhancement section */}
+            {extractEnhancements().length > 0 && (
+              <div className="selected-item-enhancements">
+                <h3>Enhance your dish</h3>
+                <ul>
+                  {extractEnhancements().map((enhancement, index) => (
+                    <li 
+                      key={index}
+                      onClick={() => handleEnhancementClick(enhancement)}
+                      className={selectedEnhancements.includes(enhancement) ? 'selected' : ''}
+                    >
+                      {enhancement}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Show selected enhancements */}
+            {selectedEnhancements.length > 0 && (
+              <div className="selected-enhancements">
+                <h4>Selected Enhancements:</h4>
+                <ul>
+                  {selectedEnhancements.map((enhancement, index) => (
+                    <li key={index}>{enhancement}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             
             {selectedItem.description && (
               <p className="selected-item-description">{selectedItem.description}</p>
             )}
             
             <div className="modal-buttons">
-              <button onClick={() => setSelectedItem(null)} className="close-btn">Close</button>
+              <button onClick={() => { setSelectedItem(null); setSelectedEnhancements([]); }} className="close-btn">
+                Close
+              </button>
               
               {showAddToOrder && (
                 <button onClick={handleAddToOrder} className="add-order-btn">
