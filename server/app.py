@@ -78,22 +78,51 @@ def auto_assign_tables():
    
     layout = Layout.query.filter_by(name=name, address=address).first()
     if layout:
-        
-
-        for table in layout.tables:
-            party_size_range = table['maxPartySizeRange'].split('-')
-            print(party_size_range)
-            if occasion in table['description'] and int(party_size) >= int(party_size_range[0]) and int(party_size) <= int(party_size_range[1]):
-                print(table['description'])
-                return jsonify({
-                    "id": layout.id,
-                    "name": layout.name,
-                    "address": layout.address,
-                    "tables": table,
-                    "created_at": layout.created_at
-                })
-            else:
-                return jsonify({"message": "Let User choose own table"}), 200
+        if isinstance(layout.tables, list):
+            for table in layout.tables:
+                try:
+                    print(table['maxPartySizeRange'])
+                    party_size_range = table['maxPartySizeRange'].split('-')
+                    print(party_size_range)
+                    if (occasion.lower() in table['description'].lower() and 
+                        int(party_size) >= int(party_size_range[0]) and 
+                        int(party_size) <= int(party_size_range[1])):
+                        
+                        print(table['description'])
+                        return jsonify({
+                            "id": layout.id,
+                            "name": layout.name,
+                            "address": layout.address,
+                            "tables": table,
+                            "created_at": layout.created_at
+                        })
+                except (KeyError, ValueError, IndexError) as e:
+                    # Handle tables that might not have the required fields
+                    print(f"Error processing table: {e}")
+                    continue
+                    
+            # Only return this if no matching table was found after checking ALL tables
+            return jsonify({"message": "Let User choose own table"}), 200
+        else:
+            # Handle case where tables is a single object, not a list
+            table = layout.tables
+            try:
+                party_size_range = table['maxPartySizeRange'].split('-')
+                if (occasion.lower() in table['description'].lower() and 
+                    int(party_size) >= int(party_size_range[0]) and 
+                    int(party_size) <= int(party_size_range[1])):
+                    
+                    return jsonify({
+                        "id": layout.id,
+                        "name": layout.name,
+                        "address": layout.address,
+                        "tables": table,
+                        "created_at": layout.created_at
+                    })
+            except (KeyError, ValueError, IndexError):
+                pass
+                
+            return jsonify({"message": "Let User choose own table"}), 200
     else:
         return jsonify({"message": "No layout found"}), 404
 

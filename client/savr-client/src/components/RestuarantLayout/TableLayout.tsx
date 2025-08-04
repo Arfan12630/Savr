@@ -8,6 +8,16 @@ import Box from '@mui/joy/Box';
 import List from './List';
 import DoorSlidingOutlinedIcon from '@mui/icons-material/DoorSlidingOutlined';
 import DetailsModal from './DetailsModal';
+const pulseAnimation = `
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 5px #ff9800;
+  }
+  100% {
+    box-shadow: 0 0 15px #ff9800, 0 0 20px rgba(255, 152, 0, 0.5);
+  }
+}
+`;
 const TableLayout = ({
   restaurantCardData,
   onDelete,
@@ -86,7 +96,9 @@ const [tableNumber, setTableNumber] = React.useState('');
     setStartPos({ x: e.clientX, y: e.clientY });
     setStartSize({ width: size.width, height: size.height });
   };
-
+  if(viewOnly){
+    console.log(selected)
+  }
   // --- Mouse move/up listeners for resizing ---
   React.useEffect(() => {
     if (!resizing) return;
@@ -99,7 +111,7 @@ const [tableNumber, setTableNumber] = React.useState('');
         const newHeight = Math.max(30, startSize.height + dy);
         
         setSize({ width: newWidth, height: newHeight });
-        onResize?.(id, newWidth, newHeight); // 🔥 Notify parent
+        onResize?.(id, newWidth, newHeight); // 
         
       }
     };
@@ -144,8 +156,7 @@ const [tableNumber, setTableNumber] = React.useState('');
     width: size.width,
     height: size.height,
     borderRadius: 4,
-    // border: selected ? '2px solid #ff9800' : '2.5px solid #274b8f',
-    border:selected ? '2px solid #ff9800' : '1px solid black',
+    border: selected ? '2px solid #ff9800' : '1px solid black',
     boxShadow: selected ? '0 0 8px #ff9800' : '0 4px 16px rgba(57, 115, 219, 0.10)',
     background: reserved ? '#ff9800' : 'white',
     display: 'flex',
@@ -157,6 +168,8 @@ const [tableNumber, setTableNumber] = React.useState('');
     transition: isActuallyDragging
       ? 'box-shadow 0.2s, border 0.2s, background 0.2s'
       : 'transform 0.35s cubic-bezier(0.4,0,0.2,1), box-shadow 0.2s, border 0.2s, background 0.2s',
+    // Add animation when selected
+    animation: selected ? 'pulse 0.5s infinite alternate' : 'none',
   };
   if (shape == 'circle') {
     tableStyle.borderRadius = '50%';
@@ -225,6 +238,8 @@ const [tableNumber, setTableNumber] = React.useState('');
     updateTableNumber(id, tableNumber)
   }
   return (
+    <>
+    <style>{pulseAnimation}</style>
     <div
       ref={setNodeRef}
       style={tableStyle}
@@ -256,6 +271,7 @@ const [tableNumber, setTableNumber] = React.useState('');
 {!viewOnly && contextMenu &&  (
   <List onAddDetails={() => setClickedAddDetails(true)} contextMenu={contextMenu} setContextMenu={setContextMenu}/>
 )}
+
 {clickedAddDetails && (
   <DetailsModal
     open={clickedAddDetails}
@@ -370,14 +386,19 @@ const [tableNumber, setTableNumber] = React.useState('');
             </div>
             <ReservationModal
               open={modalOpen}
-              onClose={() => setModalOpen(false)}
+              onClose={() => {
+                setModalOpen(false)
+                selected = false
+              }}
               onReserve={() => {
                 setReserved(true);
                 setModalOpen(false);
+                selected = false
               }}
               onCancel={() => {
                 setReserved(false);
                 setModalOpen(false);
+                selected = false
               }}
               reserved={reserved}
             />
@@ -455,6 +476,7 @@ const [tableNumber, setTableNumber] = React.useState('');
         />
       )}
     </div>
+    </>
   );
 };
 
