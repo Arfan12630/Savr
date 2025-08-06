@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from models import db, Restaurant
 from RestuarantScraping.Scraper import scraper
 from RestuarantScraping.restuarantEntry import restuarantEntry
+from RestuarantScraping.MenuImage import menuImage
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from datetime import datetime
@@ -14,7 +15,7 @@ CORS(app, resources={
     r"/*": {"origins": "http://localhost:3000"},
 })
 app.register_blueprint(scraper)
-
+app.register_blueprint(menuImage)
 app.register_blueprint(restuarantEntry)
 
 load_dotenv()

@@ -106,10 +106,14 @@ def function_scheme():
                 },
                 "time": {
                     "type": "string",
-                    "description": "The time for the reservation, e.g. '7pm', '19:00', 'tonight', etc."
+                    "description": "The time for the reservation, e.g. '7pm', '19:00', 'tonight', make sure we see that the time actually has 'PM' or 'AM' and if this field is not present, then we should not include it in the response."
+                },
+                "occasion": {
+                    "type": "string",
+                    "description": "The occasion for the reservation, e.g. 'date', 'birthday', 'anniversary', 'business meeting', 'family dinner', 'family' etc."
                 }
             },
-            "required": ["restaurant", "city", "party_size", "time"]
+            "required": ["restaurant", "city", "party_size", "time", "occasion"]
         }
     }
     return function_schema
@@ -209,6 +213,7 @@ def get_restaurants():
     print(f"Received input: {input_text}")
 
     try:
+        
         # Extract restaurant and city from user input
         chatdata = chatbot_response(function_scheme(), input_text)
         
@@ -233,7 +238,7 @@ def get_restaurants():
         restaurant = args["restaurant"]
         party_size = args["party_size"]
         time = args["time"]
-        
+        occasion = args["occasion"]
         # Try to parse the time string
         try:
             now = datetime.now()
@@ -313,6 +318,7 @@ def get_restaurants():
                 "country": country,
                 "party_size": party_size,
                 "time": formatted_time,
+                "occasion": occasion,
             },
             "Restaurant_info":{
                 "name":message.name,

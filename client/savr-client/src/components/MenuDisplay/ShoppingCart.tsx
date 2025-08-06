@@ -17,7 +17,7 @@ const ShoppingCart: React.FC = () => {
   return (
     <div className="shopping-cart-container">
       <div className="cart-icon" onClick={toggleCart}>
-        <span className="material-icons">shopping_cart</span>
+        <span className="material-icons"></span>
         {getTotalItems() > 0 && (
           <span className="cart-badge">{getTotalItems()}</span>
         )}
