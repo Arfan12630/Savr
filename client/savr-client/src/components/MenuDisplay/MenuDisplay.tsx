@@ -3,6 +3,7 @@ import axios from 'axios';
 import './MenuDisplay.css';
 import { useShoppingCart } from './ShoppingCartContext';
 import ShoppingCart from './ShoppingCart';
+import MenuItemImageUpload from './MenuItemImageUpload';
 // Add this function to convert p tags with options to h3 tags
 const convertOptionParagraphsToH3 = (html: string): string => {
   // Create a temporary DOM element to parse the HTML
@@ -15,6 +16,21 @@ const convertOptionParagraphsToH3 = (html: string): string => {
   menuItems.forEach(menuItem => {
     // Get all paragraph elements that are not price elements
     const paragraphs = menuItem.querySelectorAll('p:not(.price)');
+    
+    // Add image container to each menu item
+    const imageContainer = document.createElement('div');
+    imageContainer.className = 'menu-item-image-container';
+    
+    // Add placeholder image
+    const img = document.createElement('img');
+    img.src = "https://cdn-icons-png.flaticon.com/512/98/98017.png";
+    img.alt = "Menu item";
+    img.className = 'menu-item-card-image';
+    
+    imageContainer.appendChild(img);
+    
+    // Insert at the beginning of the menu item
+    menuItem.insertBefore(imageContainer, menuItem.firstChild);
     
     paragraphs.forEach(p => {
       const text = p.textContent?.trim() || '';
@@ -57,12 +73,14 @@ interface MenuItemInfo {
   selectedOption?: string;
   enhancements?: string[]; // Add enhancements array
   selectedEnhancements?: string[]; // Track selected enhancements
+  imageUrl?: string;
 }
 
 export interface MenuItem extends MenuItemInfo {
   selectedOption?: string;
   quantity?: number;
   selectedEnhancements?: string[]; // Include in MenuItem interface
+  imageUrl?: string;
 }
 
 const MenuDisplay: React.FC = () => {
@@ -73,9 +91,10 @@ const MenuDisplay: React.FC = () => {
   const [item, setItem] = useState({any:[]})
   const menuContainerRef = useRef<HTMLDivElement>(null);
   const [selectedEnhancements, setSelectedEnhancements] = useState<string[]>([]);
+  const [selectedHTMLGroup, setSelectedHTMLGroup] = useState<any>([]);
 
   const { addItem } = useShoppingCart();
-
+  const isOwner = true;
   useEffect(() => {
     axios.get('http://127.0.0.1:5000/get-all-menu-html')
       .then((res) => {
@@ -142,6 +161,7 @@ const MenuDisplay: React.FC = () => {
       // Extract menu item information
       const nameElement = menuItem.querySelector('h3');
       const priceElement = menuItem.querySelector('.price');
+      const imageElement = menuItem.querySelector('.menu-item-card-image') as HTMLImageElement;
       
       // Get all paragraph elements that are not price elements
       const allParagraphs = Array.from(menuItem.querySelectorAll('p:not(.price)'));
@@ -154,6 +174,7 @@ const MenuDisplay: React.FC = () => {
       const name = nameElement?.textContent?.trim() || '';
       const price = priceElement?.textContent?.trim() || '';
       const section = sectionElement?.textContent?.trim() || '';
+      const imageUrl = imageElement?.src || '';
       
       // Extract all text content from paragraphs
       let options: string[] = [];
@@ -209,6 +230,7 @@ const MenuDisplay: React.FC = () => {
       // Log detailed information about the clicked item
       console.log('=== MENU ITEM CLICKED ===');
       console.log('Menu Item HTML:', menuItem.outerHTML);
+      setSelectedHTMLGroup(menuItem.outerHTML);
       console.log('Name:', name || '(none)');
       console.log('Section:', section);
       console.log('Price:', price);
@@ -218,13 +240,15 @@ const MenuDisplay: React.FC = () => {
       console.log('Is Combo:', isCombo);
       console.log('========================');
       
+      // Include the image URL in the selected item
       setSelectedItem({ 
         name: finalName, 
         price, 
         description,
         section: isCombo ? undefined : (name ? section : undefined), // Don't show section for combos
         options: options.length > 0 ? options : undefined,
-        isCombo
+        isCombo,
+        imageUrl // Add the image URL here
       });
       
       // Prevent event bubbling
@@ -284,12 +308,14 @@ const MenuDisplay: React.FC = () => {
     }
   };
 
+  
   useEffect(() => {
     // Add click event listener to the document
     document.addEventListener('click', handleMenuItemClick as unknown as EventListener);
     
     return () => {
       document.removeEventListener('click', handleMenuItemClick as unknown as EventListener);
+      setSelectedHTMLGroup([]);
     };
   }, []);
 
@@ -326,6 +352,42 @@ const MenuDisplay: React.FC = () => {
     return Array.from(enhancementElements).map(p => p.textContent?.trim() || '');
   };
 
+  // Add this function to update images in the menu
+  const updateMenuItemImage = (itemName: string, imageUrl: string) => {
+    if (!menuContainerRef.current) return;
+   // console.log(menuContainerRef.current.outerHTML);
+    const menuItems = menuContainerRef.current.querySelectorAll('.menu-item');
+    
+    menuItems.forEach(menuItem => {
+      const nameElement = menuItem.querySelector('h3');
+      if (nameElement?.textContent?.trim() === itemName) {
+        const imageElement = menuItem.querySelector('.menu-item-card-image') as HTMLImageElement;
+        if (imageElement) {
+          imageElement.src = imageUrl;
+        }
+      }
+    });
+  };
+
+  const handleImageUploaded = (imageUrl: string) => {
+    //console.log(imageUrl);
+    if (selectedItem) {
+      console.log(selectedItem);
+      console.log(selectedHTMLGroup);
+      const imgtag = selectedHTMLGroup.querySelector('.menu-item-card-image');
+      console.log(imgtag);
+  
+      // Update the selected item with the new image URL
+      setSelectedItem({
+        ...selectedItem,
+        imageUrl
+      });
+      
+      // Also update the image in the menu card
+      updateMenuItemImage(selectedItem.name, imageUrl);
+    }
+  };
+
   return (
     <>
       <ShoppingCart />
@@ -334,8 +396,25 @@ const MenuDisplay: React.FC = () => {
         <div className="selected-item-modal">
           <div className="selected-item-content">
             <h2>{selectedItem.name}</h2>
+            
             {selectedItem.section && !selectedItem.isCombo && <p className="selected-item-section">{selectedItem.section}</p>}
             {selectedItem.price && <p className="selected-item-price">{selectedItem.price}</p>}
+            
+            {/* Display the image if available */}
+            {selectedItem.imageUrl && (
+              <div className="selected-item-image">
+                <img src={selectedItem.imageUrl} alt={selectedItem.name} />
+              </div>
+            )}
+            
+            {/* Add image upload component for restaurant owners */}
+            {isOwner && (
+              <MenuItemImageUpload 
+                itemId={selectedItem.name.replace(/\s+/g, '-').toLowerCase()} 
+                itemName={selectedItem.name}
+                onImageUploaded={handleImageUploaded} 
+              />
+            )}
             
             {selectedItem.selectedOption && (
               <div className="selected-option">
