@@ -4,64 +4,9 @@ import './MenuDisplay.css';
 import { useShoppingCart } from './ShoppingCartContext';
 import ShoppingCart from './ShoppingCart';
 import MenuItemImageUpload from './MenuItemImageUpload';
-// Add this function to convert p tags with options to h3 tags
-const convertOptionParagraphsToH3 = (html: string): string => {
-  // Create a temporary DOM element to parse the HTML
-  const tempDiv = document.createElement('div');
-  tempDiv.innerHTML = html;
-  
-  // Find menu items
-  const menuItems = tempDiv.querySelectorAll('.menu-item');
-  
-  menuItems.forEach(menuItem => {
-    // Get all paragraph elements that are not price elements
-    const paragraphs = menuItem.querySelectorAll('p:not(.price)');
-    
-    // Add image container to each menu item
-    const imageContainer = document.createElement('div');
-    imageContainer.className = 'menu-item-image-container';
-    
-    // Add placeholder image
-    const img = document.createElement('img');
-    img.src = "https://cdn-icons-png.flaticon.com/512/98/98017.png";
-    img.alt = "Menu item";
-    img.className = 'menu-item-card-image';
-    
-    imageContainer.appendChild(img);
-    
-    // Insert at the beginning of the menu item
-    menuItem.insertBefore(imageContainer, menuItem.firstChild);
-    
-    paragraphs.forEach(p => {
-      const text = p.textContent?.trim() || '';
-      // Apply the same logic to identify options
-      if (text && text.length < 50 && !text.includes('.')) {
-        // Create a new h3 element
-        const h3 = document.createElement('h3');
-        h3.className = 'menu-option';
-        h3.textContent = text;
-        
-        // Replace the paragraph with the h3
-        p.parentNode?.replaceChild(h3, p);
-      }
-    });
-  });
-  
-  return tempDiv.innerHTML;
-};
 
-// Then modify the cleanHTML function to include this transformation
-const cleanHTML = (raw: string): string => {
-  const cleaned = raw
-    .replace(/```html\n?/, '')
-    .replace(/```$/, '')
-    .replace(/\\n/g, '')
-    .replace(/\\"/g, '"')
-    .replace(/\\'/g, "'")
-    .trim();
-    
-  return convertOptionParagraphsToH3(cleaned);
-};
+
+
 
 interface MenuItemInfo {
   name: string;
@@ -71,20 +16,20 @@ interface MenuItemInfo {
   options?: string[];
   isCombo?: boolean;
   selectedOption?: string;
-  enhancements?: string[]; // Add enhancements array
-  selectedEnhancements?: string[]; // Track selected enhancements
+  enhancements?: string[]; 
+  selectedEnhancements?: string[]; 
   imageUrl?: string;
 }
 
 export interface MenuItem extends MenuItemInfo {
   selectedOption?: string;
   quantity?: number;
-  selectedEnhancements?: string[]; // Include in MenuItem interface
+  selectedEnhancements?: string[];
   imageUrl?: string;
 }
 
 const MenuDisplay: React.FC = () => {
-  const [menuHtml, setMenuHtml] = useState<any[][]>([]); // should be array of arrays
+  const [menuHtml, setMenuHtml] = useState<any[][]>([]); 
   const [selectedItem, setSelectedItem] = useState<MenuItemInfo | null>(null);
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
@@ -92,13 +37,55 @@ const MenuDisplay: React.FC = () => {
   const menuContainerRef = useRef<HTMLDivElement>(null);
   const [selectedEnhancements, setSelectedEnhancements] = useState<string[]>([]);
   const [selectedHTMLGroup, setSelectedHTMLGroup] = useState<any>([]);
+  const convertOptionParagraphsToH3 = (html: string): string => {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    const menuItems = tempDiv.querySelectorAll('.menu-item');
+    menuItems.forEach(menuItem => {
+      if (!menuItem.querySelector('.menu-item-card-image')) {
+        const img = document.createElement('img');
+        img.src = "https://cdn-icons-png.flaticon.com/512/98/98017.png";
+        img.className = 'menu-item-card-image';
+        img.alt = "Menu item";
+        menuItem.insertBefore(img, menuItem.firstChild);
+      }
 
+      const paragraphs = menuItem.querySelectorAll('p');
+      
+      paragraphs.forEach((p: HTMLParagraphElement) => {
+        const text = p.textContent?.trim() || '';
+        if (text && text.length < 50 && !text.includes('.')) {
+          const h3 = document.createElement('h3');
+          h3.className = 'menu-option';
+          h3.textContent = text;
+          p.parentNode?.replaceChild(h3, p);
+        }
+      });
+    });
+    
+    return tempDiv.innerHTML;
+  
+  };
+  
+  // Then modify the cleanHTML function to include this transformation
+  const cleanHTML = (raw: string): string => {
+    const cleaned = raw
+      .replace(/```html\n?/, '')
+      .replace(/```$/, '')
+      .replace(/\\n/g, '')
+      .replace(/\\"/g, '"')
+      .replace(/\\'/g, "'")
+      .trim();
+    // Only return the processed HTML, do not set state here!
+    return convertOptionParagraphsToH3(cleaned);
+    
+  };
   const { addItem } = useShoppingCart();
   const isOwner = true;
   useEffect(() => {
     axios.get('http://127.0.0.1:5000/get-all-menu-html')
       .then((res) => {
-        console.log(res.data.menu_htmls);
+        //console.log(res.data.menu_htmls);
         setMenuHtml(res.data.menu_htmls); // keep raw array structure here
         console.log(res.data.menu_htmls[0][0].html)
       });
@@ -254,31 +241,7 @@ const MenuDisplay: React.FC = () => {
       // Prevent event bubbling
       event.stopPropagation();
     }
-    // Handle clicking on a section header directly
-    // else if (menuCategory && !menuItem) {
-    //   const sectionElement = menuCategory.querySelector('h2');
-    //   if (sectionElement) {
-    //     const section = sectionElement.textContent?.trim() || 'Menu Section';
-        
-    //     // Check if this is a combo section
-    //     const isCombo = section.toLowerCase().includes('combo') || 
-    //                     section.toLowerCase().includes('family');
-        
-    //     console.log('=== MENU SECTION CLICKED ===');
-    //     console.log('Section:', section);
-    //     console.log('Is Combo:', isCombo);
-    //     console.log('========================');
-        
-    //     setSelectedItem({
-    //       name: section,
-    //       price: '',
-    //       section: 'Menu Category',
-    //       isCombo
-    //     });
-        
-    //     event.stopPropagation();
-    //   }
-    // }
+    
   };
 
   const handlePrevious = () => {
@@ -370,24 +333,55 @@ const MenuDisplay: React.FC = () => {
   };
 
   const handleImageUploaded = (imageUrl: string) => {
-    //console.log(imageUrl);
     if (selectedItem) {
-      console.log(selectedItem);
-      console.log(selectedHTMLGroup);
-      const imgtag = selectedHTMLGroup.querySelector('.menu-item-card-image');
-      console.log(imgtag);
-  
-      // Update the selected item with the new image URL
-      setSelectedItem({
-        ...selectedItem,
-        imageUrl
-      });
+      console.log('Selected item name:', selectedItem.name);
       
-      // Also update the image in the menu card
-      updateMenuItemImage(selectedItem.name, imageUrl);
+      setMenuHtml(prevMenuHtml => {
+        const updatedMenuHtml = prevMenuHtml.map(group =>
+          group.map(item => {
+            // Since everything is in [0][0], we need to target the specific menu-item
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = item.html;
+            
+            // Find ALL menu items in the HTML
+            const menuItems = tempDiv.querySelectorAll('.menu-item');
+            let foundAndUpdated = false;
+            
+            menuItems.forEach(menuItem => {
+              const h3 = menuItem.querySelector('h3');
+              // Exact match on the h3 text content
+              if (h3?.textContent?.trim() === selectedItem.name && !foundAndUpdated) {
+                console.log('FOUND AND UPDATING:', selectedItem.name);
+                
+                // Update the image for this specific menu item
+                let img = menuItem.querySelector('.menu-item-card-image') as HTMLImageElement;
+                if (!img) {
+                  img = document.createElement('img');
+                  img.className = 'menu-item-card-image';
+                  img.alt = 'Menu item';
+                  menuItem.insertBefore(img, menuItem.firstChild);
+                }
+                img.src = imageUrl;
+                foundAndUpdated = true; // Prevent updating multiple items with same name
+              }
+            });
+            
+            if (foundAndUpdated) {
+              return { ...item, html: tempDiv.innerHTML };
+            }
+            return item;
+          })
+        );
+
+        updateMenuHtmlBackend(updatedMenuHtml);
+        return updatedMenuHtml; 
+      });
     }
   };
-
+  const updateMenuHtmlBackend = (updatedMenuHtml: any) => {
+    console.log(updatedMenuHtml);
+   
+  };
   return (
     <>
       <ShoppingCart />
@@ -506,9 +500,12 @@ const MenuDisplay: React.FC = () => {
               {currentItem && (
                 <div
                   className="menu-container"
+                  // Add a ref 
+                  ref={menuContainerRef}
                   dangerouslySetInnerHTML={{ __html: cleanHTML(currentItem.html) }}
                 />
               )}
+              
             </div>
             
             <div className="slideshow-controls">
@@ -526,8 +523,8 @@ const MenuDisplay: React.FC = () => {
         )}
       </div>
       <div className="corner-buttons">
-        <button className="bottom-left-btn">📝 UnReserve</button>
-        <button className="bottom-right-btn">💾 Proceed toCheckout</button>
+        <button className="bottom-left-btn"> UnReserve</button>
+        <button className="bottom-right-btn"> Proceed toCheckout</button>
       </div>
     </>
   );
