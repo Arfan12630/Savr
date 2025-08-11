@@ -4,6 +4,7 @@ import './MenuDisplay.css';
 import { useShoppingCart } from './ShoppingCartContext';
 import ShoppingCart from './ShoppingCart';
 import MenuItemImageUpload from './MenuItemImageUpload';
+import { useLocation } from 'react-router-dom';
 
 
 
@@ -37,6 +38,13 @@ const MenuDisplay: React.FC = () => {
   const menuContainerRef = useRef<HTMLDivElement>(null);
   const [selectedEnhancements, setSelectedEnhancements] = useState<string[]>([]);
   const [selectedHTMLGroup, setSelectedHTMLGroup] = useState<any>([]);
+  const location = useLocation();
+  const  name = location.state.name;
+  const restaurantInfo = location.state.restaurantInfo;
+  const tableNumber = location.state.tableNumber;
+  const reservationData = location.state.reservationData;
+  //console.log(name);
+
   const convertOptionParagraphsToH3 = (html: string): string => {
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
@@ -49,9 +57,7 @@ const MenuDisplay: React.FC = () => {
         img.alt = "Menu item";
         menuItem.insertBefore(img, menuItem.firstChild);
       }
-
-      const paragraphs = menuItem.querySelectorAll('p');
-      
+      const paragraphs = menuItem.querySelectorAll('p'); 
       paragraphs.forEach((p: HTMLParagraphElement) => {
         const text = p.textContent?.trim() || '';
         if (text && text.length < 50 && !text.includes('.')) {
@@ -85,7 +91,8 @@ const MenuDisplay: React.FC = () => {
   useEffect(() => {
     axios.get('http://127.0.0.1:5000/get-all-menu-html')
       .then((res) => {
-        //console.log(res.data.menu_htmls);
+        console.log(res.data.menu_htmls);
+        console.log(res.data.menu_htmls.length)
         setMenuHtml(res.data.menu_htmls); // keep raw array structure here
         console.log(res.data.menu_htmls[0][0].html)
       });
@@ -367,6 +374,7 @@ const MenuDisplay: React.FC = () => {
             });
             
             if (foundAndUpdated) {
+              selectedItem.imageUrl = imageUrl;
               return { ...item, html: tempDiv.innerHTML };
             }
             return item;

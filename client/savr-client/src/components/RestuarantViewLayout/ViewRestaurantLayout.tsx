@@ -10,6 +10,7 @@ const CONTAINER_WIDTH = 1700;
 const CONTAINER_HEIGHT = 900;
 
 const ViewRestaurantLayout: React.FC = () => {
+
   const [layout, setLayout] = useState<{
     name: any;
     chairs: any[];
@@ -23,8 +24,9 @@ const ViewRestaurantLayout: React.FC = () => {
   // First useEffect - fetch layout
   useEffect(() => {
     axios
-      .get("http://127.0.0.1:5000/get-layout")
+      .get(`http://127.0.0.1:5000/get-layout?name=${restaurantInfo.name}&address=${restaurantInfo.address}`)
       .then((response) => {
+        console.log(response.data);
         setLayout(response.data);
       })
       .catch((error) => console.error("Error fetching layout:", error));
@@ -71,9 +73,6 @@ const ViewRestaurantLayout: React.FC = () => {
     maxWidth: CONTAINER_WIDTH,
     maxHeight: CONTAINER_HEIGHT,
     background: "rgb(208, 212, 229)",
-    // borderRadius: '24px',
-    // boxShadow: '0 8px 32px 0 rgba(31, 38, 135, 0.37)',
-    // border: '1.5px solid rgba(255,255,255,0.18)',
     position: "relative",
     overflow: "hidden",
     backdropFilter: "blur(6px)",
@@ -115,6 +114,7 @@ const ViewRestaurantLayout: React.FC = () => {
      
         {layout.tables.map((table) => (
           <TableLayout
+            ownerView={false}
             restaurantCardData={layout}
             viewOnly={true}
             key={table.id}
@@ -135,6 +135,8 @@ const ViewRestaurantLayout: React.FC = () => {
               autoAssignedTable.tables &&
               autoAssignedTable.tables.id === table.id
             }
+            reservationData={reservationData}
+            restaurantInfo={restaurantInfo}
           />
         ))}
       </div>

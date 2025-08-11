@@ -403,6 +403,9 @@ const DroppableArea = () => {
       updateTableDetails = {updateTableDetails}
       tableNumberforTable={table.tableNumber}
       updateTableNumber={updateTableNumber}
+      ownerView={false}
+      reservationData={() =>{}}
+      restaurantInfo={() =>{}}
     
     />
   ))}

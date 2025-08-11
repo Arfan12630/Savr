@@ -14,7 +14,7 @@ const ChatInput: React.FC<{
 
   return (
     <div className="chat-input-container">
-      <button className="icon-button" title="Search">🌐</button>
+      {/* <button className="icon-button" title="Search">🌐</button> */}
       <input
         className="chat-input"
         type="text"
@@ -24,8 +24,9 @@ const ChatInput: React.FC<{
         onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
       />
 
-      <button className="icon-button" title="Voice">🎤</button>
-      <button className="icon-button" title="Send" onClick={handleSubmit}>⬆️</button>
+      {/* <button className="icon-button" title="Voice">🎤</button> */}
+      <button className="icon-button" title="Send" onClick={handleSubmit}>
+        ⬆ </button>
     </div>
   );
 };
