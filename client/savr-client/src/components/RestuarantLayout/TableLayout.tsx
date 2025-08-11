@@ -23,6 +23,7 @@ const TableLayout = ({
   onDelete,
   id,
   position,
+  ownerView = false,
   viewOnly = false,
   rotation = 0,
   onRotate,
@@ -35,13 +36,15 @@ const TableLayout = ({
   maxPartySizeRange,
   updateTableDetails,
   tableNumberforTable,
-  updateTableNumber
-
+  updateTableNumber,
+  reservationData,
+  restaurantInfo
 }: {
   restaurantCardData: any,
   onDelete: (id: string) => void,
   id: string,
   position: { x: number; y: number },
+  ownerView?: boolean,
   viewOnly?: boolean,
   rotation?: number,
   onRotate?: (id: string) => void,
@@ -55,6 +58,8 @@ const TableLayout = ({
   updateTableDetails: (id: string, description: string, maxPartySizeRange: string) => void,
   tableNumberforTable: string,
   updateTableNumber: (id: string, tableNumber: string) => void,
+  reservationData: any,
+  restaurantInfo: any
 }) => {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id,
@@ -97,7 +102,7 @@ const [tableNumber, setTableNumber] = React.useState('');
     setStartSize({ width: size.width, height: size.height });
   };
   if(viewOnly){
-    console.log(selected)
+    //console.log(selected)
   }
   // --- Mouse move/up listeners for resizing ---
   React.useEffect(() => {
@@ -401,6 +406,9 @@ const [tableNumber, setTableNumber] = React.useState('');
                 selected = false
               }}
               reserved={reserved}
+              tableNumber={tableNumberforTable}
+              restaurantInfo={restaurantInfo}
+              reservationData={reservationData}
             />
           </>
         )}

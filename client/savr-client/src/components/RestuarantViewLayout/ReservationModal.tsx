@@ -9,6 +9,7 @@ import DialogTitle from '@mui/joy/DialogTitle';
 import DialogContent from '@mui/joy/DialogContent';
 import Stack from '@mui/joy/Stack';
 import Add from '@mui/icons-material/Add';
+import { useNavigate } from 'react-router-dom';
 
 const ReservationModal: React.FC<{
   open: boolean;
@@ -16,15 +17,24 @@ const ReservationModal: React.FC<{
   onReserve: () => void;
   onCancel?: () => void;
   reserved?: boolean;
+  tableNumber?: string;
+  restaurantInfo?: any;
+  reservationData?: any;
   
-  
 
 
 
-}> = ({ open, onClose, onReserve, onCancel, reserved }) => {
-
+}> = ({ open, onClose, onReserve, onCancel, reserved, tableNumber, restaurantInfo, reservationData }) => {
+  //console.log(tableNumber);
+  const navigate = useNavigate();
   const [name, setName] = React.useState('');
   const [completedReservation, setCompletedReservation] = React.useState(false);
+  const reserveTable = () => {
+    console.log("Reserved");
+  
+    navigate("/menu-card-display", {state: {tableNumber: tableNumber, restaurantInfo: restaurantInfo, reservationData: reservationData, name: name}});
+    setName("")
+  }
   return (
     <React.Fragment>
       <Modal open={open} onClose={onClose}>
@@ -55,7 +65,7 @@ const ReservationModal: React.FC<{
                 <>
               <FormControl>
                 <FormLabel>Name</FormLabel>
-                <Input autoFocus required />
+                <Input autoFocus required value={name} onChange={(e) => setName(e.target.value)} />
               </FormControl>
               {/* <FormControl>
                 <FormLabel>Description</FormLabel>
@@ -63,9 +73,7 @@ const ReservationModal: React.FC<{
               </FormControl> */}
                 </>
               )}
-              <Button type="submit" onClick={() => {
-
-              }}>
+              <Button type="submit" onClick={reserveTable}>
                 {reserved ? 'Cancel Reservation' : 'Reserve'}
                
               </Button>

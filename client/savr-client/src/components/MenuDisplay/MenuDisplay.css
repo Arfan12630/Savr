@@ -13,11 +13,11 @@ body {
   color: #2d3748;
 }
 
-/* Main container */
+/* Main container - reduce max-width and padding */
 .slideshow-container {
-  max-width: 1400px;
+  max-width: 900px; /* Reduced from 1400px */
   margin: 0 auto;
-  padding: 40px 24px 120px 24px;
+  padding: 20px 16px 120px 16px; /* Reduced padding */
   min-height: 100vh;
 }
 
@@ -30,19 +30,19 @@ body {
   backdrop-filter: blur(10px);
 }
 
-/* Menu container */
+/* Menu container - reduce padding */
 .menu-container {
-  padding: 48px 40px;
+  padding: 24px 20px; /* Reduced from 48px 40px */
 }
 
-/* Category header */
+/* Category header - smaller font size */
 .menu-container h2,
 .menu-category h2 {
-  font-size: 36px;
+  font-size: 28px; /* Reduced from 36px */
   font-weight: 800;
   color: #2d3748;
   text-align: center;
-  margin: 0 0 16px 0;
+  margin: 0 0 12px 0; /* Reduced margin */
   letter-spacing: -1px;
   position: relative;
 }
@@ -60,13 +60,13 @@ body {
   border-radius: 2px;
 }
 
-/* Enhanced add-ons section - more interactive */
+/* Enhanced add-ons section - reduce padding and margins */
 .menu-addons {
   background: linear-gradient(135deg, #f8faff 0%, #f1f5ff 100%);
   border: 2px solid #e6f0ff;
-  border-radius: 20px;
-  padding: 32px;
-  margin: 32px 0 48px 0;
+  border-radius: 16px; /* Reduced from 20px */
+  padding: 20px; /* Reduced from 32px */
+  margin: 20px 0 32px 0; /* Reduced margins */
   box-shadow: 0 12px 30px rgba(102, 126, 234, 0.1);
   position: relative;
   overflow: hidden;
@@ -173,12 +173,13 @@ body {
   margin-bottom: 64px;
 }
 
+/* Menu items - reduce padding */
 .menu-item {
   display: block !important;
   background: #ffffff;
-  border-radius: 16px;
-  padding: 28px;
-  margin-bottom: 20px;
+  border-radius: 12px; /* Reduced from 16px */
+  padding: 20px; /* Reduced from 28px */
+  margin-bottom: 16px; /* Reduced from 20px */
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
   transition: all 0.3s ease;
   cursor: pointer;
@@ -208,26 +209,29 @@ body {
   transform: scaleX(1);
 }
 
+/* Menu item headings - smaller font */
 .menu-item h3 {
-  font-size: 22px;
+  font-size: 18px; /* Reduced from 22px */
   font-weight: 700;
   color: #2d3748;
-  margin: 0 0 12px 0;
+  margin: 0 0 8px 0; /* Reduced margin */
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
+/* Menu item text - smaller font and reduced padding */
 .menu-item p {
-  font-size: 16px;
+  font-size: 14px; /* Reduced from 16px */
   color: #718096;
-  line-height: 1.6;
+  line-height: 1.5; /* Reduced from 1.6 */
   margin: 0;
-  padding-right: 60px;
+  padding-right: 50px; /* Reduced from 60px */
 }
 
+/* Price styling - smaller font */
 .menu-item .price {
-  font-size: 24px;
+  font-size: 20px; /* Reduced from 24px */
   font-weight: 800;
   background: linear-gradient(135deg, #667eea, #764ba2);
   -webkit-background-clip: text;
@@ -772,9 +776,10 @@ body {
   position: relative;
 }
 
+/* Menu item image - make smaller */
 .menu-item-card-image {
-  width: 50%;
-  height: 50%;
+  width: 40%; /* Reduced from 50% */
+  height: 40%; /* Reduced from 50% */
   object-fit: cover;
   transition: transform 0.3s ease;
 }

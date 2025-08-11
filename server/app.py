@@ -57,7 +57,9 @@ def save_layout():
 #have to edit this to where we to click something to get the layout
 @app.route('/get-layout', methods=['GET'])
 def get_layout():
-    layout = Layout.query.order_by(Layout.id.desc()).first()
+    name = request.args.get('name')
+    address = request.args.get('address')   
+    layout = Layout.query.filter_by(name=name, address=address).first()
     if layout:
         return jsonify({
             "name": layout.name,
@@ -65,7 +67,7 @@ def get_layout():
             "chairs": layout.chairs,
             "tables": layout.tables,
             "created_at": layout.created_at
-        })
+        }), 200
     else:
         return jsonify({"message": "No layout found"}), 404
 
