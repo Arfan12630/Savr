@@ -42,6 +42,19 @@ class Reservations(db.Model):
     reservation_status = db.Column(db.String(255), default='pending')
     start_cooking = db.Column(db.Text, nullable=False)
     order = db.Column(JSON)
+
+class shared_menu_link(db.Model):
+    __tablename__ = 'shared_menu_link'
+    session_id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    restaurant_name = db.Column(db.String(255), nullable=False)
+    table_number = db.Column(db.String(255), nullable=False)
+    host_user_id = db.Column(UUID(as_uuid=True), nullable=False)
+    expires_at = db.Column(db.DateTime, nullable=False)
+    link = db.Column(db.Text, nullable=False)
+    participants = db.Column(ARRAY(UUID))
+    created_at = db.Column(db.DateTime, default=db.func.now())
+    updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
+    
 # class Order(db.Model):
 #     __tablename__ = 'orders'
 #     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
