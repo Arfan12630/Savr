@@ -1,14 +1,15 @@
 FROM python:3.9-slim
 
-# Install system dependencies for OpenCV and other packages
-RUN apt-get update && apt-get install -y \
+# System deps for building wheels (spaCy/blis) and OpenCV runtime
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     gcc \
-    libgl1-mesa-glx \
+    g++ \
+    libgl1 \
     libglib2.0-0 \
     libsm6 \
     libxext6 \
-    libxrender-dev \
+    libxrender1 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
