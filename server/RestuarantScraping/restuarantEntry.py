@@ -25,11 +25,15 @@ restuarantEntry = Blueprint('restuarantEntry', __name__)
 
 openai_api_key = os.environ.get("OPENAI_API_KEY")
 geography_api_key = os.environ.get("GEOGRAPHY_API_KEY")
+google_api_key = os.environ.get("GOOGLE_API_KEY")
 
 # Step 1: Define the output schema
+
+
 class RestaurantEntry(BaseModel):
     restaurant: str
     city: str
+
 
 # Step 2: Create parser
 parser = PydanticOutputParser(pydantic_object=RestaurantEntry)
@@ -49,7 +53,8 @@ Restaurant: {restaurant}
 City: {city}
 Logo: {logo}
 """,
-    input_variables=["restaurant", "city", "current_field", "format_instructions", "logo"]
+    input_variables=["restaurant", "city",
+                     "current_field", "format_instructions", "logo"]
 )
 
 
@@ -57,11 +62,13 @@ Logo: {logo}
 llm = ChatOpenAI(model="gpt-4o", temperature=0, openai_api_key=openai_api_key)
 chain = LLMChain(llm=llm, prompt=prompt)
 
+
 def url_maker(city, province, country, restuarantName):
     print("REACHED URL MAKERS")
     new_url = f"https://www.sirved.com/city/{city}-{province}-{country}/all?keyword={restuarantName}"
     restuarant_data = scrape_restaurant_data(new_url)
     return restuarant_data
+
 
 def get_address_info(restaurant, city):
     # Get city details from geography API
@@ -70,14 +77,14 @@ def get_address_info(restaurant, city):
     autocompletion_url = f"https://api.geoapify.com/v1/geocode/autocomplete?text={city}&apiKey={geography_api_key}"
     autocompletion_response = requests.get(autocompletion_url, headers=headers)
     autocompletion_data = autocompletion_response.json()
-    
+
     # Check if we got valid location data
     if not autocompletion_data.get("features"):
         return {
             "status": "invalid",
             "message": f"Could not find location information for '{city}'. Please check spelling or try another city."
         }
-        
+
     first_feature = autocompletion_data["features"][0]
     properties = first_feature.get("properties", {})
     country = properties.get("country")
@@ -88,31 +95,45 @@ def get_address_info(restaurant, city):
     print("Altered City name", city)
     if not state or not city_name:
         return {
-            "status": "invalid", 
+            "status": "invalid",
             "message": f"Could not determine state/province for '{city}'. Please be more specific."
         }
     #restaurant_data = url_maker(city, state, country, restaurant)
     address_search_query = f"{restaurant} {city}"
-    results = google_places_script("", address_search_query)
+
+    # Initialize variables with default values
+    name = ""
+    phone_number = ""
+    address = ""
+    opening_hours = []
+
+    results = google_places_script(google_api_key, address_search_query)
     if results and 'places' in results:
-            print(f"--- Results for '{address_search_query}' ---")
-            result = results['places'][0]
+        print(f"--- Results for '{address_search_query}' ---")
+        result = results['places'][0]
 
-            # Extract directly into separate variables
-            name = result.get("displayName", {}).get("text", "")
-            phone_number = result.get("nationalPhoneNumber", "")
-            address = result.get("formattedAddress", "")
-            opening_hours = result.get("regularOpeningHours", {}).get("weekdayDescriptions", [])
+        # Extract directly into separate variables
+        name = result.get("displayName", {}).get("text", "")
+        phone_number = result.get("nationalPhoneNumber", "")
+        address = result.get("formattedAddress", "")
+        opening_hours = result.get("regularOpeningHours", {}).get(
+            "weekdayDescriptions", [])
 
-            # Print the individual variables
-            print("Name:", name)
-            print("Phone Number:", phone_number)
-            print("Address:", address)
-            print("Opening Hours:")
-            for day in opening_hours:
-                print("", day)
+        # Print the individual variables
+        print("Name:", name)
+        print("Phone Number:", phone_number)
+        print("Address:", address)
+        print("Opening Hours:")
+        for day in opening_hours:
+            print("", day)
     else:
-            print("No results found.")
+        print("No results found.")
+        # Return error response when no results found
+        return {
+            "status": "error",
+            "message": f"Could not find restaurant '{restaurant}' in {city}. Please check the restaurant name and try again."
+        }
+
     address_search_info = {
         "name": name,
         "phone_number": phone_number,
@@ -121,6 +142,7 @@ def get_address_info(restaurant, city):
     }
     return address_search_info
 
+
 def scrape_restaurant_data(url):
     print("REACHED SCRAPE RESTAURANT DATA")
     headers = {
@@ -128,16 +150,18 @@ def scrape_restaurant_data(url):
     }
     response = requests.get(url, headers=headers)
     soup = BeautifulSoup(response.text, 'html.parser')
-    
+
     # Find all restaurant cards
     names = [atag.text.strip() for atag in soup.select('h3.text-truncate a')]
     addresses = [
-        ', '.join([line.strip() for line in div.text.strip().split('\n') if line.strip()])
+        ', '.join([line.strip()
+                  for line in div.text.strip().split('\n') if line.strip()])
         for div in soup.find_all('div', class_="res-address")
     ]
-    hours = [div.text.strip() for div in soup.find_all('div', class_="res-responce text-truncate open")]
-    logos = [img.get('data-src') for img in soup.find_all('img', class_="visible lozad")]
-
+    hours = [div.text.strip() for div in soup.find_all(
+        'div', class_="res-responce text-truncate open")]
+    logos = [img.get('data-src')
+             for img in soup.find_all('img', class_="visible lozad")]
 
     restaurants = []
     for i in range(len(names)):
@@ -150,6 +174,7 @@ def scrape_restaurant_data(url):
         restaurants.append(restaurant)
     return restaurants
 
+
 # Step 5: Info holder
 restaurant_info = {
     "restaurant": "",
@@ -160,13 +185,18 @@ restaurant_info = {
 }
 
 
-
 @restuarantEntry.route('/get-address-options', methods=['POST'])
 def get_address_options():
     data = request.json
     for field in ["restaurant", "city", "logo"]:
-       restaurant_info[field] = data.get(field)
-    address_info = get_address_info(restaurant_info["restaurant"], restaurant_info["city"])
+        restaurant_info[field] = data.get(field)
+    address_info = get_address_info(
+        restaurant_info["restaurant"], restaurant_info["city"])
+
+    # Check if address_info contains an error response
+    if address_info.get("status") in ["error", "invalid"]:
+        return jsonify(address_info), 400
+
     restaurant_info["address"] = address_info["address"]
     restaurant_info["restaurant"] = address_info["name"]
     restaurant_info["opening_hours"] = address_info["opening_hours"]
@@ -184,11 +214,10 @@ def get_address_options():
     print(result)
     print("----------------------\n")
 
-    # Step 8: Parse the final result into a structured Python object
     parsed = parser.parse(result)
-    # print("✅ Final Parsed Output:")
-    # print(parsed.dict())
     return jsonify(restaurant_info)
+
+
 @restuarantEntry.route('/upload-logo', methods=['POST'])
 def upload_logo():
     data = request.json
@@ -196,7 +225,8 @@ def upload_logo():
     if logo:
         restaurant_info["logo"] = logo
         print("RESTAURANT INFO", restaurant_info["logo"][:20])
-        return jsonify( restaurant_info)
+        return jsonify(restaurant_info)
+
 
 @restuarantEntry.route('/get-address-info', methods=['POST'])
 def place_in_DB():
@@ -216,6 +246,7 @@ def place_in_DB():
     db.session.commit()
     return jsonify(data)
 
+
 @restuarantEntry.route('/extract-menu-html', methods=['POST'])
 def extract_menu_html():
     data = request.json
@@ -226,10 +257,10 @@ def extract_menu_html():
     # executor.submit(rag_embeddings, image_urls)
     if not restaurant_data and not image_urls:
         return jsonify({"message": "No data provided", "status": "error"})
-    
+
     # Just return the extracted HTML, don't save to DB yet
     response = {"menu_html": menu_html,
-    "status": "HTML Extracted Successfully, Rag Remaining"}  # Assuming single image
+                "status": "HTML Extracted Successfully, Rag Remaining"}  # Assuming single image
 
     executor = ThreadPoolExecutor(max_workers=10)
     executor.submit(rag_embeddings, image_urls)
@@ -241,24 +272,26 @@ def save_all_menu_html():
     data = request.json
     restaurant_data = data["restaurant_data"]
     menu_htmls = data["menu_htmls"]  # List of HTML strings
-    
+
     entry = Restaurant_Entry.query.filter_by(
-        name=restaurant_data["restaurant"], 
+        name=restaurant_data["restaurant"],
         address=restaurant_data["address"]
     ).first()
-    
+
     if not entry:
         return jsonify({"message": "Entry not found"}), 404
-    
+
     # Store as array of strings or concatenate them
     entry.menu_html = menu_htmls  # If your column is ARRAY(Text) or JSON
     entry.rag_ready = True
     # OR concatenate: entry.menu_html = "\n\n".join(menu_htmls)
-    
+
     db.session.commit()
     return jsonify({"message": "All menu HTMLs saved successfully"})
 
+
 @restuarantEntry.route('/get-all-menu-html', methods=['GET'])
 def get_all_menu_html():
-    entry = Restaurant_Entry.query.filter_by(name="Ennio's Pasta House").first()
+    entry = Restaurant_Entry.query.filter_by(
+        name="Ennio's Pasta House").first()
     return jsonify({"menu_htmls": entry.menu_html})

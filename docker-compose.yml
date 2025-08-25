@@ -1,17 +1,54 @@
 version: '3.8'
 
 services:
+  # PostgreSQL Database Service
+  postgres:
+    image: postgres:15
+    container_name: savr-postgres
+    environment:
+      POSTGRES_DB: savr_db
+      POSTGRES_USER: savr_user
+      POSTGRES_PASSWORD: savr_password
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - savr-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U savr_user -d savr_db']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Adminer - Lightweight Database Management
+  adminer:
+    image: adminer:latest
+    container_name: savr-adminer
+    ports:
+      - '8080:8080'
+    networks:
+      - savr-network
+    depends_on:
+      - postgres
+
   backend:
     build: ./server
     container_name: savr-backend
     ports:
-      - "5000:5000"
+      - '5000:5000'
     volumes:
       - ./server:/app
     env_file:
       - ./.env
     environment:
       - FLASK_ENV=development
+      - SQL_DB_LINK=postgresql://savr_user:savr_password@postgres:5432/savr_db
+    networks:
+      - savr-network
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   frontend:
     # For development, use a simpler approach that supports hot reloading
@@ -21,7 +58,7 @@ services:
     volumes:
       - ./client/savr-client:/app
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - WATCHPACK_POLLING=true
     command: sh -c "npm install && npm start"
@@ -29,3 +66,14 @@ services:
       - backend
     env_file:
       - ./.env
+    networks:
+      - savr-network
+
+# Volumes for data persistence
+volumes:
+  postgres_data:
+
+# Network for service communication
+networks:
+  savr-network:
+    driver: bridge
