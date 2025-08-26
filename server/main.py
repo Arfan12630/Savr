@@ -34,8 +34,8 @@ app.include_router(restaurant_entry_router, tags=["restaurant"])
 class LayoutRequest(BaseModel):
     """Request model for layout data."""
 
-    layout: dict
-    restaurant_card_data: dict
+    layout: Any
+    restaurant_card_data: Any
 
 
 class LayoutResponse(BaseModel):
@@ -49,21 +49,30 @@ class LayoutResponse(BaseModel):
 
 
 @app.post("/save-layout")
-async def save_layout(data: LayoutRequest, db: Session = Depends(get_db)):
+async def save_layout(data: dict, db: Session = Depends(get_db)):
     """Save restaurant layout to database."""
-    layout = Layout(
-        id=uuid.uuid4(),
-        chairs=data.layout["chairs"],
-        tables=data.layout["tables"],
-        name=data.restaurant_card_data["restaurantCardData"]["restaurant"],
-        address=data.restaurant_card_data["restaurantCardData"]["address"],
-        created_at=datetime.now(),
-    )
+    try:
+        # Add some debug logging
+        print(f"Received data: {data}")
+        print(f"Data type: {type(data)}")
+        print(f"Data keys: {data.keys() if isinstance(data, dict) else 'Not a dict'}")
+        
+        layout = Layout(
+            id=uuid.uuid4(),
+            chairs=data["layout"]["chairs"],
+            tables=data["layout"]["tables"],
+            name=data["restaurantCardData"]["restaurantCardData"]["restaurant"],
+            address=data["restaurantCardData"]["restaurantCardData"]["address"],
+            created_at=datetime.now(),
+        )
 
-    db.add(layout)
-    db.commit()
-    db.refresh(layout)
-    return data
+        db.add(layout)
+        db.commit()
+        db.refresh(layout)
+        return data
+    except Exception as e:
+        print(f"Error in save-layout: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
 
 
 @app.get("/get-layout")
