@@ -7,6 +7,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     gcc \
     g++ \
     libpq-dev \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get clean
 
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
