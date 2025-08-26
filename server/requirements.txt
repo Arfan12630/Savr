@@ -1,10 +1,12 @@
-# Core Flask dependencies
-Flask
-flask-cors
-Flask-SQLAlchemy
+# Core FastAPI dependencies
+fastapi
+uvicorn[standard]
+python-multipart
+fastapi-cors
 
 # Database
 psycopg2-binary
+sqlalchemy
 
 # Web scraping and HTTP
 requests

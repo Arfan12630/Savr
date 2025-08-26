@@ -7,55 +7,46 @@ interface MenuItemImageUploadProps {
   onImageUploaded: (imageUrl: string) => void;
 }
 
-const MenuItemImageUpload: React.FC<MenuItemImageUploadProps> = ({ 
-  itemId, 
-  itemName, 
-  onImageUploaded 
+const MenuItemImageUpload: React.FC<MenuItemImageUploadProps> = ({
+  onImageUploaded,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const placeholderImage = "https://cdn-icons-png.flaticon.com/512/98/98017.png";
-  
-  // Add function to use placeholder image
-  // const useDefaultImage = () => {
-  //   onImageUploaded(placeholderImage);
-  // };
-  
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("Reached here");
+    console.log('Reached here');
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      // console.log(file);
       uploadImage(file);
-      e.target.value = "";
+      e.target.value = '';
     }
   };
-  
+
   const uploadImage = (file: File) => {
-    console.log("Reached here 2");
     const reader = new FileReader();
     reader.onload = function (e) {
       const base64DataUrl = e.target?.result;
-      if (typeof base64DataUrl === "string") {
+      if (typeof base64DataUrl === 'string') {
         setIsLoading(true);
-        
+
         // Create form data with the image and item details
-       const imageUrl = base64DataUrl;
-        
-        axios.post("http://127.0.0.1:5000/upload-menu-item-image", {
-          imageUrl: imageUrl
-        })
-        .then((response) => {
-          if (response.data.imageUrl) {
-            onImageUploaded(response.data.imageUrl);
-          }
-          console.log(response.data);
-        })
-        .catch((error) => {
-          console.error("Error uploading image:", error);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
+        const imageUrl = base64DataUrl;
+
+        axios
+          .post('http://127.0.0.1:8000/upload-menu-item-image', {
+            imageUrl: imageUrl,
+          })
+          .then(response => {
+            if (response.data.imageUrl) {
+              onImageUploaded(response.data.imageUrl);
+            }
+            console.log(response.data);
+          })
+          .catch(error => {
+            console.error('Error uploading image:', error);
+          })
+          .finally(() => {
+            setIsLoading(false);
+          });
       }
     };
     reader.readAsDataURL(file);
@@ -65,19 +56,18 @@ const MenuItemImageUpload: React.FC<MenuItemImageUploadProps> = ({
     <div className="menu-item-image-upload">
       <div className="image-upload-buttons">
         <label className="upload-button">
-          {isLoading ? "Uploading..." : "Upload Image"}
+          {isLoading ? 'Uploading...' : 'Upload Image'}
           <input
             type="file"
             accept="image/*"
-            style={{ display: "none" }}
+            style={{ display: 'none' }}
             onChange={handleFileChange}
             disabled={isLoading}
           />
         </label>
-      
       </div>
     </div>
   );
 };
 
-export default MenuItemImageUpload; 
+export default MenuItemImageUpload;

@@ -31,19 +31,19 @@ services:
     build: ./server
     container_name: savr-backend
     ports:
-      - '5000:5000'
+      - '8000:8000'
     volumes:
       - ./server:/app
     env_file:
       - ./.env
     environment:
-      - FLASK_ENV=development
       - SQL_DB_LINK=postgresql://savr_user:savr_password@postgres:5432/savr_db
     networks:
       - savr-network
     depends_on:
       postgres:
         condition: service_healthy
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
   frontend:
     image: node:18

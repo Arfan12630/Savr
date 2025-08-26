@@ -1,13 +1,30 @@
-import * as React from 'react';
-import Box from '@mui/joy/Box';
-import Drawer from '@mui/joy/Drawer';
-import Button from '@mui/joy/Button';
-import Snackbar from '@mui/material/Snackbar';
-import Avatar from '@mui/joy/Avatar';
-import IconButton from '@mui/joy/IconButton';
 import CalendarTodaySharpIcon from '@mui/icons-material/CalendarTodaySharp';
-const NavBar = ({style,restaurantCardData, addChair, isChairPressed, setIsChairPressed, addTable, isTablePressed, setIsTablePressed, saveLayout}: {style: React.CSSProperties, restaurantCardData: any, addChair: () => void, isChairPressed: boolean, setIsChairPressed: (isChairPressed: boolean) => void, addTable: (shape:string) => void, isTablePressed: boolean, setIsTablePressed: (isTablePressed: boolean) => void, saveLayout: () => void}) => {
-  
+import Box from '@mui/joy/Box';
+import Button from '@mui/joy/Button';
+import Drawer from '@mui/joy/Drawer';
+import Snackbar from '@mui/material/Snackbar';
+import * as React from 'react';
+const NavBar = ({
+  style,
+  restaurantCardData,
+  addChair,
+  isChairPressed,
+  setIsChairPressed,
+  addTable,
+  isTablePressed,
+  setIsTablePressed,
+  saveLayout,
+}: {
+  style: React.CSSProperties;
+  restaurantCardData: any;
+  addChair: () => void;
+  isChairPressed: boolean;
+  setIsChairPressed: (isChairPressed: boolean) => void;
+  addTable: (shape: string) => void;
+  isTablePressed: boolean;
+  setIsTablePressed: (isTablePressed: boolean) => void;
+  saveLayout: () => void;
+}) => {
   const [open, setOpen] = React.useState(false);
   const [currentDate, setCurrentDate] = React.useState('');
 
@@ -17,7 +34,7 @@ const NavBar = ({style,restaurantCardData, addChair, isChairPressed, setIsChairP
         new Date().toLocaleDateString('en-US', {
           month: 'short',
           day: 'numeric',
-          year: 'numeric'
+          year: 'numeric',
         })
       );
     }, 1000);
@@ -37,7 +54,6 @@ const NavBar = ({style,restaurantCardData, addChair, isChairPressed, setIsChairP
       setOpen(inOpen);
     };
 
-   
   return (
     <>
       <Box
@@ -53,49 +69,56 @@ const NavBar = ({style,restaurantCardData, addChair, isChairPressed, setIsChairP
           color: 'white',
           px: 3,
           py: 2,
-        }}
-      >
-        <Button sx = {{
-          color: 'black',
-          border: '1px solid #512da8',
-          '&:hover': {
-            color: 'white',
-            bgcolor: '#512da8',
-          },
-        }}variant="outlined" color="primary" onClick={toggleDrawer(true)}>
+        }}>
+        <Button
+          sx={{
+            color: 'black',
+            border: '1px solid #512da8',
+            '&:hover': {
+              color: 'white',
+              bgcolor: '#512da8',
+            },
+          }}
+          variant="outlined"
+          color="primary"
+          onClick={toggleDrawer(true)}>
           Edit Layout
         </Button>
-        <h1 style={{
-          margin: 0,
-          fontWeight: 'bold',
-          fontSize: 28,
-          color: '#333',
-          flex: 1,
-          textAlign: 'center'
-        }}>
-         <CalendarTodaySharpIcon sx={{marginRight: 1}} />
-         {currentDate}
+        <h1
+          style={{
+            margin: 0,
+            fontWeight: 'bold',
+            fontSize: 28,
+            color: '#333',
+            flex: 1,
+            textAlign: 'center',
+          }}>
+          <CalendarTodaySharpIcon sx={{ marginRight: 1 }} />
+          {currentDate}
         </h1>
         {/* Empty Box to balance the flex layout, or you can put another button here */}
-        <Button sx = {{
-          color: 'black',
-          border: '1px solid #512da8',
-          '&:hover': {
-            color: 'white',
-            bgcolor: '#512da8',
-          },
-        }}variant="outlined" color="primary" onClick={saveLayout}>
+        <Button
+          sx={{
+            color: 'black',
+            border: '1px solid #512da8',
+            '&:hover': {
+              color: 'white',
+              bgcolor: '#512da8',
+            },
+          }}
+          variant="outlined"
+          color="primary"
+          onClick={saveLayout}>
           Save Layout
         </Button>
-    
       </Box>
-      <Drawer open={open} onClose={toggleDrawer(false)}
-      size = "sm"
-      sx={{
-        width: '300px',
-      }}
-  
-    >
+      <Drawer
+        open={open}
+        onClose={toggleDrawer(false)}
+        size="sm"
+        sx={{
+          width: '300px',
+        }}>
         <Box
           role="presentation"
           sx={{
@@ -108,19 +131,26 @@ const NavBar = ({style,restaurantCardData, addChair, isChairPressed, setIsChairP
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-          }}
-        >
-          <Box sx={{ mb: 3, fontWeight: 'bold', fontSize: 24, letterSpacing: 1 }}>
-            <Button variant="outlined" color="neutral" onClick={toggleDrawer(false)}>
-
-            Exit
+          }}>
+          <Box
+            sx={{ mb: 3, fontWeight: 'bold', fontSize: 24, letterSpacing: 1 }}>
+            <Button
+              variant="outlined"
+              color="neutral"
+              onClick={toggleDrawer(false)}>
+              Exit
             </Button>
-           
           </Box>
 
-          <Box sx={{ width: '90%', display: 'flex', flexDirection: 'column', gap: 2 }}> 
+          <Box
+            sx={{
+              width: '90%',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 2,
+            }}>
             <Button
-              onClick={() => addTable("circle")}
+              onClick={() => addTable('circle')}
               variant="soft"
               color="primary"
               sx={{
@@ -136,13 +166,12 @@ const NavBar = ({style,restaurantCardData, addChair, isChairPressed, setIsChairP
                   transform: 'translateY(-2px) scale(1.03)',
                 },
               }}
-              fullWidth
-            >
+              fullWidth>
               Add Round Table
             </Button>
 
             <Button
-              onClick={() => addTable("rectangle")}
+              onClick={() => addTable('rectangle')}
               variant="soft"
               color="primary"
               sx={{
@@ -158,156 +187,134 @@ const NavBar = ({style,restaurantCardData, addChair, isChairPressed, setIsChairP
                   transform: 'translateY(-2px) scale(1.03)',
                 },
               }}
-              fullWidth
-            >
+              fullWidth>
               Add Table
             </Button>
-          
+
             <Button
-  onClick={() => addTable("Door")}
-  variant="soft"
-  color="primary"
-  sx={{
-    borderRadius: 3,
-    fontWeight: 500,
-    fontSize: 16,
-    boxShadow: 1,
-    transition: 'all 0.2s',
-    '&:hover': {
-      bgcolor: 'primary.solidBg',
-      color: 'white',
-      boxShadow: 3,
-      transform: 'translateY(-2px) scale(1.03)',
-    },
-  }}
-  fullWidth
->
-  Add Entrance
-</Button>
-         
-<Button
-  onClick={() => addTable("Kitchen")}
-  variant="soft"
-  color="primary"
-  sx={{
-    borderRadius: 3,
-    fontWeight: 500,
-    fontSize: 16,
-    boxShadow: 1,
-    transition: 'all 0.2s',
-    '&:hover': {
-      bgcolor: 'primary.solidBg',
-      color: 'white',
-      boxShadow: 3,
-      transform: 'translateY(-2px) scale(1.03)',
-    },
-  }}
-  fullWidth
->
-  Add Kitchen
-</Button>
+              onClick={() => addTable('Door')}
+              variant="soft"
+              color="primary"
+              sx={{
+                borderRadius: 3,
+                fontWeight: 500,
+                fontSize: 16,
+                boxShadow: 1,
+                transition: 'all 0.2s',
+                '&:hover': {
+                  bgcolor: 'primary.solidBg',
+                  color: 'white',
+                  boxShadow: 3,
+                  transform: 'translateY(-2px) scale(1.03)',
+                },
+              }}
+              fullWidth>
+              Add Entrance
+            </Button>
 
+            <Button
+              onClick={() => addTable('Kitchen')}
+              variant="soft"
+              color="primary"
+              sx={{
+                borderRadius: 3,
+                fontWeight: 500,
+                fontSize: 16,
+                boxShadow: 1,
+                transition: 'all 0.2s',
+                '&:hover': {
+                  bgcolor: 'primary.solidBg',
+                  color: 'white',
+                  boxShadow: 3,
+                  transform: 'translateY(-2px) scale(1.03)',
+                },
+              }}
+              fullWidth>
+              Add Kitchen
+            </Button>
 
+            <Button
+              onClick={() => addTable('Patio')}
+              variant="soft"
+              color="primary"
+              sx={{
+                borderRadius: 3,
+                fontWeight: 500,
+                fontSize: 16,
+                boxShadow: 1,
+                transition: 'all 0.2s',
+                '&:hover': {
+                  bgcolor: 'primary.solidBg',
+                  color: 'white',
+                  boxShadow: 3,
+                  transform: 'translateY(-2px) scale(1.03)',
+                },
+              }}
+              fullWidth>
+              Add Patio
+            </Button>
 
-<Button
-  onClick={() => addTable("Patio")}
-  variant="soft"
-  color="primary"
-  sx={{
-    borderRadius: 3,
-    fontWeight: 500,
-    fontSize: 16,
-    boxShadow: 1,
-    transition: 'all 0.2s',
-    '&:hover': {
-      bgcolor: 'primary.solidBg',
-      color: 'white',
-      boxShadow: 3,
-      transform: 'translateY(-2px) scale(1.03)',
-    },
-  }}
-  fullWidth
->
-  Add Patio
-</Button>
+            <Button
+              onClick={() => addTable('Patio-Area')}
+              variant="soft"
+              color="primary"
+              sx={{
+                borderRadius: 3,
+                fontWeight: 500,
+                fontSize: 16,
+                boxShadow: 1,
+                transition: 'all 0.2s',
+                '&:hover': {
+                  bgcolor: 'primary.solidBg',
+                  color: 'white',
+                  boxShadow: 3,
+                  transform: 'translateY(-2px) scale(1.03)',
+                },
+              }}
+              fullWidth>
+              Add Patio Area
+            </Button>
 
-
-<Button
-  onClick={() => addTable("Patio-Area")}
-  variant="soft"
-  color="primary"
-  sx={{
-    borderRadius: 3,
-    fontWeight: 500,
-    fontSize: 16,
-    boxShadow: 1,
-    transition: 'all 0.2s',
-    '&:hover': {
-      bgcolor: 'primary.solidBg',
-      color: 'white',
-      boxShadow: 3,
-      transform: 'translateY(-2px) scale(1.03)',
-    },
-  }}
-  fullWidth
->
-  Add Patio Area 
-</Button>
-
-
-<Button
-  onClick={() => addTable("Editable-Area")}
-  variant="soft"
-  color="primary"
-  sx={{
-    borderRadius: 3,
-    fontWeight: 500,
-    fontSize: 16,
-    boxShadow: 1,
-    transition: 'all 0.2s',
-    '&:hover': {
-      bgcolor: 'primary.solidBg',
-      color: 'white',
-      boxShadow: 3,
-      transform: 'translateY(-2px) scale(1.03)',
-    },
-  }}
-  fullWidth
->
-  Add Editable Area
-</Button>
-
-
-
-
-
-
-
-
-
-
-
-
+            <Button
+              onClick={() => addTable('Editable-Area')}
+              variant="soft"
+              color="primary"
+              sx={{
+                borderRadius: 3,
+                fontWeight: 500,
+                fontSize: 16,
+                boxShadow: 1,
+                transition: 'all 0.2s',
+                '&:hover': {
+                  bgcolor: 'primary.solidBg',
+                  color: 'white',
+                  boxShadow: 3,
+                  transform: 'translateY(-2px) scale(1.03)',
+                },
+              }}
+              fullWidth>
+              Add Editable Area
+            </Button>
           </Box>
         </Box>
         <Snackbar
-      color="success"
-      open={isChairPressed}
-      autoHideDuration={4000}
-      onClose={() => setIsChairPressed(false)}
-      message="Chair added ✅"
-      anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-    />
-    <Snackbar
-      color="success"
-      open={isTablePressed}
-      autoHideDuration={4000}
-      onClose={() => setIsTablePressed(false)}
-      message="Table added ✅"
-      />
+          color="success"
+          open={isChairPressed}
+          autoHideDuration={4000}
+          onClose={() => setIsChairPressed(false)}
+          message="Chair added ✅"
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        />
+        <Snackbar
+          color="success"
+          open={isTablePressed}
+          autoHideDuration={4000}
+          onClose={() => setIsTablePressed(false)}
+          message="Table added ✅"
+        />
       </Drawer>
     </>
   );
-}
+};
 
 export default NavBar;
