@@ -1,21 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  CardMedia,
-  Button,
-} from '@mui/material';
-import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
 
 type Restaurant = {
   name: string;
   address: string;
   logo: string;
   menu_images: string[];
-  // add other fields as needed
 };
 
 const RestuarantList = () => {
