@@ -411,7 +411,6 @@ const DroppableArea = () => {
           onMouseUp={handleMouseUp}>
           {tables.map(table => (
             <TableLayout
-              restaurantCardData={restaurantCardData}
               viewOnly={false}
               key={table.id}
               id={table.id}
@@ -429,7 +428,6 @@ const DroppableArea = () => {
               updateTableDetails={updateTableDetails}
               tableNumberforTable={table.tableNumber}
               updateTableNumber={updateTableNumber}
-              ownerView={false}
               reservationData={() => {}}
               restaurantInfo={() => {}}
             />

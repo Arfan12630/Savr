@@ -94,24 +94,12 @@ const ViewRestaurantLayout: React.FC = () => {
 
   return (
     <>
-      <ViewNavBar
-        style={navBarStyle}
-        restaurantCardData={layout}
-        addChair={() => {}}
-        isChairPressed={false}
-        setIsChairPressed={() => {}}
-        addTable={() => {}}
-        isTablePressed={false}
-        setIsTablePressed={() => {}}
-        saveLayout={() => {}}
-      />
+      <ViewNavBar style={navBarStyle} />
 
       <div style={containerStyle}>
         <div style={viewAreaStyle}>
           {layout.tables.map(table => (
             <TableLayout
-              ownerView={false}
-              restaurantCardData={layout}
               viewOnly={true}
               key={table.id}
               id={table.id}
