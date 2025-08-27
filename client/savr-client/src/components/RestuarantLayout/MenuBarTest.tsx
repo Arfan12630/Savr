@@ -1,19 +1,13 @@
-import * as React from 'react';
-import Menu, { menuClasses } from '@mui/joy/Menu';
-import MenuItem from '@mui/joy/MenuItem';
+import Apps from '@mui/icons-material/Apps';
+import CropSquareIcon from '@mui/icons-material/CropSquare';
+import Dropdown from '@mui/joy/Dropdown';
 import IconButton from '@mui/joy/IconButton';
 import List from '@mui/joy/List';
 import ListItem from '@mui/joy/ListItem';
-import Sheet from '@mui/joy/Sheet';
-import Apps from '@mui/icons-material/Apps';
-import Settings from '@mui/icons-material/Settings';
-import Person from '@mui/icons-material/Person';
-import Dropdown from '@mui/joy/Dropdown';
+import Menu, { menuClasses } from '@mui/joy/Menu';
 import MenuButton from '@mui/joy/MenuButton';
-import CropSquareIcon from '@mui/icons-material/CropSquare';
-
-// The Menu is built on top of Popper v2, so it accepts `modifiers` prop that will be passed to the Popper.
-// https://popper.js.org/docs/v2/modifiers/offset/
+import Sheet from '@mui/joy/Sheet';
+import * as React from 'react';
 interface MenuButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   menu: React.ReactElement<any>;
@@ -21,7 +15,7 @@ interface MenuButtonProps extends React.HTMLAttributes<HTMLButtonElement> {
   onOpen: (
     event?:
       | React.MouseEvent<HTMLButtonElement>
-      | React.KeyboardEvent<HTMLButtonElement>,
+      | React.KeyboardEvent<HTMLButtonElement>
   ) => void;
   onLeaveMenu: (callback: () => boolean) => void;
   label: string;
@@ -53,7 +47,9 @@ function NavMenuButton({
   const isOnButton = React.useRef(false);
   const internalOpen = React.useRef(open);
 
-  const handleButtonKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+  const handleButtonKeyDown = (
+    event: React.KeyboardEvent<HTMLButtonElement>
+  ) => {
     internalOpen.current = open;
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault();
@@ -68,8 +64,7 @@ function NavMenuButton({
         if (isOpen) {
           onOpen?.();
         }
-      }}
-    >
+      }}>
       <MenuButton
         {...props}
         slots={{ root: IconButton }}
@@ -97,8 +92,7 @@ function NavMenuButton({
             },
           },
           open ? { bgcolor: 'neutral.plainHoverBg' } : { bgcolor: null },
-        ]}
-      >
+        ]}>
         {children}
       </MenuButton>
       {React.cloneElement(menu, {
@@ -126,9 +120,7 @@ function NavMenuButton({
 
 export default function MenuIconSideNavExample() {
   const [menuIndex, setMenuIndex] = React.useState<null | number>(null);
-  const itemProps = {
-    onClick: () => setMenuIndex(null),
-  };
+
   const createHandleLeaveMenu =
     (index: number) => (getIsOnButton: () => boolean) => {
       setTimeout(() => {
@@ -153,34 +145,36 @@ export default function MenuIconSideNavExample() {
             onOpen={() => setMenuIndex(0)}
             onLeaveMenu={createHandleLeaveMenu(0)}
             menu={
-              <Menu onClose={() => setMenuIndex(null)}
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                gap: 2, // optional spacing between items
-                p: 1,   // padding
-                border: '1px solid #ccc',
-                borderRadius: 'md',
-                bgcolor: 'background.body',
-              }}
-              >
+              <Menu
+                onClose={() => setMenuIndex(null)}
+                sx={{
+                  display: 'flex',
+                  flexDirection: 'row',
+                  gap: 2, // optional spacing between items
+                  p: 1, // padding
+                  border: '1px solid #ccc',
+                  borderRadius: 'md',
+                  bgcolor: 'background.body',
+                }}>
                 <ul
-                style={{
+                  style={{
                     listStyleType: 'none',
                     display: 'flex',
                     flexDirection: 'row',
                     gap: 2,
                     padding: 1,
-             
+
                     borderRadius: 'md',
-                }}
-                >
-                  <li><CropSquareIcon /> </li>
-                  <li><CropSquareIcon /> </li>
+                  }}>
+                  <li>
+                    <CropSquareIcon />{' '}
+                  </li>
+                  <li>
+                    <CropSquareIcon />{' '}
+                  </li>
                 </ul>
               </Menu>
-            }
-          >
+            }>
             <Apps />
           </NavMenuButton>
         </ListItem>
