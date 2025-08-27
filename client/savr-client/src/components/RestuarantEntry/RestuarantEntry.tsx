@@ -1,95 +1,76 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from 'react';
 
-import { useNavigate } from "react-router-dom";
-import Box from "@mui/joy/Box";
-import Typography from "@mui/joy/Typography";
-import CircularProgress from "@mui/joy/CircularProgress";
-import axios from "axios";
-import RestuarantEntryInput from "./RestuarantEntryInput";
-import { createStrictEquality } from "typescript";
+import Box from '@mui/joy/Box';
+import CircularProgress from '@mui/joy/CircularProgress';
+import Typography from '@mui/joy/Typography';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import RestuarantEntryInput from './RestuarantEntryInput';
 
-const fields = ["restaurant", "city"];
+const fields = ['restaurant', 'city'];
 type Field = (typeof fields)[number];
 
 const RestuarantEntry: React.FC = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
-  const [userMessage, setUserMessage] = useState<string>("");
+  const [userMessage, setUserMessage] = useState<string>('');
   const [inputs, setInputs] = useState<{ [K in Field]?: string | File }>({});
-  const [responseMessage, setResponseMessage] = useState<string>("");
+  const [responseMessage, setResponseMessage] = useState<string>('');
   const [cards, setCards] = useState<any[]>([]);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [entryMessages, setEntryMessages] = useState<string>(
-    "Please enter the name of the restaurant"
+    'Please enter the name of the restaurant'
   );
   const [hovered, setHovered] = useState<boolean>(false);
   const navigate = useNavigate();
   const [showLogoStep, setShowLogoStep] = useState(false);
 
-  const currentField = fields[currentStep];
-
-
   const processFile = (file: File) => {
-    console.log("Processing file:", file.name, file.type, file.size);
     const reader = new FileReader();
     reader.onload = function (e) {
       const base64DataUrl = e.target?.result;
-      if (typeof base64DataUrl === "string") {
-        console.log("Base64 conversion complete. First 50 chars:");
-        // Store the base64 string as the logo field
-        console.log(base64DataUrl);
+      if (typeof base64DataUrl === 'string') {
         const updatedInputs = { ...inputs, logo: base64DataUrl };
         setInputs(updatedInputs);
 
-        setUserMessage("Logo image uploaded");
-        setEntryMessages("");
-        // Now, continue the flow as if all fields are collected
-        // (You may want to send to backend here if this is the last step)
-        // Example:
-        // sendToBackend(updatedInputs);
+        setUserMessage('Logo image uploaded');
+        setEntryMessages('');
       }
     };
     reader.readAsDataURL(file);
   };
 
-
-
   const handleSend = async (value: string | File) => {
     setIsLoading(true);
 
     if (showLogoStep && value instanceof File) {
-      // Handle logo upload
       const reader = new FileReader();
       reader.onload = async function (e) {
         const base64DataUrl = e.target?.result;
-        if (typeof base64DataUrl === "string") {
+        if (typeof base64DataUrl === 'string') {
           try {
             const response = await axios.post(
-              "http://127.0.0.1:5000/upload-logo",
+              'http://127.0.0.1:8000/upload-logo',
               { ...inputs, logo: base64DataUrl }
             );
             console.log(response.data);
-            setCards([response.data])
-            setResponseMessage("Logo uploaded successfully!");
-            
-           
+            setCards([response.data]);
+            setResponseMessage('Logo uploaded successfully!');
           } catch (error) {
-            setResponseMessage("Error uploading logo.");
+            setResponseMessage('Error uploading logo.');
           } finally {
             setIsLoading(false);
-
           }
         }
       };
-      setEntryMessages("")
+      setEntryMessages('');
       reader.readAsDataURL(value);
       return;
     }
 
-    // Normal flow for restaurant and city
     const updatedInputs = { ...inputs, [fields[currentStep]]: value };
     setInputs(updatedInputs);
-    setEntryMessages("");
+    setEntryMessages('');
 
     if (currentStep < fields.length - 1) {
       setCurrentStep(currentStep + 1);
@@ -98,19 +79,17 @@ const RestuarantEntry: React.FC = () => {
     } else {
       // Send restaurant and city to backend
       try {
-        setResponseMessage("");
+        setResponseMessage('');
         const response = await axios.post(
-          "http://127.0.0.1:5000/get-address-options",
+          'http://127.0.0.1:8000/get-address-options',
           updatedInputs
         );
         console.log(response.data);
-       
+
         setShowLogoStep(true); // Now prompt for logo
-        setEntryMessages("Please upload your restaurant logo");
-        
-        
+        setEntryMessages('Please upload your restaurant logo');
       } catch (error) {
-        setResponseMessage("Error connecting to server. Please try again.");
+        setResponseMessage('Error connecting to server. Please try again.');
       } finally {
         setIsLoading(false);
       }
@@ -122,20 +101,20 @@ const RestuarantEntry: React.FC = () => {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        "http://127.0.0.1:5000/get-address-info",
+        'http://127.0.0.1:8000/get-address-info',
         card
       );
       console.log(response.data);
-      if (response.data.message == "Restaurant already exists") {
-        setResponseMessage("Restaurant already exists");
+      if (response.data.message == 'Restaurant already exists') {
+        setResponseMessage('Restaurant already exists');
       }
       setTimeout(() => {
-        navigate("/owner/restaurant-entry/menu-image-upload", { state: card });
+        navigate('/owner/restaurant-entry/menu-image-upload', { state: card });
         setHovered(true);
       }, 500);
     } catch (error) {
       console.log(error);
-      setResponseMessage("Error connecting to server. Please try again.");
+      setResponseMessage('Error connecting to server. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -144,82 +123,76 @@ const RestuarantEntry: React.FC = () => {
   return (
     <Box
       sx={{
-        width: "100vw",
-        height: "100vh",
-        background: "radial-gradient(circle at top, #161a2b, #0a0f1f)",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
+        width: '100vw',
+        height: '100vh',
+        background: 'radial-gradient(circle at top, #161a2b, #0a0f1f)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
       <Box
         sx={{
-          width: "90%",
-          maxWidth: "800px",
-          height: "400px",
-          backgroundColor: "#1a1d26",
-          borderRadius: "20px",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.5)",
+          width: '90%',
+          maxWidth: '800px',
+          height: '400px',
+          backgroundColor: '#1a1d26',
+          borderRadius: '20px',
+          boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
           p: 2,
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-        }}
-      >
-        {/* Message area */}
-        <Box sx={{ flexGrow: 1, overflowY: "auto", pr: 1 }}>
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'space-between',
+        }}>
+        <Box sx={{ flexGrow: 1, overflowY: 'auto', pr: 1 }}>
           {userMessage && (
-            <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
               <Typography
                 level="body-md"
                 sx={{
-                  backgroundColor: "#2e3953",
-                  color: "white",
+                  backgroundColor: '#2e3953',
+                  color: 'white',
                   px: 2,
                   py: 1,
-                  borderRadius: "12px",
-                }}
-              >
+                  borderRadius: '12px',
+                }}>
                 {userMessage}
               </Typography>
             </Box>
           )}
 
           {isLoading && (
-            <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
               <CircularProgress color="neutral" />
             </Box>
           )}
 
           {responseMessage && (
-            <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
               <Typography
                 level="body-md"
                 sx={{
-                  backgroundColor: "#2a2f3d",
-                  color: "#ddd",
+                  backgroundColor: '#2a2f3d',
+                  color: '#ddd',
                   px: 2,
                   py: 1,
-                  borderRadius: "12px",
-                }}
-              >
+                  borderRadius: '12px',
+                }}>
                 {responseMessage}
               </Typography>
             </Box>
           )}
 
           {entryMessages && (
-            <Box sx={{ display: "flex", justifyContent: "flex-start", mb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
               <Typography
                 level="body-md"
                 sx={{
-                  backgroundColor: "#2a2f3d",
-                  color: "#ddd",
+                  backgroundColor: '#2a2f3d',
+                  color: '#ddd',
                   px: 2,
                   py: 1,
-                  borderRadius: "12px",
-                }}
-              >
+                  borderRadius: '12px',
+                }}>
                 {entryMessages}
               </Typography>
             </Box>
@@ -228,64 +201,63 @@ const RestuarantEntry: React.FC = () => {
           {cards && cards.length > 0 && (
             <Box
               sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "flex-start",
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-start',
                 mb: 2,
-              }}
-            >
+              }}>
               {cards.map((card, idx) => (
                 <Box
                   onClick={() => {
                     handleCardClick(card);
                   }}
                   key={card.name ? card.name + idx : idx}
-                  sx={{ mb: 1 }}
-                >
-                    {card.logo && (
+                  sx={{ mb: 1 }}>
+                  {card.logo && (
                     <img
                       src={card.logo}
                       alt={card.name}
                       style={{ maxWidth: 50, maxHeight: 50 }}
                     />
                   )}
-                  <Typography level="body-md" sx={{ fontWeight: "bold" }}>
+                  <Typography
+                    level="body-md"
+                    sx={{ fontWeight: 'bold' }}>
                     {card.name}
                   </Typography>
                   <Typography level="body-sm">{card.address}</Typography>
                   <Typography level="body-sm">Opening Hours:</Typography>
                   {Array.isArray(card.opening_hours) ? (
                     card.opening_hours.map((entry: string, i: number) => (
-                      <Typography level="body-xs" key={i}>
+                      <Typography
+                        level="body-xs"
+                        key={i}>
                         {entry}
                       </Typography>
                     ))
                   ) : (
-                    <Typography level="body-xs">{card.opening_hours}</Typography>
+                    <Typography level="body-xs">
+                      {card.opening_hours}
+                    </Typography>
                   )}
-                
                 </Box>
               ))}
             </Box>
           )}
         </Box>
 
-         
         {/* Input bar */}
         <Box sx={{ mt: 1 }}>
           <RestuarantEntryInput
             onSend={handleSend}
             placeholder={
               showLogoStep
-                ? "Upload your logo..."
+                ? 'Upload your logo...'
                 : `Enter ${fields[currentStep]}...`
             }
             disabled={isLoading}
             showFileInput={showLogoStep}
           />
-
-
-          
         </Box>
       </Box>
     </Box>

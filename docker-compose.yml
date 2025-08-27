@@ -1,27 +1,58 @@
-version: '3.8'
-
 services:
+  postgres:
+    image: postgres:15
+    container_name: savr-postgres
+    environment:
+      POSTGRES_DB: savr_db
+      POSTGRES_USER: savr_user
+      POSTGRES_PASSWORD: savr_password
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - savr-network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U savr_user -d savr_db']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  adminer:
+    image: adminer:latest
+    container_name: savr-adminer
+    ports:
+      - '8080:8080'
+    networks:
+      - savr-network
+    depends_on:
+      - postgres
+
   backend:
     build: ./server
     container_name: savr-backend
     ports:
-      - "5000:5000"
+      - '8000:8000'
     volumes:
       - ./server:/app
     env_file:
       - ./.env
     environment:
-      - FLASK_ENV=development
+      - SQL_DB_LINK=postgresql://savr_user:savr_password@postgres:5432/savr_db
+    networks:
+      - savr-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
   frontend:
-    # For development, use a simpler approach that supports hot reloading
     image: node:18
     container_name: savr-frontend
     working_dir: /app
     volumes:
       - ./client/savr-client:/app
     ports:
-      - "3000:3000"
+      - '3000:3000'
     environment:
       - WATCHPACK_POLLING=true
     command: sh -c "npm install && npm start"
@@ -29,3 +60,12 @@ services:
       - backend
     env_file:
       - ./.env
+    networks:
+      - savr-network
+
+volumes:
+  postgres_data:
+
+networks:
+  savr-network:
+    driver: bridge

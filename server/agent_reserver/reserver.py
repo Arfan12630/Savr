@@ -1,15 +1,13 @@
-# Download the helper library from https://www.twilio.com/docs/python/install
 import os
-from twilio.rest import Client
-from dotenv import load_dotenv
-from flask import Blueprint, request, jsonify
-from twilio.twiml.voice_response import VoiceResponse
 import re
 
-
+from dotenv import load_dotenv
+from fastapi import APIRouter, Depends, HTTPException
+from twilio.rest import Client
+from twilio.twiml.voice_response import VoiceResponse
 
 load_dotenv()
-#reserver = Blueprint("reserver", __name__)
+# reserver = Blueprint("reserver", __name__)
 account_sid = os.environ.get("account_sid")
 auth_token = os.environ.get("auth_token")
 
@@ -19,16 +17,17 @@ client = Client(account_sid, auth_token)
 reserved_times = ["1:00 PM", "3:00 PM"]
 unreserved_times = ["2:00 PM", "4:00 PM"]
 
+
 def is_slot_available(requested_time):
     return requested_time not in reserved_times
+
 
 def suggest_alternative_times():
     return unreserved_times
 
+
 call = client.messages.create(
-  body="Hello, World!",
-  to="+16476543141",
-  from_="+14322391186"
+    body="Hello, World!", to="+16476543141", from_="+14322391186"
 )
 print(call.sid)
 
@@ -40,7 +39,6 @@ print(call.sid)
 #     gather.say("What is your name and when would you like to book an appointment?")
 #     response.append(gather)
 #     return jsonify({"message": "Hello, World!"})
-
 
 
 # @reserver.route("/process_speech", methods=["POST"])
@@ -56,16 +54,15 @@ print(call.sid)
 #         response.say(f"Sorry, the slot at {requested_time} is taken. How about {alternatives[0]} or {alternatives[1]}?")
 #     else:
 #         response.say("I couldn't understand the time you requested. Please try again.")
-    
+
 #     return str(response)
+
 
 def extract_time_from_input(user_input):
     # Use a regular expression to find a time in the format "h:mm AM/PM"
-    match = re.search(r'\b\d{1,2}:\d{2} [APap][Mm]\b', user_input)
+    match = re.search(r"\b\d{1,2}:\d{2} [APap][Mm]\b", user_input)
     if match:
         return match.group(0)
     else:
         # If no time is found, return a default or handle the error
         return None
-
-

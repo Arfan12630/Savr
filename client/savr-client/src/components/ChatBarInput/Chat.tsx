@@ -37,7 +37,7 @@ const Chat: React.FC = () => {
     setIsLoading(true);
 
     axios
-      .post("http://127.0.0.1:5000/chat", { message: text })
+      .post("http://127.0.0.1:8000/chat", { message: text })
       .then((res) => {
         const data: ResponseData = res.data;
         setMessages((prev) => [
