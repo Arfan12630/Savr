@@ -17,7 +17,7 @@ import Info from './Components/Info';
 import InfoMobile from './Components/InfoMobile';
 import PaymentForm from './Components/PaymentForm';
 import Review from './Components/Review';
-import SitemarkIcon from './Components/SitemarkIcon';
+import { SitemarkIcon } from './Components/SitemarkIcon';
 
 const steps = ['Shipping address', 'Payment details', 'Review your order'];
 function getStepContent(step: number) {

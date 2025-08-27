@@ -5,11 +5,17 @@ import CircularProgress from '@mui/joy/CircularProgress';
 import Typography from '@mui/joy/Typography';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import RestuarantEntryInput from './RestuarantEntryInput';
+import { RestuarantEntryInput } from './RestuarantEntryInput';
 
 const fields = ['restaurant', 'city'];
 type Field = (typeof fields)[number];
 
+// TODO: Large component (234 lines) - needs refactoring
+// - Extract API calls into custom hooks
+// - Split into smaller components (RestaurantForm, RestaurantCard, etc.)
+// - Move inline styles to CSS classes
+// - Add proper error handling and loading states
+// - Remove console.log statements
 const RestuarantEntry = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
   const [inputs, setInputs] = useState<{ [K in Field]?: string | File }>({});
@@ -36,6 +42,7 @@ const RestuarantEntry = () => {
               'http://127.0.0.1:8000/upload-logo',
               { ...inputs, logo: base64DataUrl }
             );
+            // TODO: Remove console.log - debugging statement
             console.log(response.data);
             setCards([response.data]);
             setResponseMessage('Logo uploaded successfully!');
@@ -67,6 +74,7 @@ const RestuarantEntry = () => {
           'http://127.0.0.1:8000/get-address-options',
           updatedInputs
         );
+        // TODO: Remove console.log - debugging statement
         console.log(response.data);
 
         setShowLogoStep(true); // Now prompt for logo

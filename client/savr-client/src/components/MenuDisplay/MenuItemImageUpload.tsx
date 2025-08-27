@@ -7,7 +7,9 @@ interface MenuItemImageUploadProps {
   onImageUploaded: (imageUrl: string) => void;
 }
 
-const MenuItemImageUpload = ({ onImageUploaded }: MenuItemImageUploadProps) => {
+export function MenuItemImageUpload({
+  onImageUploaded,
+}: MenuItemImageUploadProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,6 +68,4 @@ const MenuItemImageUpload = ({ onImageUploaded }: MenuItemImageUploadProps) => {
       </div>
     </div>
   );
-};
-
-export default MenuItemImageUpload;
+}

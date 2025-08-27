@@ -5,8 +5,14 @@ import Typography from '@mui/joy/Typography';
 import axios from 'axios';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import RestuarantMenuUploadInput from './RestuarantMenuUploadInput';
+import { RestuarantMenuUploadInput } from './RestuarantMenuUploadInput';
 
+// TODO: Large component (197 lines) - needs refactoring
+// - Extract file processing logic into custom hooks
+// - Split into smaller components (FileUpload, MenuPreview, etc.)
+// - Move inline styles to CSS classes
+// - Add proper error handling
+// - Remove console statements
 const RestuarantMenuImageUpload = () => {
   const location = useLocation();
   const navigate = useNavigate();

@@ -26,6 +26,9 @@ interface ResponseData {
 
 type ChatMessage = { role: 'user' | 'assistant'; content: string };
 
+// TODO: Large component (259 lines) - needs refactoring
+// - Extract UI components (ChatHeader, MessageBubble, etc.)
+// - Move inline styles to CSS classes or styled components
 const Chat = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);

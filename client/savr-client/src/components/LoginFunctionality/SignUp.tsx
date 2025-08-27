@@ -16,7 +16,7 @@ import Stack from '@mui/joy/Stack';
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded';
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded';
 import BadgeRoundedIcon from '@mui/icons-material/BadgeRounded';
-import GoogleIcon from './GoogleIcon';
+import { GoogleIcon } from './GoogleIcon';
 
 const SignUp: React.FC = () => {
   interface FormElements extends HTMLFormControlsCollection {

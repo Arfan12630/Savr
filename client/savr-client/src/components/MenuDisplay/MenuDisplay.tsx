@@ -1,8 +1,8 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import './MenuDisplay.css';
-import MenuItemImageUpload from './MenuItemImageUpload';
-import ShoppingCart from './ShoppingCart';
+import { MenuItemImageUpload } from './MenuItemImageUpload';
+import { ShoppingCart } from './ShoppingCart';
 import { useShoppingCart } from './ShoppingCartContext';
 
 interface MenuItemInfo {

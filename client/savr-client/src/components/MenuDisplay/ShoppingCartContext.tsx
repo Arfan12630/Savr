@@ -12,7 +12,7 @@ interface ShoppingCartContextType {
 }
 
 // Create context with default values
-const ShoppingCartContext = createContext<ShoppingCartContextType>({
+export const ShoppingCartContext = createContext<ShoppingCartContextType>({
   items: [],
   addItem: () => {},
   removeItem: () => {},
@@ -101,4 +101,4 @@ export const ShoppingCartProvider = ({
   );
 };
 
-export default ShoppingCartContext;
+// no default export to encourage named imports

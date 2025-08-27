@@ -16,7 +16,7 @@ import Stack from '@mui/joy/Stack';
 import { CssVarsProvider, extendTheme, useColorScheme } from '@mui/joy/styles';
 import Typography from '@mui/joy/Typography';
 import { useEffect, useState } from 'react';
-import GoogleIcon from './GoogleIcon';
+import { GoogleIcon } from './GoogleIcon';
 
 const SignIn = () => {
   interface FormElements extends HTMLFormControlsCollection {

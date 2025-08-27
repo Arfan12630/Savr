@@ -2,7 +2,7 @@ import { useState } from 'react';
 import './ShoppingCart.css';
 import { useShoppingCart } from './ShoppingCartContext';
 
-const ShoppingCart = () => {
+export function ShoppingCart() {
   const {
     items,
     removeItem,
@@ -113,6 +113,4 @@ const ShoppingCart = () => {
       )}
     </div>
   );
-};
-
-export default ShoppingCart;
+}
