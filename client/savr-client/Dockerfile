@@ -1,5 +1,4 @@
-# Use official Node image for building
-FROM node:18 as build
+FROM node:22.12-alpine AS build
 
 WORKDIR /app
 
@@ -10,7 +9,7 @@ RUN npm install
 # Copy source code
 COPY . .
 
-# Build the React app
+# Build the React app with Vite
 RUN npm run build
 
 # Use a lightweight web server to serve the build
