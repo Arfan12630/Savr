@@ -62,6 +62,7 @@ const TableLayout = ({
     id,
   });
 
+  const [isHovered, setIsHovered] = React.useState(false);
   const [size, setSize] = React.useState({ width, height });
 
   const [showDelete, setShowDelete] = React.useState(false);
@@ -172,7 +173,7 @@ const TableLayout = ({
     // Add animation when selected
     animation: selected ? 'pulse 0.5s infinite alternate' : 'none',
   };
-  if (shape === 'Circle') {
+  if (shape === 'circle') {
     tableStyle.borderRadius = '50%';
   }
   if (shape === 'Door') {
@@ -242,6 +243,14 @@ const TableLayout = ({
         onDoubleClick={() => {
           setShowText(true);
           setDoubleClicked(true);
+        }}
+        onMouseEnter = {() => {
+          setIsHovered(true)
+          setShowDelete(true)
+        }}
+        onMouseLeave = {() => {
+          setIsHovered(false)
+          setShowDelete(false)
         }}
         onContextMenu={handleRightClick}>
         {!viewOnly && contextMenu && (
@@ -392,7 +401,7 @@ const TableLayout = ({
         </div>
 
         {/* Only show delete/rotate if not in resize-only mode */}
-        {showDelete && !viewOnly && !resizeOnly && (
+        {showDelete && !viewOnly && !resizeOnly && isHovered && (
           <>
             <button
               style={{

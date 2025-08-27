@@ -182,20 +182,6 @@ const DroppableArea = () => {
     );
   };
 
-  const addChair = () => {
-    setChairs(prev => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        x: 100 + prev.length * 30,
-        y: 100,
-        rotation: 0,
-        width: CHAIR_SIZE,
-        height: CHAIR_SIZE,
-      },
-    ]);
-    setIsChairPressed(true);
-  };
 
   const addTable = (shape: string) => {
     setTables(prev => [
@@ -391,7 +377,7 @@ const DroppableArea = () => {
       <div style={containerStyle}>
         <NavBar
           restaurantCardData={restaurantCardData.restaurantCardData}
-          addChair={addChair}
+          
           isChairPressed={isChairPressed}
           setIsChairPressed={setIsChairPressed}
           addTable={addTable}

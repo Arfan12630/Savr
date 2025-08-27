@@ -1,11 +1,16 @@
 import { useState } from 'react';
 
 const RestuarantEntryInput = ({
+    onSend,
+    placeholder,
+    disabled,
+    showFileInput,
+}: {
     onSend: (message: any) => void;
     placeholder: string;
     disabled: boolean;
     showFileInput?: boolean;
-}> = ({ onSend, placeholder, disabled, showFileInput }) => {
+}) => {
     const [message, setMessage] = useState("");
 
     const handleSubmit = () => {
