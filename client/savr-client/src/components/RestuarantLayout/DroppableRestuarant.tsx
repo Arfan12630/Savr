@@ -28,7 +28,7 @@ const DroppableArea = () => {
   const location = useLocation();
   const restaurantCardData = location.state;
   console.log(restaurantCardData);
-  const { setNodeRef, isOver } = useDroppable({
+  const { setNodeRef } = useDroppable({
     id: 'droppable-area',
   });
   const [touchedBoundary, setTouchedBoundary] = useState(false);
@@ -59,7 +59,6 @@ const DroppableArea = () => {
   const [isChairPressed, setIsChairPressed] = useState(false);
 
   const [isTablePressed, setIsTablePressed] = useState(false);
-  const [isRoundTablePressed, setIsRoundTablePressed] = useState(false);
   const [selectionBox, setSelectionBox] = useState<{
     startX: number;
     startY: number;

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import Box from '@mui/joy/Box';
 import CircularProgress from '@mui/joy/CircularProgress';
@@ -10,9 +10,8 @@ import RestuarantEntryInput from './RestuarantEntryInput';
 const fields = ['restaurant', 'city'];
 type Field = (typeof fields)[number];
 
-const RestuarantEntry: React.FC = () => {
+const RestuarantEntry = () => {
   const [currentStep, setCurrentStep] = useState<number>(0);
-  const [userMessage, setUserMessage] = useState<string>('');
   const [inputs, setInputs] = useState<{ [K in Field]?: string | File }>({});
   const [responseMessage, setResponseMessage] = useState<string>('');
   const [cards, setCards] = useState<any[]>([]);
@@ -21,24 +20,8 @@ const RestuarantEntry: React.FC = () => {
   const [entryMessages, setEntryMessages] = useState<string>(
     'Please enter the name of the restaurant'
   );
-  const [hovered, setHovered] = useState<boolean>(false);
   const navigate = useNavigate();
   const [showLogoStep, setShowLogoStep] = useState(false);
-
-  const processFile = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = function (e) {
-      const base64DataUrl = e.target?.result;
-      if (typeof base64DataUrl === 'string') {
-        const updatedInputs = { ...inputs, logo: base64DataUrl };
-        setInputs(updatedInputs);
-
-        setUserMessage('Logo image uploaded');
-        setEntryMessages('');
-      }
-    };
-    reader.readAsDataURL(file);
-  };
 
   const handleSend = async (value: string | File) => {
     setIsLoading(true);
@@ -105,12 +88,11 @@ const RestuarantEntry: React.FC = () => {
         card
       );
       console.log(response.data);
-      if (response.data.message == 'Restaurant already exists') {
+      if (response.data.message === 'Restaurant already exists') {
         setResponseMessage('Restaurant already exists');
       }
       setTimeout(() => {
         navigate('/owner/restaurant-entry/menu-image-upload', { state: card });
-        setHovered(true);
       }, 500);
     } catch (error) {
       console.log(error);
@@ -144,22 +126,6 @@ const RestuarantEntry: React.FC = () => {
           justifyContent: 'space-between',
         }}>
         <Box sx={{ flexGrow: 1, overflowY: 'auto', pr: 1 }}>
-          {userMessage && (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-              <Typography
-                level="body-md"
-                sx={{
-                  backgroundColor: '#2e3953',
-                  color: 'white',
-                  px: 2,
-                  py: 1,
-                  borderRadius: '12px',
-                }}>
-                {userMessage}
-              </Typography>
-            </Box>
-          )}
-
           {isLoading && (
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
               <CircularProgress color="neutral" />
