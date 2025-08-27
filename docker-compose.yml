@@ -7,7 +7,7 @@ services:
       POSTGRES_USER: savr_user
       POSTGRES_PASSWORD: savr_password
     ports:
-      - '5432:5432'
+      - '5433:5433'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
@@ -46,16 +46,16 @@ services:
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
   frontend:
-    image: node:18
+    image: node:22.12
     container_name: savr-frontend
     working_dir: /app
     volumes:
       - ./client/savr-client:/app
     ports:
-      - '3000:3000'
+      - '3000:3000' 
     environment:
       - WATCHPACK_POLLING=true
-    command: sh -c "npm install && npm start"
+    command: sh -c "npm install && npm run dev"
     depends_on:
       - backend
     env_file:

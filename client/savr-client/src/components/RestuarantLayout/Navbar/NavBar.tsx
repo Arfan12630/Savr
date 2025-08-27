@@ -7,7 +7,7 @@ import * as React from 'react';
 const NavBar = ({
   style,
   restaurantCardData,
-  addChair,
+ 
   isChairPressed,
   setIsChairPressed,
   addTable,
@@ -17,7 +17,7 @@ const NavBar = ({
 }: {
   style: React.CSSProperties;
   restaurantCardData: any;
-  addChair: () => void;
+  
   isChairPressed: boolean;
   setIsChairPressed: (isChairPressed: boolean) => void;
   addTable: (shape: string) => void;

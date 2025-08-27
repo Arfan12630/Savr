@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import ChairLayout from '../RestuarantLayout/ChairLayout';
-import TableLayout from '../RestuarantLayout/TableLayout';
-import ViewNavBar from '../RestuarantLayout/Navbar/ViewNavBar';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import ViewNavBar from '../RestuarantLayout/Navbar/ViewNavBar';
+import TableLayout from '../RestuarantLayout/TableLayout';
 
 // Use the same dimensions as DroppableRestuarant
 const CONTAINER_WIDTH = 1700;
 const CONTAINER_HEIGHT = 900;
 
-const ViewRestaurantLayout: React.FC = () => {
+const ViewRestaurantLayout = () => {
   const [layout, setLayout] = useState<{
     name: any;
     chairs: any[];
@@ -20,7 +19,6 @@ const ViewRestaurantLayout: React.FC = () => {
   const reservationData = location.state?.reservationData;
   const restaurantInfo = location.state?.restaurantInfo;
 
-  // First useEffect - fetch layout
   useEffect(() => {
     axios
       .get(
@@ -31,9 +29,8 @@ const ViewRestaurantLayout: React.FC = () => {
         setLayout(response.data);
       })
       .catch(error => console.error('Error fetching layout:', error));
-  }, []);
+  });
 
-  // Second useEffect - auto assign table
   useEffect(() => {
     if (layout && reservationData && restaurantInfo) {
       axios
@@ -48,10 +45,10 @@ const ViewRestaurantLayout: React.FC = () => {
     }
   }, [reservationData, restaurantInfo, layout]);
 
-  // Render loading state if layout is not yet loaded
-  if (!layout) return <div>Loading...</div>;
+  if (!layout) {
+    return <div>Loading...</div>;
+  }
 
-  // Use the same container style as DroppableRestuarant
   const containerStyle: React.CSSProperties = {
     width: '100vw',
     height: '100vh',
@@ -65,7 +62,6 @@ const ViewRestaurantLayout: React.FC = () => {
     justifyContent: 'center',
   };
 
-  // Use the same drag area style as DroppableRestuarant
   const viewAreaStyle: React.CSSProperties = {
     width: '200vw',
     height: '120vh',
@@ -98,24 +94,12 @@ const ViewRestaurantLayout: React.FC = () => {
 
   return (
     <>
-      <ViewNavBar
-        style={navBarStyle}
-        restaurantCardData={layout}
-        addChair={() => {}}
-        isChairPressed={false}
-        setIsChairPressed={() => {}}
-        addTable={() => {}}
-        isTablePressed={false}
-        setIsTablePressed={() => {}}
-        saveLayout={() => {}}
-      />
+      <ViewNavBar style={navBarStyle} />
 
       <div style={containerStyle}>
         <div style={viewAreaStyle}>
           {layout.tables.map(table => (
             <TableLayout
-              ownerView={false}
-              restaurantCardData={layout}
               viewOnly={true}
               key={table.id}
               id={table.id}
@@ -145,4 +129,4 @@ const ViewRestaurantLayout: React.FC = () => {
   );
 };
 
-export default ViewRestaurantLayout;
+export { ViewRestaurantLayout };

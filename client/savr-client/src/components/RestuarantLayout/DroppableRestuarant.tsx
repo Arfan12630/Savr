@@ -1,5 +1,5 @@
 import { DndContext, useDroppable } from '@dnd-kit/core';
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { data, useLocation } from 'react-router-dom';
 
 import Snackbar from '@mui/material/Snackbar';
@@ -28,7 +28,7 @@ const DroppableArea = () => {
   const location = useLocation();
   const restaurantCardData = location.state;
   console.log(restaurantCardData);
-  const { setNodeRef, isOver } = useDroppable({
+  const { setNodeRef } = useDroppable({
     id: 'droppable-area',
   });
   const [touchedBoundary, setTouchedBoundary] = useState(false);
@@ -59,7 +59,6 @@ const DroppableArea = () => {
   const [isChairPressed, setIsChairPressed] = useState(false);
 
   const [isTablePressed, setIsTablePressed] = useState(false);
-  const [isRoundTablePressed, setIsRoundTablePressed] = useState(false);
   const [selectionBox, setSelectionBox] = useState<{
     startX: number;
     startY: number;
@@ -183,20 +182,6 @@ const DroppableArea = () => {
     );
   };
 
-  const addChair = () => {
-    setChairs(prev => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        x: 100 + prev.length * 30,
-        y: 100,
-        rotation: 0,
-        width: CHAIR_SIZE,
-        height: CHAIR_SIZE,
-      },
-    ]);
-    setIsChairPressed(true);
-  };
 
   const addTable = (shape: string) => {
     setTables(prev => [
@@ -392,7 +377,7 @@ const DroppableArea = () => {
       <div style={containerStyle}>
         <NavBar
           restaurantCardData={restaurantCardData.restaurantCardData}
-          addChair={addChair}
+          
           isChairPressed={isChairPressed}
           setIsChairPressed={setIsChairPressed}
           addTable={addTable}
@@ -412,7 +397,6 @@ const DroppableArea = () => {
           onMouseUp={handleMouseUp}>
           {tables.map(table => (
             <TableLayout
-              restaurantCardData={restaurantCardData}
               viewOnly={false}
               key={table.id}
               id={table.id}
@@ -430,7 +414,6 @@ const DroppableArea = () => {
               updateTableDetails={updateTableDetails}
               tableNumberforTable={table.tableNumber}
               updateTableNumber={updateTableNumber}
-              ownerView={false}
               reservationData={() => {}}
               restaurantInfo={() => {}}
             />
@@ -467,4 +450,4 @@ const DroppableArea = () => {
   );
 };
 
-export default DroppableArea;
+export { DroppableArea };

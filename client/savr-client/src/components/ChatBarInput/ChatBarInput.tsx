@@ -1,15 +1,13 @@
-import React, { useState } from "react";
-import "./ChairBarInput.css";
+import { useState } from 'react';
+import './ChairBarInput.css';
 
-const ChatInput: React.FC<{
-  onSend: (message: string) => void;
-}> = ({ onSend }) => {
-  const [message, setMessage] = useState("");
+const ChatInput = ({ onSend }: { onSend: (message: string) => void }) => {
+  const [message, setMessage] = useState('');
 
   const handleSubmit = () => {
     if (!message.trim()) return;
     onSend(message.trim());
-    setMessage("");
+    setMessage('');
   };
 
   return (
@@ -20,15 +18,19 @@ const ChatInput: React.FC<{
         type="text"
         placeholder="Type your message..."
         value={message}
-        onChange={(e) => setMessage(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && handleSubmit()}
+        onChange={e => setMessage(e.target.value)}
+        onKeyDown={e => e.key === 'Enter' && handleSubmit()}
       />
 
       {/* <button className="icon-button" title="Voice">🎤</button> */}
-      <button className="icon-button" title="Send" onClick={handleSubmit}>
-        ⬆ </button>
+      <button
+        className="icon-button"
+        title="Send"
+        onClick={handleSubmit}>
+        ⬆{' '}
+      </button>
     </div>
   );
 };
 
-export default ChatInput;
+export { ChatInput };

@@ -1,8 +1,8 @@
 import axios from 'axios';
 import React, { useEffect, useRef, useState } from 'react';
 import './MenuDisplay.css';
-import MenuItemImageUpload from './MenuItemImageUpload';
-import ShoppingCart from './ShoppingCart';
+import { MenuItemImageUpload } from './MenuItemImageUpload';
+import { ShoppingCart } from './ShoppingCart';
 import { useShoppingCart } from './ShoppingCartContext';
 
 interface MenuItemInfo {
@@ -25,18 +25,15 @@ export interface MenuItem extends MenuItemInfo {
   imageUrl?: string;
 }
 
-const MenuDisplay: React.FC = () => {
+const MenuDisplay = () => {
   const [menuHtml, setMenuHtml] = useState<any[][]>([]);
   const [selectedItem, setSelectedItem] = useState<MenuItemInfo | null>(null);
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
   const [currentItemIndex, setCurrentItemIndex] = useState(0);
-  const [item, setItem] = useState({ any: [] });
   const menuContainerRef = useRef<HTMLDivElement>(null);
   const [selectedEnhancements, setSelectedEnhancements] = useState<string[]>(
     []
   );
-  const [selectedHTMLGroup, setSelectedHTMLGroup] = useState<any>([]);
-
   const convertOptionParagraphsToH3 = (html: string): string => {
     const tempDiv = document.createElement('div');
     tempDiv.innerHTML = html;
@@ -64,7 +61,6 @@ const MenuDisplay: React.FC = () => {
     return tempDiv.innerHTML;
   };
 
-  // Then modify the cleanHTML function to include this transformation
   const cleanHTML = (raw: string): string => {
     const cleaned = raw
       .replace(/```html\n?/, '')
@@ -73,7 +69,6 @@ const MenuDisplay: React.FC = () => {
       .replace(/\\"/g, '"')
       .replace(/\\'/g, "'")
       .trim();
-    // Only return the processed HTML, do not set state here!
     return convertOptionParagraphsToH3(cleaned);
   };
   const { addItem } = useShoppingCart();
@@ -146,7 +141,6 @@ const MenuDisplay: React.FC = () => {
   const handleMenuItemClick = (event: React.MouseEvent) => {
     const target = event.target as HTMLElement;
     const menuItem = target.closest('.menu-item');
-    const menuCategory = target.closest('.menu-category');
 
     if (menuItem) {
       // Extract menu item information
@@ -296,7 +290,6 @@ const MenuDisplay: React.FC = () => {
         'click',
         handleMenuItemClick as unknown as EventListener
       );
-      setSelectedHTMLGroup([]);
     };
   }, []);
 
@@ -337,25 +330,6 @@ const MenuDisplay: React.FC = () => {
     return Array.from(enhancementElements).map(
       p => p.textContent?.trim() || ''
     );
-  };
-
-  // Add this function to update images in the menu
-  const updateMenuItemImage = (itemName: string, imageUrl: string) => {
-    if (!menuContainerRef.current) return;
-    // console.log(menuContainerRef.current.outerHTML);
-    const menuItems = menuContainerRef.current.querySelectorAll('.menu-item');
-
-    menuItems.forEach(menuItem => {
-      const nameElement = menuItem.querySelector('h3');
-      if (nameElement?.textContent?.trim() === itemName) {
-        const imageElement = menuItem.querySelector(
-          '.menu-item-card-image'
-        ) as HTMLImageElement;
-        if (imageElement) {
-          imageElement.src = imageUrl;
-        }
-      }
-    });
   };
 
   const handleImageUploaded = (imageUrl: string) => {
@@ -594,4 +568,4 @@ const MenuDisplay: React.FC = () => {
   );
 };
 
-export default MenuDisplay;
+export { MenuDisplay };

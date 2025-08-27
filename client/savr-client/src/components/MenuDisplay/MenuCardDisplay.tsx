@@ -1,13 +1,12 @@
-import React from 'react'
-import { ShoppingCartProvider } from './ShoppingCartContext'
-import MenuDisplay from './MenuDisplay'
+import { MenuDisplay } from './MenuDisplay';
+import { ShoppingCartProvider } from './ShoppingCartContext';
 
 const MenuCardDisplay = () => {
   return (
     <ShoppingCartProvider>
       <MenuDisplay />
     </ShoppingCartProvider>
-  )
-}
+  );
+};
 
-export default MenuCardDisplay
+export { MenuCardDisplay };
