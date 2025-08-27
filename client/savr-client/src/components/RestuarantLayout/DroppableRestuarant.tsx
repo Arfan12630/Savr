@@ -1,5 +1,5 @@
 import { DndContext, useDroppable } from '@dnd-kit/core';
-import React, { useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { data, useLocation } from 'react-router-dom';
 
 import Snackbar from '@mui/material/Snackbar';
@@ -464,4 +464,4 @@ const DroppableArea = () => {
   );
 };
 
-export default DroppableArea;
+export { DroppableArea };

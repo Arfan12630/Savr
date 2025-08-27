@@ -25,7 +25,7 @@ export interface MenuItem extends MenuItemInfo {
   imageUrl?: string;
 }
 
-const MenuDisplay: React.FC = () => {
+const MenuDisplay = () => {
   const [menuHtml, setMenuHtml] = useState<any[][]>([]);
   const [selectedItem, setSelectedItem] = useState<MenuItemInfo | null>(null);
   const [currentGroupIndex, setCurrentGroupIndex] = useState(0);
@@ -568,4 +568,4 @@ const MenuDisplay: React.FC = () => {
   );
 };
 
-export default MenuDisplay;
+export { MenuDisplay };

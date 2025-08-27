@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import ViewNavBar from '../RestuarantLayout/Navbar/ViewNavBar';
 import TableLayout from '../RestuarantLayout/TableLayout';
@@ -8,7 +8,7 @@ import TableLayout from '../RestuarantLayout/TableLayout';
 const CONTAINER_WIDTH = 1700;
 const CONTAINER_HEIGHT = 900;
 
-const ViewRestaurantLayout: React.FC = () => {
+const ViewRestaurantLayout = () => {
   const [layout, setLayout] = useState<{
     name: any;
     chairs: any[];
@@ -129,4 +129,4 @@ const ViewRestaurantLayout: React.FC = () => {
   );
 };
 
-export default ViewRestaurantLayout;
+export { ViewRestaurantLayout };

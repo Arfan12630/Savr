@@ -1,7 +1,6 @@
-import React from "react";
 import './SavrLandingPage.css';
 
-const SavrLandingPage: React.FC = () => {
+const SavrLandingPage = () => {
   return (
     <div className="landing-page">
       {/* Header */}
@@ -12,8 +11,16 @@ const SavrLandingPage: React.FC = () => {
           <a href="#restaurants">Restaurants</a>
           <a href="#pricing">Pricing</a>
           <a href="#contact">Contact</a>
-          <a href="#login" className="auth-link">Log in</a>
-          <a href="#signup" className="auth-link">Sign up</a>
+          <a
+            href="#login"
+            className="auth-link">
+            Log in
+          </a>
+          <a
+            href="#signup"
+            className="auth-link">
+            Sign up
+          </a>
           <button className="partner-button">Become a Partner</button>
         </nav>
       </header>
@@ -23,7 +30,9 @@ const SavrLandingPage: React.FC = () => {
         <p className="badge">🍽️ Reserve smarter, eat happier</p>
         <h1 className="headline">RESERVE & PRE-ORDER WITH EASE</h1>
         <p className="subtext">
-          Discover, reserve, and pre-order from your favorite restaurants. SAVR gives diners full control with seat maps, real-time availability, and AI-powered convenience.
+          Discover, reserve, and pre-order from your favorite restaurants. SAVR
+          gives diners full control with seat maps, real-time availability, and
+          AI-powered convenience.
         </p>
         <button className="cta-button">Download the App</button>
 
@@ -47,4 +56,4 @@ const SavrLandingPage: React.FC = () => {
   );
 };
 
-export default SavrLandingPage;
+export { SavrLandingPage };

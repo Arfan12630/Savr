@@ -197,4 +197,4 @@ const RestaurantStoreLayout = () => {
   );
 };
 
-export default RestaurantStoreLayout;
+export { RestaurantStoreLayout };

@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
-const RestuarantEntryInput: React.FC<{
+const RestuarantEntryInput = ({
     onSend: (message: any) => void;
     placeholder: string;
     disabled: boolean;

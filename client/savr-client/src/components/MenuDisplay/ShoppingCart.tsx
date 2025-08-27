@@ -1,9 +1,16 @@
-import React, { useState } from 'react';
-import { useShoppingCart } from './ShoppingCartContext';
+import { useState } from 'react';
 import './ShoppingCart.css';
+import { useShoppingCart } from './ShoppingCartContext';
 
-const ShoppingCart: React.FC = () => {
-  const { items, removeItem, updateQuantity, clearItems, getTotalItems, getTotalPrice } = useShoppingCart();
+const ShoppingCart = () => {
+  const {
+    items,
+    removeItem,
+    updateQuantity,
+    clearItems,
+    getTotalItems,
+    getTotalPrice,
+  } = useShoppingCart();
   const [isOpen, setIsOpen] = useState(false);
 
   const toggleCart = () => {
@@ -16,20 +23,26 @@ const ShoppingCart: React.FC = () => {
 
   return (
     <div className="shopping-cart-container">
-      <div className="cart-icon" onClick={toggleCart}>
+      <div
+        className="cart-icon"
+        onClick={toggleCart}>
         <span className="material-icons"></span>
         {getTotalItems() > 0 && (
           <span className="cart-badge">{getTotalItems()}</span>
         )}
       </div>
-      
+
       {isOpen && (
         <div className="cart-dropdown">
           <div className="cart-header">
             <h3>Your Cart</h3>
-            <button className="close-cart" onClick={toggleCart}>×</button>
+            <button
+              className="close-cart"
+              onClick={toggleCart}>
+              ×
+            </button>
           </div>
-          
+
           {items.length === 0 ? (
             <div className="empty-cart">
               <p>Your cart is empty</p>
@@ -38,7 +51,9 @@ const ShoppingCart: React.FC = () => {
             <>
               <div className="cart-items">
                 {items.map((item, index) => (
-                  <div key={index} className="cart-item">
+                  <div
+                    key={index}
+                    className="cart-item">
                     <div className="item-details">
                       <h4>{item.name}</h4>
                       {item.selectedOption && (
@@ -47,40 +62,47 @@ const ShoppingCart: React.FC = () => {
                       <p className="item-price">{item.price}</p>
                     </div>
                     <div className="item-actions">
-                      <button 
-                        onClick={() => updateQuantity(item, (item.quantity || 1) - 1)}
-                        className="quantity-btn"
-                      >
+                      <button
+                        onClick={() =>
+                          updateQuantity(item, (item.quantity || 1) - 1)
+                        }
+                        className="quantity-btn">
                         -
                       </button>
-                      <span className="item-quantity">{item.quantity || 1}</span>
-                      <button 
-                        onClick={() => updateQuantity(item, (item.quantity || 1) + 1)}
-                        className="quantity-btn"
-                      >
+                      <span className="item-quantity">
+                        {item.quantity || 1}
+                      </span>
+                      <button
+                        onClick={() =>
+                          updateQuantity(item, (item.quantity || 1) + 1)
+                        }
+                        className="quantity-btn">
                         +
                       </button>
-                      <button 
+                      <button
                         onClick={() => removeItem(item)}
-                        className="remove-btn"
-                      >
+                        className="remove-btn">
                         🗑️
                       </button>
                     </div>
                   </div>
                 ))}
               </div>
-              
+
               <div className="cart-footer">
                 <div className="cart-total">
                   <span>Total:</span>
                   <span>${getTotalPrice().toFixed(2)}</span>
                 </div>
                 <div className="cart-actions">
-                  <button onClick={clearItems} className="clear-cart-btn">
+                  <button
+                    onClick={clearItems}
+                    className="clear-cart-btn">
                     Clear Cart
                   </button>
-                  <button className="checkout-btn" onClick={handleCheckout}>
+                  <button
+                    className="checkout-btn"
+                    onClick={handleCheckout}>
                     Checkout
                   </button>
                 </div>

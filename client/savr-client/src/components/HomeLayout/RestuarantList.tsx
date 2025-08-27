@@ -50,4 +50,4 @@ const RestuarantList = () => {
   );
 };
 
-export default RestuarantList;
+export { RestuarantList };

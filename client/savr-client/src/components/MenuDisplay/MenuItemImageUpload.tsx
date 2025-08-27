@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
 import axios from 'axios';
+import { useState } from 'react';
 
 interface MenuItemImageUploadProps {
   itemId: string;
@@ -7,9 +7,7 @@ interface MenuItemImageUploadProps {
   onImageUploaded: (imageUrl: string) => void;
 }
 
-const MenuItemImageUpload: React.FC<MenuItemImageUploadProps> = ({
-  onImageUploaded,
-}) => {
+const MenuItemImageUpload = ({ onImageUploaded }: MenuItemImageUploadProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -230,4 +230,4 @@ const RestuarantEntry = () => {
   );
 };
 
-export default RestuarantEntry;
+export { RestuarantEntry };
