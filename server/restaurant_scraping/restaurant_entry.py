@@ -271,6 +271,7 @@ async def place_in_DB(data: dict, db: Session = Depends(get_db)):
         .filter_by(name=data["restaurant"], address=data["address"])
         .first()
     ):
+        raise HTTPException(
             status_code=400, detail="Restaurant already exists"
         )
     db.add(restaurant_entry)
