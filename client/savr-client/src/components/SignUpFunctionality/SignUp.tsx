@@ -1,34 +1,21 @@
-import { Box, Divider, FormControl, FormLabel, Typography } from '@mui/joy';
+import { Box, Divider, Typography } from '@mui/joy';
 import {
   Card,
   CardContent,
   CardHeader,
-  FormInput,
   PrimaryButton,
   TextButton,
 } from '../../lib-components';
+import { CheckboxRHF } from '../../lib-components/Form/ReactHookFormCheckBox';
+import { TextFieldRHF } from '../../lib-components/Form/ReactHookFormTextField';
 
 interface SignUpProps {
-  onSubmit?: (data: { name: string; email: string; password: string }) => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   onSignInClick?: () => void;
+  isSubmitting?: boolean;
 }
 
-export function SignUp({ onSubmit, onSignInClick }: SignUpProps) {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const name = formData.get('name')?.toString();
-    const email = formData.get('email')?.toString();
-    const password = formData.get('password')?.toString();
-
-    if (!name || !email || !password) {
-      console.error('Email or password is missing');
-      return;
-    }
-
-    onSubmit?.({ name, email, password });
-  };
-
+export function SignUp({ onSubmit, onSignInClick, isSubmitting }: SignUpProps) {
   return (
     <Card
       variant="outlined"
@@ -39,64 +26,81 @@ export function SignUp({ onSubmit, onSignInClick }: SignUpProps) {
         backdropFilter: 'blur(10px)',
         backgroundColor: 'rgba(255, 255, 255, 0.95)',
       }}>
-      <CardHeader>Sign up</CardHeader>
+      <CardHeader sx={{ textAlign: 'center' }}>Sign up</CardHeader>
 
       <CardContent>
         <Box
           component="form"
-          onSubmit={handleSubmit}
+          onSubmit={onSubmit}
           sx={{
             display: 'flex',
             flexDirection: 'column',
             gap: 2,
           }}>
-          <FormControl>
-            <FormLabel htmlFor="name">Full name</FormLabel>
-            <FormInput
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Enter your full name"
-              required
-              autoComplete="name"
-            />
-          </FormControl>
-          <FormControl>
-            <FormLabel htmlFor="email">Email</FormLabel>
-            <FormInput
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Enter your email"
-              required
-              autoComplete="email"
-            />
-          </FormControl>
+          <TextFieldRHF
+            name="firstName"
+            label="First Name"
+            placeholder="Enter your first name"
+            required
+          />
 
-          <FormControl>
-            <FormLabel htmlFor="password">Password</FormLabel>
-            <FormInput
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Create a password"
-              required
-              autoComplete="new-password"
-            />
-          </FormControl>
+          <TextFieldRHF
+            name="lastName"
+            label="Last Name"
+            placeholder="Enter your last name"
+            required
+          />
+
+          <TextFieldRHF
+            name="email"
+            label="Email"
+            type="email"
+            placeholder="Enter your email"
+            required
+          />
+
+          <TextFieldRHF
+            name="password"
+            label="Password"
+            type="password"
+            placeholder="Create a password"
+            required
+          />
+
+          <TextFieldRHF
+            name="confirmPassword"
+            label="Confirm Password"
+            type="password"
+            placeholder="Confirm your password"
+            required
+          />
+
+          <TextFieldRHF
+            name="phoneNumber"
+            label="Phone Number"
+            type="tel"
+            placeholder="123-456-7890"
+            required
+          />
+
+          <CheckboxRHF
+            name="terms"
+            label="I agree to the terms and conditions"
+            required
+          />
 
           <PrimaryButton
             type="submit"
+            disabled={isSubmitting}
             sx={{
               mt: 2,
               height: 48,
               fontSize: '1rem',
               fontWeight: 600,
             }}>
-            Sign up
+            {isSubmitting ? 'Signing up...' : 'Sign up'}
           </PrimaryButton>
         </Box>
-
         <Divider sx={{ my: 3 }}>
           <Typography
             level="body-sm"
@@ -104,7 +108,6 @@ export function SignUp({ onSubmit, onSignInClick }: SignUpProps) {
             or
           </Typography>
         </Divider>
-
         <Box sx={{ textAlign: 'center' }}>
           <Typography
             level="body-sm"

@@ -1,16 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { SignUp } from '../components/SignUpFunctionality/SignUp';
+import { SignUpContainer } from '../components/SignUpFunctionality/SignUpContainer';
 
-const meta: Meta<typeof SignUp> = {
+const meta: Meta<typeof SignUpContainer> = {
   title: 'Authentication/SignUp',
-  component: SignUp,
+  component: SignUpContainer,
   parameters: {
     layout: 'centered',
   },
   tags: ['autodocs'],
   argTypes: {
     onSubmit: { action: 'submitted' },
-    onSignInClick: { action: 'sign in clicked' },
   },
   decorators: [
     Story => (
@@ -32,29 +31,24 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
-  args: {},
-};
-
-export const WithHandlers: Story = {
   args: {
-    onSubmit: data => {
+    onSubmit: async data => {
       console.log('Sign up data:', data);
-      alert(`Sign up attempt with name: ${data.name}, email: ${data.email}`);
-    },
-    onSignInClick: () => {
-      console.log('Sign in link clicked');
-      alert('Navigate to sign in page');
+      await new Promise(resolve => setTimeout(resolve, 1000));
     },
   },
 };
 
-export const CustomStyling: Story = {
-  args: {},
-  parameters: {
-    docs: {
-      description: {
-        story: 'The SignUp component with default styling and layout.',
-      },
+export const Loading: Story = {
+  args: {
+    isLoading: true,
+  },
+};
+
+export const WithError: Story = {
+  args: {
+    onSubmit: async data => {
+      throw new Error('Sign up failed');
     },
   },
 };
