@@ -1,5 +1,5 @@
 import type { Preview } from '@storybook/react-webpack5';
-import themeDecorator from '../src/lib-components/themeDecorator';
+import themeDecorator from '../src/theme/themeDecorator';
 
 const preview: Preview = {
   globalTypes: {

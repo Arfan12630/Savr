@@ -15,7 +15,7 @@ import { RestuarantMenuImageUpload } from './components/RestuarantEntry/Restuara
 import { DroppableArea } from './components/RestuarantLayout/DroppableRestuarant';
 import { RestaurantStoreLayout } from './components/RestuarantStoreLayout/RestuarantStoreLayout';
 import { ViewRestaurantLayout } from './components/RestuarantViewLayout/ViewRestaurantLayout';
-import { customTheme } from './lib-components/theme';
+import { customTheme } from './theme/theme';
 
 export function App() {
   return (

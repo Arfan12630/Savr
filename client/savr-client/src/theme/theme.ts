@@ -1,6 +1,6 @@
 import { extendTheme } from '@mui/joy/styles';
-import type { RecursivePartial } from './RecursivePartial';
-import recursiveMerge from './recursiveMerge';
+import type { RecursivePartial } from '../stories/RecursivePartial';
+import recursiveMerge from '../stories/recursiveMerge';
 
 export interface ColorPalette {
   primary: Record<string, string>;

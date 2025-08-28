@@ -1,8 +1,8 @@
 import CssBaseline from '@mui/joy/CssBaseline';
 import { CssVarsProvider } from '@mui/joy/styles';
 import type { Decorator } from '@storybook/react';
-import recursiveMerge from './recursiveMerge';
-import type { RecursivePartial } from './RecursivePartial';
+import recursiveMerge from '../stories/recursiveMerge';
+import type { RecursivePartial } from '../stories/RecursivePartial';
 import type { ColorPalette } from './theme';
 import { createCustomTheme, sageGreenPalette } from './theme';
 
@@ -117,7 +117,6 @@ const themeDecorator =
         </CssVarsProvider>
       );
     } catch (error) {
-      console.warn('Theme decorator error:', error);
       const fallbackTheme = createCustomTheme(sageGreenPalette);
       return (
         <CssVarsProvider
