@@ -5,7 +5,14 @@ import {
   Button,
   CancelButton,
   CTAButton,
+  DestructiveButton,
   FullWidthButton,
+  GhostButton,
+  GhostCTAButton,
+  GhostDestructiveButton,
+  GhostPrimaryButton,
+  GhostSuccessButton,
+  InfoButton,
   LargeButton,
   LargePrimaryButton,
   LargeSecondaryButton,
@@ -13,13 +20,24 @@ import {
   MediumPrimaryButton,
   MediumSecondaryButton,
   OutlineButton,
+  OutlineCTAButton,
+  OutlineDestructiveButton,
+  OutlinePrimaryButton,
+  OutlineSuccessButton,
   PrimaryButton,
   SecondaryButton,
   SmallButton,
   SmallPrimaryButton,
   SmallSecondaryButton,
   SoftButton,
+  SoftCTAButton,
+  SoftDestructiveButton,
+  SoftPrimaryButton,
+  SoftSuccessButton,
+  SoftWarningButton,
+  SuccessButton,
   TextButton,
+  WarningButton,
 } from '../lib-components/Button';
 
 const meta: Meta = {
@@ -81,6 +99,23 @@ export const SpecialPurpose: Story = {
   ),
 };
 
+export const SemanticButtons: Story = {
+  render: () => (
+    <div
+      style={{
+        display: 'flex',
+        gap: '16px',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+      }}>
+      <SuccessButton>Success</SuccessButton>
+      <WarningButton>Warning</WarningButton>
+      <InfoButton>Info</InfoButton>
+      <DestructiveButton>Destructive</DestructiveButton>
+    </div>
+  ),
+};
+
 export const FullWidth: Story = {
   render: () => (
     <div style={{ width: '400px' }}>
@@ -122,6 +157,59 @@ export const Interactive: Story = {
   ),
 };
 
+export const OutlineVariants: Story = {
+  render: () => (
+    <div
+      style={{
+        display: 'flex',
+        gap: '16px',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+      }}>
+      <OutlinePrimaryButton>Outline Primary</OutlinePrimaryButton>
+      <OutlineCTAButton>Outline CTA</OutlineCTAButton>
+      <OutlineSuccessButton>Outline Success</OutlineSuccessButton>
+      <OutlineDestructiveButton>Outline Destructive</OutlineDestructiveButton>
+    </div>
+  ),
+};
+
+export const GhostVariants: Story = {
+  render: () => (
+    <div
+      style={{
+        display: 'flex',
+        gap: '16px',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+      }}>
+      <GhostButton>Ghost</GhostButton>
+      <GhostPrimaryButton>Ghost Primary</GhostPrimaryButton>
+      <GhostCTAButton>Ghost CTA</GhostCTAButton>
+      <GhostSuccessButton>Ghost Success</GhostSuccessButton>
+      <GhostDestructiveButton>Ghost Destructive</GhostDestructiveButton>
+    </div>
+  ),
+};
+
+export const SoftVariants: Story = {
+  render: () => (
+    <div
+      style={{
+        display: 'flex',
+        gap: '16px',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+      }}>
+      <SoftPrimaryButton>Soft Primary</SoftPrimaryButton>
+      <SoftCTAButton>Soft CTA</SoftCTAButton>
+      <SoftSuccessButton>Soft Success</SoftSuccessButton>
+      <SoftWarningButton>Soft Warning</SoftWarningButton>
+      <SoftDestructiveButton>Soft Destructive</SoftDestructiveButton>
+    </div>
+  ),
+};
+
 export const AllVariants: Story = {
   render: () => (
     <div
@@ -154,6 +242,22 @@ export const AllVariants: Story = {
           <OutlineButton>Outline</OutlineButton>
           <TextButton>Text</TextButton>
           <SoftButton>Soft</SoftButton>
+        </div>
+      </div>
+
+      <div>
+        <h3 style={{ marginBottom: '12px' }}>Semantic Variants</h3>
+        <div
+          style={{
+            display: 'flex',
+            gap: '16px',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+          }}>
+          <SuccessButton>Success</SuccessButton>
+          <WarningButton>Warning</WarningButton>
+          <InfoButton>Info</InfoButton>
+          <DestructiveButton>Destructive</DestructiveButton>
         </div>
       </div>
 

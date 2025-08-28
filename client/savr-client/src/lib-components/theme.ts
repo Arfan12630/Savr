@@ -11,66 +11,66 @@ export interface ColorPalette {
   error: Record<string, string>;
 }
 
-export const defaultGreenPalette: ColorPalette = {
+export const sageGreenPalette: ColorPalette = {
   primary: {
+    50: '#f0f4f0',
+    100: '#e1e9e1',
+    200: '#c3d3c3',
+    300: '#a5bda5',
+    400: '#87a787',
+    500: '#699169',
+    600: '#547454',
+    700: '#3f573f',
+    800: '#2a3a2a',
+    900: '#151d15',
+  },
+  secondary: {
+    50: '#fdfbf7',
+    100: '#fbf7ef',
+    200: '#f7efdf',
+    300: '#f3e7cf',
+    400: '#efdfbf',
+    500: '#ebd7af',
+    600: '#bcac8c',
+    700: '#8d8169',
+    800: '#5e5646',
+    900: '#2f2b23',
+  },
+  neutral: {
     50: '#fafbf8',
     100: '#f5f6f2',
     200: '#e8eae4',
-    300: '#d4a574',
-    400: '#7fb069',
-    500: '#5a7c65',
-    600: '#4a6b56',
-    700: '#3a5a47',
-    800: '#2a4938',
-    900: '#1a3829',
-  },
-  secondary: {
-    50: '#fafbf8',
-    100: '#f5f6f2',
-    200: '#f0f1ed',
-    300: '#e8eae4',
-    400: '#b8bdb6',
-    500: '#8a9189',
-    600: '#3a3f3a',
-    700: '#3a5a47',
-    800: '#2a4938',
-    900: '#1a3829',
-  },
-  neutral: {
-    50: '#ffffff',
-    100: '#fafbf8',
-    200: '#f5f6f2',
-    300: '#e8eae4',
-    400: '#b8bdb6',
-    500: '#8a9189',
-    600: '#3a3f3a',
-    700: '#2a2f2a',
-    800: '#1a1f1a',
-    900: '#0a0f0a',
+    300: '#d4d7d0',
+    400: '#a8ada3',
+    500: '#7c8376',
+    600: '#636a5e',
+    700: '#4a5146',
+    800: '#31382e',
+    900: '#181f16',
   },
   success: {
-    50: '#f0fdf4',
-    100: '#dcfce7',
-    200: '#bbf7d0',
-    300: '#86efac',
-    400: '#4ade80',
-    500: '#22c55e',
-    600: '#16a34a',
-    700: '#15803d',
-    800: '#166534',
-    900: '#14532d',
+    50: '#f0f8f0',
+    100: '#e1f1e1',
+    200: '#c3e3c3',
+    300: '#a5d5a5',
+    400: '#87c787',
+    500: '#69b969',
+    600: '#549454',
+    700: '#3f6f3f',
+    800: '#2a4a2a',
+    900: '#152515',
   },
   warning: {
-    50: '#fffbeb',
-    100: '#fef3c7',
-    200: '#fde68a',
-    300: '#fcd34d',
-    400: '#fbbf24',
-    500: '#f59e0b',
-    600: '#d97706',
-    700: '#b45309',
-    800: '#92400e',
-    900: '#78350f',
+    50: '#fef9f0',
+    100: '#fdf3e1',
+    200: '#fbe7c3',
+    300: '#f9dba5',
+    400: '#f7cf87',
+    500: '#f5c369',
+    600: '#c49c54',
+    700: '#93753f',
+    800: '#624e2a',
+    900: '#312715',
   },
   error: {
     50: '#fef2f2',
@@ -163,7 +163,7 @@ function createColorScheme(palette: ColorPalette, isDark: boolean = false) {
   };
 }
 
-export function createCustomTheme(palette: ColorPalette = defaultGreenPalette) {
+export function createCustomTheme(palette: ColorPalette = sageGreenPalette) {
   return extendTheme({
     colorSchemes: {
       light: {
@@ -216,10 +216,10 @@ export function createCustomTheme(palette: ColorPalette = defaultGreenPalette) {
   });
 }
 
-export const customTheme = createCustomTheme(defaultGreenPalette);
+export const customTheme = createCustomTheme(sageGreenPalette);
 
 export const themeTokens = {
-  colors: defaultGreenPalette,
+  colors: sageGreenPalette,
   fontSize: customTheme.fontSize,
   fontWeight: customTheme.fontWeight,
 };
@@ -227,5 +227,5 @@ export const themeTokens = {
 export function createPartialTheme(
   partialPalette: RecursivePartial<ColorPalette>
 ): ColorPalette {
-  return recursiveMerge(defaultGreenPalette, partialPalette);
+  return recursiveMerge(sageGreenPalette, partialPalette);
 }
