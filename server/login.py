@@ -33,9 +33,9 @@ class LoginRequest(BaseModel):
 
 @login.post("/login/access-token")
 def login_access_token(session: SessionDep, form_data: LoginRequest):
-   user = authenticate(session=session, email=form_data.email, password=form_data.password)   
-   if not user:
-      raise HTTPException(status_code=401, detail="Invalid credentials")
-   return user
-   #TODO: Add access token duration and test jwt
-   #access_token_duration = timedelta(minutes=30)
+    user = authenticate(session=session, email=form_data.email, password=form_data.password)   
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return user
+    #TODO: Add access token duration and test jwt
+    #access_token_duration = timedelta(minutes=30)

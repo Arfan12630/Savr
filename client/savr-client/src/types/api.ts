@@ -5,6 +5,11 @@ export interface SignUpRequest {
   phone_number?: string;
 }
 
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
 export interface SignInRequest {
   email: string;
   password: string;

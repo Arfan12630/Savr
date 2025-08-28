@@ -28,12 +28,8 @@ export const SignUpContainer = ({
   } = methods;
 
   const handleFormSubmit = async (data: SignUpFormData) => {
-    try {
-      if (onSubmit !== undefined) {
-        await onSubmit(data);
-      }
-    } catch (error) {
-      console.error('Sign up error:', error);
+    if (onSubmit !== undefined) {
+      await onSubmit(data);
     }
   };
 

@@ -12,7 +12,7 @@ import { RestuarantMenuImageUpload } from './components/RestuarantEntry/Restuara
 import { DroppableArea } from './components/RestuarantLayout/DroppableRestuarant';
 import { RestaurantStoreLayout } from './components/RestuarantStoreLayout/RestuarantStoreLayout';
 import { ViewRestaurantLayout } from './components/RestuarantViewLayout/ViewRestaurantLayout';
-import { SignIn } from './components/SignInFunctionality/SignIn';
+import { SignInPage } from './components/pages/SignInPage';
 import { SignUpPage } from './components/pages/SignUpPage';
 
 const queryClient = new QueryClient();
@@ -68,7 +68,7 @@ export function App() {
           />
           <Route
             path="/sign-in"
-            element={<SignIn />}
+            element={<SignInPage />}
           />
           <Route
             path="/sign-up"

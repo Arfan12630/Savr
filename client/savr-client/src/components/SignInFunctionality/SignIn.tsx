@@ -1,32 +1,19 @@
-import { Box, Divider, FormControl, FormLabel, Typography } from '@mui/joy';
-import { FormEvent } from 'react';
-
+import { Box } from '@mui/joy';
 import {
   Card,
   CardContent,
   CardHeader,
-  FormInput,
   PrimaryButton,
-  TextButton,
 } from '../../lib-components';
+import { TextFieldRHF } from '../../lib-components/Form/ReactHookFormTextField';
 
 interface SignInProps {
-  onSubmit?: (data: { email: string; password: string }) => void;
-  onSignUpClick?: () => void;
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
+  onSignInClick?: () => void;
+  isSubmitting?: boolean;
 }
 
-export function SignIn({ onSubmit, onSignUpClick }: SignInProps) {
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const email = formData.get('email')?.toString();
-    const password = formData.get('password')?.toString();
-    if (!email || !password) {
-      console.error('Email or password is missing');
-      return;
-    }
-    onSubmit?.({ email, password });
-  };
+export function SignIn({ onSubmit, onSignInClick, isSubmitting }: SignInProps) {
   return (
     <Card
       variant="outlined"
@@ -37,68 +24,41 @@ export function SignIn({ onSubmit, onSignUpClick }: SignInProps) {
         backdropFilter: 'blur(10px)',
         backgroundColor: 'rgba(255, 255, 255, 0.95)',
       }}>
-      <CardHeader>Sign in</CardHeader>
-
+      <CardHeader sx={{ textAlign: 'center' }}>Sign in</CardHeader>
       <CardContent>
         <Box
           component="form"
-          onSubmit={handleSubmit}
+          onSubmit={onSubmit}
           sx={{
             display: 'flex',
             flexDirection: 'column',
             gap: 2,
           }}>
-          <FormControl>
-            <FormLabel htmlFor="email">Email</FormLabel>
-            <FormInput
-              id="email"
-              name="email"
-              type="email"
-              placeholder="Enter your email"
-              required
-              autoComplete="email"
-            />
-          </FormControl>
-
-          <FormControl>
-            <FormLabel htmlFor="password">Password</FormLabel>
-            <FormInput
-              id="password"
-              name="password"
-              type="password"
-              placeholder="Enter your password"
-              required
-              autoComplete="current-password"
-            />
-          </FormControl>
-
+          <TextFieldRHF
+            name="email"
+            label="Email"
+            type="email"
+            placeholder="Enter your email"
+            required
+          />
+          <TextFieldRHF
+            name="password"
+            label="Password"
+            type="password"
+            placeholder="Enter your password"
+            required
+          />
           <PrimaryButton
             type="submit"
+            disabled={isSubmitting}
             sx={{
               mt: 2,
               height: 48,
               fontSize: '1rem',
               fontWeight: 600,
             }}>
-            Sign in
+            {isSubmitting ? 'Signing in...' : 'Sign in'}
           </PrimaryButton>
-        </Box>
-
-        <Divider sx={{ my: 3 }}>
-          <Typography
-            level="body-sm"
-            sx={{ color: 'text.secondary' }}>
-            or
-          </Typography>
-        </Divider>
-
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography
-            level="body-sm"
-            sx={{ color: 'text.secondary', mb: 1 }}>
-            Don't have an account?
-          </Typography>
-          <TextButton onClick={onSignUpClick}>Sign up</TextButton>
         </Box>
       </CardContent>
     </Card>
