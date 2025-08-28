@@ -1,4 +1,6 @@
 import { DndContext } from '@dnd-kit/core';
+import CssBaseline from '@mui/joy/CssBaseline';
+import { CssVarsProvider } from '@mui/joy/styles';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import './App.css';
 import { Chat } from './components/ChatBarInput/Chat';
@@ -13,64 +15,71 @@ import { RestuarantMenuImageUpload } from './components/RestuarantEntry/Restuara
 import { DroppableArea } from './components/RestuarantLayout/DroppableRestuarant';
 import { RestaurantStoreLayout } from './components/RestuarantStoreLayout/RestuarantStoreLayout';
 import { ViewRestaurantLayout } from './components/RestuarantViewLayout/ViewRestaurantLayout';
+import { customTheme } from './lib-components/theme';
+
 export function App() {
   return (
-    <Router>
-      <Routes>
-        <Route
-          path="/lander"
-          element={<SavrLandingPage />}
-        />
-        <Route
-          path="/restaurants"
-          element={<RestuarantList />}
-        />
-        <Route
-          path="/chat"
-          element={<Chat />}
-        />
-        <Route
-          path="owner/restaurant-entry"
-          element={<RestuarantEntry />}
-        />
-        <Route
-          path="owner/restaurant-entry/menu-image-upload"
-          element={<RestuarantMenuImageUpload />}
-        />
-        {/* <Route path="/menu-display" element={<MenuDisplay />} /> */}
-        <Route
-          path="/menu-card-display"
-          element={<MenuCardDisplay />}
-        />
-        <Route
-          path="/checkout"
-          element={<Checkout />}
-        />
-        <Route
-          path="/edit"
-          element={
-            <DndContext>
-              <DroppableArea />
-            </DndContext>
-          }
-        />
-        <Route
-          path="/view"
-          element={<ViewRestaurantLayout />}
-        />
-        <Route
-          path="/sign-in"
-          element={<SignIn />}
-        />
-        <Route
-          path="/sign-up"
-          element={<SignUp />}
-        />
-        <Route
-          path="/restaurant-display"
-          element={<RestaurantStoreLayout />}
-        />
-      </Routes>
-    </Router>
+    <CssVarsProvider
+      theme={customTheme}
+      disableTransitionOnChange>
+      <CssBaseline />
+      <Router>
+        <Routes>
+          <Route
+            path="/lander"
+            element={<SavrLandingPage />}
+          />
+          <Route
+            path="/restaurants"
+            element={<RestuarantList />}
+          />
+          <Route
+            path="/chat"
+            element={<Chat />}
+          />
+          <Route
+            path="owner/restaurant-entry"
+            element={<RestuarantEntry />}
+          />
+          <Route
+            path="owner/restaurant-entry/menu-image-upload"
+            element={<RestuarantMenuImageUpload />}
+          />
+          {/* <Route path="/menu-display" element={<MenuDisplay />} /> */}
+          <Route
+            path="/menu-card-display"
+            element={<MenuCardDisplay />}
+          />
+          <Route
+            path="/checkout"
+            element={<Checkout />}
+          />
+          <Route
+            path="/edit"
+            element={
+              <DndContext>
+                <DroppableArea />
+              </DndContext>
+            }
+          />
+          <Route
+            path="/view"
+            element={<ViewRestaurantLayout />}
+          />
+          <Route
+            path="/sign-in"
+            element={<SignIn />}
+          />
+          <Route
+            path="/sign-up"
+            element={<SignUp />}
+          />
+          <Route
+            path="/restaurant-display"
+            element={<RestaurantStoreLayout />}
+          />
+        </Routes>
+      </Router>
+    </CssVarsProvider>
   );
 }
