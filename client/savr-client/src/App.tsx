@@ -5,14 +5,15 @@ import { Chat } from './components/ChatBarInput/Chat';
 import { Checkout } from './components/Checkout/Checkout';
 import { RestuarantList } from './components/HomeLayout/RestuarantList';
 import { SavrLandingPage } from './components/HomeLayout/SavrLandingPage';
-import { SignIn } from './components/LoginFunctionality/SignIn';
-import { SignUp } from './components/LoginFunctionality/SignUp';
 import { MenuCardDisplay } from './components/MenuDisplay/MenuCardDisplay';
 import { RestuarantEntry } from './components/RestuarantEntry/RestuarantEntry';
 import { RestuarantMenuImageUpload } from './components/RestuarantEntry/RestuarantMenuImageUpload';
 import { DroppableArea } from './components/RestuarantLayout/DroppableRestuarant';
 import { RestaurantStoreLayout } from './components/RestuarantStoreLayout/RestuarantStoreLayout';
 import { ViewRestaurantLayout } from './components/RestuarantViewLayout/ViewRestaurantLayout';
+import { SignIn } from './components/SignInFunctionality/SignIn';
+import { SignUp } from './components/SignUpFunctionality/SignUp';
+
 export function App() {
   return (
     <Router>

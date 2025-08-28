@@ -1,4 +1,6 @@
 import { Box, Divider, FormControl, FormLabel, Typography } from '@mui/joy';
+import { FormEvent } from 'react';
+
 import {
   Card,
   CardContent,
@@ -8,27 +10,23 @@ import {
   TextButton,
 } from '../../lib-components';
 
-interface SignUpProps {
-  onSubmit?: (data: { name: string; email: string; password: string }) => void;
-  onSignInClick?: () => void;
+interface SignInProps {
+  onSubmit?: (data: { email: string; password: string }) => void;
+  onSignUpClick?: () => void;
 }
 
-export function SignUp({ onSubmit, onSignInClick }: SignUpProps) {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+export function SignIn({ onSubmit, onSignUpClick }: SignInProps) {
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
-    const name = formData.get('name')?.toString();
     const email = formData.get('email')?.toString();
     const password = formData.get('password')?.toString();
-
-    if (!name || !email || !password) {
+    if (!email || !password) {
       console.error('Email or password is missing');
       return;
     }
-
-    onSubmit?.({ name, email, password });
+    onSubmit?.({ email, password });
   };
-
   return (
     <Card
       variant="outlined"
@@ -39,7 +37,7 @@ export function SignUp({ onSubmit, onSignInClick }: SignUpProps) {
         backdropFilter: 'blur(10px)',
         backgroundColor: 'rgba(255, 255, 255, 0.95)',
       }}>
-      <CardHeader>Sign up</CardHeader>
+      <CardHeader>Sign in</CardHeader>
 
       <CardContent>
         <Box
@@ -50,17 +48,6 @@ export function SignUp({ onSubmit, onSignInClick }: SignUpProps) {
             flexDirection: 'column',
             gap: 2,
           }}>
-          <FormControl>
-            <FormLabel htmlFor="name">Full name</FormLabel>
-            <FormInput
-              id="name"
-              name="name"
-              type="text"
-              placeholder="Enter your full name"
-              required
-              autoComplete="name"
-            />
-          </FormControl>
           <FormControl>
             <FormLabel htmlFor="email">Email</FormLabel>
             <FormInput
@@ -79,9 +66,9 @@ export function SignUp({ onSubmit, onSignInClick }: SignUpProps) {
               id="password"
               name="password"
               type="password"
-              placeholder="Create a password"
+              placeholder="Enter your password"
               required
-              autoComplete="new-password"
+              autoComplete="current-password"
             />
           </FormControl>
 
@@ -93,7 +80,7 @@ export function SignUp({ onSubmit, onSignInClick }: SignUpProps) {
               fontSize: '1rem',
               fontWeight: 600,
             }}>
-            Sign up
+            Sign in
           </PrimaryButton>
         </Box>
 
@@ -109,9 +96,9 @@ export function SignUp({ onSubmit, onSignInClick }: SignUpProps) {
           <Typography
             level="body-sm"
             sx={{ color: 'text.secondary', mb: 1 }}>
-            Already have an account?
+            Don't have an account?
           </Typography>
-          <TextButton onClick={onSignInClick}>Sign in</TextButton>
+          <TextButton onClick={onSignUpClick}>Sign up</TextButton>
         </Box>
       </CardContent>
     </Card>
