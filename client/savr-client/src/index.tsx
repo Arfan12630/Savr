@@ -1,19 +1,27 @@
-import React from 'react';
+import CssBaseline from '@mui/joy/CssBaseline';
+import { CssVarsProvider } from '@mui/joy/styles';
+import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { App } from './App';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
+import { createCustomTheme, sageGreenPalette } from './theme/theme';
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
+
+const theme = createCustomTheme(sageGreenPalette);
+
 root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
+  <StrictMode>
+    <CssVarsProvider
+      theme={theme}
+      disableTransitionOnChange>
+      <CssBaseline />
+      <App />
+    </CssVarsProvider>
+  </StrictMode>
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();

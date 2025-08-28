@@ -3,12 +3,12 @@ import uuid
 from datetime import datetime
 from typing import Optional
 from collections.abc import Generator
+
 from sqlmodel import SQLModel, Field, create_engine, Session
 from sqlalchemy.dialects.postgresql import ARRAY, JSON, UUID
 from sqlalchemy import func, DateTime, String
-import user_models
+from user_models import User  # Import User model to ensure table creation
 
-# Database setup
 SQLALCHEMY_DATABASE_URL = os.environ.get("SQL_DB_LINK")
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 

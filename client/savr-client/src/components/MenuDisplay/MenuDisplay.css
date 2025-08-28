@@ -5,10 +5,11 @@
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    sans-serif;
   margin: 0;
   padding: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #667eea;
   min-height: 100vh;
   color: #2d3748;
 }
@@ -56,13 +57,13 @@ body {
   transform: translateX(-50%);
   width: 60px;
   height: 4px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
+  background: #667eea;
   border-radius: 2px;
 }
 
 /* Enhanced add-ons section - reduce padding and margins */
 .menu-addons {
-  background: linear-gradient(135deg, #f8faff 0%, #f1f5ff 100%);
+  background: #f8faff;
   border: 2px solid #e6f0ff;
   border-radius: 16px; /* Reduced from 20px */
   padding: 20px; /* Reduced from 32px */
@@ -79,7 +80,7 @@ body {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
+  background: #667eea;
 }
 
 .menu-addons h4 {
@@ -129,7 +130,7 @@ body {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(102, 126, 234, 0.1), transparent);
+  background: rgba(102, 126, 234, 0.1);
   transition: left 0.5s ease;
 }
 
@@ -137,7 +138,7 @@ body {
   transform: translateY(-4px);
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.2);
   border-color: #667eea;
-  background: linear-gradient(135deg, #ffffff, #f8faff);
+  background: #ffffff;
 }
 
 .menu-addons p:hover::before {
@@ -151,7 +152,7 @@ body {
 
 /* Selected add-on state */
 .menu-addons p.selected {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #667eea;
   color: #ffffff;
   border-color: #667eea;
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
@@ -195,7 +196,7 @@ body {
   left: 0;
   right: 0;
   height: 3px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
+  background: #667eea;
   transform: scaleX(0);
   transition: transform 0.3s ease;
 }
@@ -233,10 +234,7 @@ body {
 .menu-item .price {
   font-size: 20px; /* Reduced from 24px */
   font-weight: 800;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #667eea;
   flex-shrink: 0;
 }
 
@@ -248,7 +246,7 @@ body {
   right: 20px;
   width: 36px;
   height: 36px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #667eea;
   color: white;
   border-radius: 50%;
   display: flex;
@@ -304,13 +302,17 @@ body {
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #667eea, #764ba2);
+  background: #667eea;
   border-radius: 20px 20px 0 0;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes slideUp {
@@ -342,10 +344,7 @@ body {
 .selected-item-price {
   font-size: 26px;
   font-weight: 800;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #667eea;
   margin-bottom: 24px;
 }
 
@@ -360,7 +359,7 @@ body {
 .selected-item-enhancements {
   margin: 32px 0;
   padding: 24px;
-  background: linear-gradient(135deg, #f8faff 0%, #f1f5ff 100%);
+  background: #f8faff;
   border-radius: 16px;
   border: 2px solid #e6f0ff;
 }
@@ -406,14 +405,14 @@ body {
 }
 
 .selected-item-enhancements li:hover {
-  background: linear-gradient(135deg, #667eea10, #764ba210);
+  background: rgba(102, 126, 234, 0.1);
   border-color: #667eea;
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.15);
 }
 
 .selected-item-enhancements li.selected {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #667eea;
   color: #ffffff;
   border-color: #667eea;
   box-shadow: 0 6px 20px rgba(102, 126, 234, 0.3);
@@ -465,7 +464,7 @@ body {
 }
 
 .selected-item-options li:hover {
-  background: linear-gradient(135deg, #667eea10, #764ba210);
+  background: rgba(102, 126, 234, 0.1);
   border-color: #667eea;
   transform: translateY(-2px);
   box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
@@ -477,7 +476,7 @@ body {
 }
 
 .selected-option {
-  background: linear-gradient(135deg, #667eea10, #764ba210);
+  background: rgba(102, 126, 234, 0.1);
   border: 2px solid #667eea;
   padding: 16px 20px;
   border-radius: 12px;
@@ -492,10 +491,7 @@ body {
 }
 
 .selected-option strong {
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #667eea;
 }
 
 /* Modal buttons */
@@ -527,7 +523,7 @@ body {
 .add-order-btn {
   flex: 2;
   padding: 16px 24px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #667eea;
   color: #ffffff;
   border: none;
   border-radius: 12px;
@@ -572,7 +568,7 @@ body {
 }
 
 .slideshow-btn:hover {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #667eea;
   color: #ffffff;
   border-color: #667eea;
   transform: translateY(-3px);
@@ -630,7 +626,7 @@ body {
 }
 
 .bottom-right-btn {
-  background: linear-gradient(135deg, #667eea, #764ba2);
+  background: #667eea;
   color: #ffffff;
   border-color: #667eea;
 }
@@ -653,52 +649,52 @@ body {
   .slideshow-container {
     padding: 20px 16px 100px 16px;
   }
-  
+
   .menu-container {
     padding: 32px 24px;
   }
-  
+
   .menu-container h2,
   .menu-category h2 {
     font-size: 28px;
   }
-  
+
   .menu-addons {
     padding: 24px 20px;
     margin: 24px 0 36px 0;
   }
-  
+
   .menu-addons p {
     font-size: 14px;
     padding: 10px 16px;
     margin: 6px 8px 6px 0;
   }
-  
+
   .selected-item-enhancements ul {
     grid-template-columns: 1fr;
   }
-  
+
   .menu-item {
     padding: 24px 20px;
   }
-  
+
   .menu-item h3 {
     font-size: 18px;
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-  
+
   .menu-item .price {
     font-size: 20px;
     margin-left: 0;
   }
-  
+
   .menu-item p {
     padding-right: 0;
     font-size: 15px;
   }
-  
+
   .corner-buttons {
     left: 16px;
     right: 16px;

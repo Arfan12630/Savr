@@ -7,7 +7,8 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 999px;
   padding: 10px 12px;
-  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.45), inset 0 1px 0 rgba(255,255,255,0.04);
+  box-shadow: 0 10px 30px rgba(2, 6, 23, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
 
 .chat-input {
@@ -33,7 +34,8 @@
   display: grid;
   place-items: center;
   cursor: pointer;
-  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 .icon-button:hover {
@@ -44,7 +46,7 @@
 }
 
 .icon-button.send {
-  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  background: #6366f1;
   border: none;
   color: white;
 }
@@ -53,4 +55,3 @@
   filter: brightness(1.06);
   transform: translateY(-1px);
 }
-  

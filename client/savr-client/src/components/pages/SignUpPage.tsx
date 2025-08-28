@@ -1,16 +1,19 @@
-import axios from 'axios';
+import { useSignUp } from '../../hooks/useAuth';
+import { SignUpRequest } from '../../types/api';
 import { SignUpContainer } from '../SignUpFunctionality/SignUpContainer';
 import { SignUpFormData } from '../SignUpFunctionality/signUp.schema';
 
-const handleSignUp = async (data: SignUpFormData) => {
-  try {
-    await axios.post('/signup', data);
-  } catch (error) {
-    console.error('Sign up error:', error);
-  }
-};
-
 export function SignUpPage() {
+  const signUpMutation = useSignUp();
+  const handleSignUp = async (data: SignUpFormData) => {
+    const signUpData: SignUpRequest = {
+      email: data.email,
+      password: data.password,
+      full_name: data.fullName,
+      phone_number: data.phoneNumber,
+    };
+    await signUpMutation.mutateAsync(signUpData);
+  };
   return (
     <div
       style={{
@@ -21,7 +24,7 @@ export function SignUpPage() {
       }}>
       <SignUpContainer
         onSubmit={handleSignUp}
-        isLoading={false}
+        isLoading={signUpMutation.isPending}
       />
     </div>
   );
