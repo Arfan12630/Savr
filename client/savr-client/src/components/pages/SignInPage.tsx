@@ -1,7 +1,7 @@
 import { useSignIn } from '../../hooks/useAuth';
 import { SignInRequest } from '../../types/api';
-import { SignInContainer } from '../SignInFunctionality/SignInContainer';
-import { SignInFormData } from '../SignInFunctionality/signIn.schema';
+import { SignInContainer } from '../SignIn/SignInContainer';
+import { SignInFormData } from '../SignIn/signIn.schema';
 
 export function SignInPage() {
   const signInMutation = useSignIn();

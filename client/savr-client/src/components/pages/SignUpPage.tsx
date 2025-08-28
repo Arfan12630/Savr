@@ -1,7 +1,7 @@
 import { useSignUp } from '../../hooks/useAuth';
 import { SignUpRequest } from '../../types/api';
-import { SignUpContainer } from '../SignUpFunctionality/SignUpContainer';
-import { SignUpFormData } from '../SignUpFunctionality/signUp.schema';
+import { SignUpContainer } from '../SignUp/SignUpContainer';
+import { SignUpFormData } from '../SignUp/signUp.schema';
 
 export function SignUpPage() {
   const signUpMutation = useSignUp();

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { SignUpContainer } from '../components/SignUpFunctionality/SignUpContainer';
+import { SignUpContainer } from '../components/SignUp/SignUpContainer';
 
 const meta: Meta<typeof SignUpContainer> = {
   title: 'Authentication/SignUp',

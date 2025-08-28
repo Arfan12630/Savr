@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import { SignIn } from '../components/SignInFunctionality/SignIn';
+import { SignIn } from '../components/SignIn/SignIn';
 
 const meta: Meta<typeof SignIn> = {
   title: 'Authentication/SignIn',
