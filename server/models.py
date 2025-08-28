@@ -2,7 +2,7 @@ import os
 import uuid
 from datetime import datetime
 from typing import Optional
-
+from collections.abc import Generator
 from sqlmodel import SQLModel, Field, create_engine, Session
 from sqlalchemy.dialects.postgresql import ARRAY, JSON, UUID
 from sqlalchemy import func, DateTime, String
@@ -13,7 +13,7 @@ SQLALCHEMY_DATABASE_URL = os.environ.get("SQL_DB_LINK")
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
 
 
-def get_db():
+def get_db() -> Generator[Session, None, None]:
     """Get database session."""
     with Session(engine) as session:
         yield session

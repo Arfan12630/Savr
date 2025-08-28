@@ -14,6 +14,7 @@ from restaurant_scraping.menu_image import menu_image_router
 from restaurant_scraping.restaurant_entry import restaurant_entry_router
 from restaurant_scraping.scraper import scraper_router
 from registration import registration
+from login import login
 load_dotenv()
 
 app = FastAPI(title="Savr API", version="1.0.0")
@@ -30,6 +31,7 @@ app.include_router(scraper_router, tags=["scraper"])
 app.include_router(menu_image_router, tags=["menu"])
 app.include_router(restaurant_entry_router, tags=["restaurant"])
 app.include_router(registration, tags=["registration"])
+app.include_router(login, tags=["login"])
 
 class LayoutRequest(BaseModel):
     """Request model for layout data."""
