@@ -38,19 +38,11 @@ export function SignUp({ onSubmit, onSignInClick, isSubmitting }: SignUpProps) {
             gap: 2,
           }}>
           <TextFieldRHF
-            name="firstName"
-            label="First Name"
-            placeholder="Enter your first name"
+            name="fullName"
+            label="Full Name"
+            placeholder="Enter your full name"
             required
           />
-
-          <TextFieldRHF
-            name="lastName"
-            label="Last Name"
-            placeholder="Enter your last name"
-            required
-          />
-
           <TextFieldRHF
             name="email"
             label="Email"

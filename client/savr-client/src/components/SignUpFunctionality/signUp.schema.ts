@@ -1,23 +1,13 @@
 import { z } from 'zod';
 
-const firstNameSchema = z
+const fullNameSchema = z
   .string()
-  .min(1, 'First name is required')
-  .min(2, 'First name must be at least 2 characters')
-  .max(50, 'First name must be less than 50 characters')
+  .min(1, 'Full name is required')
+  .min(2, 'Full name must be at least 2 characters')
+  .max(50, 'Full name must be less than 50 characters')
   .trim()
-  .refine(value => /^[a-zA-Z]+$/.test(value), {
-    message: 'First name can only contain letters',
-  });
-
-const lastNameSchema = z
-  .string()
-  .min(1, 'Last name is required')
-  .min(2, 'Last name must be at least 2 characters')
-  .max(50, 'Last name must be less than 50 characters')
-  .trim()
-  .refine(value => /^[a-zA-Z]+$/.test(value), {
-    message: 'Last name can only contain letters',
+  .refine(value => /^[a-zA-Z\s]+$/.test(value), {
+    message: 'Full name can only contain letters and spaces',
   });
 
 const emailSchema = z
@@ -56,8 +46,7 @@ const termsSchema = z.boolean().refine(terms => terms === true, {
 
 export const signUpSchema = z
   .object({
-    firstName: firstNameSchema,
-    lastName: lastNameSchema,
+    fullName: fullNameSchema,
     email: emailSchema,
     password: passwordSchema,
     confirmPassword: confirmPasswordSchema,
@@ -72,8 +61,7 @@ export const signUpSchema = z
 export type SignUpFormData = z.infer<typeof signUpSchema>;
 
 export const signUpDefaultValues: Partial<SignUpFormData> = {
-  firstName: '',
-  lastName: '',
+  fullName: '',
   email: '',
   password: '',
   confirmPassword: '',
