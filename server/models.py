@@ -1,106 +1,121 @@
 import os
 import uuid
 from datetime import datetime
+from typing import Optional
 
-from sqlalchemy import (Boolean, Column, DateTime, Integer, String, Text,
-                        create_engine, func)
+from sqlmodel import SQLModel, Field, create_engine, Session
 from sqlalchemy.dialects.postgresql import ARRAY, JSON, UUID
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy import func, DateTime, String
+import user_models
 
 # Database setup
 SQLALCHEMY_DATABASE_URL = os.environ.get("SQL_DB_LINK")
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
 
 
 def get_db():
     """Get database session."""
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+    with Session(engine) as session:
+        yield session
 
 
-class Restaurant(Base):
+class Restaurant(SQLModel, table=True):
     """Restaurant model for basic restaurant information."""
-
+    
     __tablename__ = "restaurants"
+    
+    id: int | None = Field(default=None, primary_key=True)
+    name: str = Field(max_length=255)
+    address: str | None = Field(default=None)
+    hours: str | None = Field(default=None, max_length=255)
+    link: str | None = Field(default=None)
+    menu_images: dict | None = Field(default=None, sa_type=JSON)
+    menu_html: dict | None = Field(default=None, sa_type=JSON)
+    created_at: datetime | None = Field(
+        default_factory=datetime.now,
+        sa_type=DateTime(timezone=True),
+        sa_column_kwargs={"server_default": func.now()},
+    )
+    logo: str | None = Field(default=None)
 
-    id = Column(Integer, primary_key=True)
-    name = Column(String(255), nullable=False)
-    address = Column(Text)
-    hours = Column(String(255))
-    link = Column(Text)
-    menu_images = Column(JSON)
-    menu_html = Column(JSON)
-    created_at = Column(DateTime, default=func.now())
-    logo = Column(Text)
 
-
-class RestaurantEntry(Base):
+class RestaurantEntry(SQLModel, table=True):
     """Restaurant entry model with enhanced features."""
-
+    
     __tablename__ = "restaurant_entries"
+    
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True, sa_type=UUID(as_uuid=True))
+    name: str = Field(max_length=255)
+    address: str | None = Field(default=None)
+    hours: list[str] | None = Field(default=None, sa_type=ARRAY(String))
+    menu_images: dict | None = Field(default=None, sa_type=JSON)
+    menu_html: dict | None = Field(default=None, sa_type=JSON)
+    created_at: datetime | None = Field(
+        default_factory=datetime.now,
+        sa_type=DateTime(timezone=True),
+        sa_column_kwargs={"server_default": func.now()},
+    )
+    rag_ready: bool = Field(default=False)
+    logo: str | None = Field(default=None)
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    name = Column(String(255), nullable=False)
-    address = Column(Text)
-    hours = Column(ARRAY(String(2556)))
-    menu_images = Column(JSON)
-    menu_html = Column(JSON)
-    created_at = Column(DateTime, default=func.now())
-    rag_ready = Column(Boolean, default=False)
-    logo = Column(Text)
 
-
-class Reservations(Base):
+class Reservations(SQLModel, table=True):
     """Reservation model for table bookings."""
-
+    
     __tablename__ = "reservations"
+    
+    reservation_id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True, sa_type=UUID(as_uuid=True))
+    user_id: uuid.UUID | None = Field(default=None, sa_type=UUID(as_uuid=True))
+    restaurant_name: str = Field(max_length=255)
+    restaurant_address: str | None = Field(default=None)
+    table_id: uuid.UUID | None = Field(default=None, sa_type=UUID(as_uuid=True))
+    reservation_date: datetime
+    reservation_time: datetime
+    reservation_status: str = Field(default="pending", max_length=255)
+    start_cooking: str
+    order: dict | None = Field(default=None, sa_type=JSON)
 
-    reservation_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    user_id = Column(UUID(as_uuid=True))
-    restaurant_name = Column(String(255), nullable=False)
-    restaurant_address = Column(Text)
-    table_id = Column(UUID(as_uuid=True))
-    reservation_date = Column(DateTime, nullable=False)
-    reservation_time = Column(DateTime, nullable=False)
-    reservation_status = Column(String(255), default="pending")
-    start_cooking = Column(Text, nullable=False)
-    order = Column(JSON)
 
-
-class SharedMenuLink(Base):
+class SharedMenuLink(SQLModel, table=True):
     """Shared menu link model for group dining sessions."""
-
+    
     __tablename__ = "shared_menu_link"
+    
+    session_id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True, sa_type=UUID(as_uuid=True))
+    restaurant_name: str = Field(max_length=255)
+    table_number: str = Field(max_length=255)
+    host_user_id: uuid.UUID = Field(sa_type=UUID(as_uuid=True))
+    expires_at: datetime
+    link: str
+    participants: list[uuid.UUID] | None = Field(default=None, sa_type=ARRAY(UUID))
+    created_at: datetime | None = Field(
+        default_factory=datetime.now,
+        sa_type=DateTime(timezone=True),
+        sa_column_kwargs={"server_default": func.now()},
+    )
+    updated_at: datetime | None = Field(
+        default_factory=datetime.now,
+        sa_type=DateTime(timezone=True),
+        sa_column_kwargs={"server_default": func.now(), "onupdate": func.now()},
+    )
 
-    session_id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    restaurant_name = Column(String(255), nullable=False)
-    table_number = Column(String(255), nullable=False)
-    host_user_id = Column(UUID(as_uuid=True), nullable=False)
-    expires_at = Column(DateTime, nullable=False)
-    link = Column(Text, nullable=False)
-    participants = Column(ARRAY(UUID))
-    created_at = Column(DateTime, default=func.now())
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
 
-
-class Layout(Base):
+class Layout(SQLModel, table=True):
     """Layout model for restaurant floor plans."""
-
+    
     __tablename__ = "layouts"
+    
+    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True, sa_type=UUID(as_uuid=True))
+    created_at: datetime | None = Field(
+        default_factory=datetime.now,
+        sa_type=DateTime(timezone=True),
+        sa_column_kwargs={"server_default": func.now()},
+    )
+    chairs: dict | None = Field(default=None, sa_type=JSON)
+    tables: dict | None = Field(default=None, sa_type=JSON)
+    name: str = Field(max_length=255)
+    address: str | None = Field(default=None)
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    created_at = Column(DateTime, default=func.now())
-    chairs = Column(JSON)
-    tables = Column(JSON)
-    name = Column(String(255), nullable=False)
-    address = Column(Text)
 
-
-# Create tables
-Base.metadata.create_all(bind=engine)
+# Create all tables
+SQLModel.metadata.create_all(bind=engine)

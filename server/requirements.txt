@@ -7,12 +7,15 @@ fastapi-cors
 # Database
 psycopg2-binary
 sqlalchemy
-
+sqlmodel
+passlib
+jwt
 # Web scraping and HTTP
 requests
 beautifulsoup4
 selenium
 webdriver-manager
+
 
 # AI and ML
 openai
@@ -44,6 +47,7 @@ aiohttp
 async-timeout
 
 # Utilities
+pydantic[email]
 pydantic
 tqdm
 typing_extensions
