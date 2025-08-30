@@ -9,7 +9,7 @@ psycopg2-binary
 sqlalchemy
 sqlmodel
 passlib
-jwt
+pyJWT
 # Web scraping and HTTP
 requests
 beautifulsoup4

@@ -24,6 +24,7 @@ def create_user(user: UserRegister, db: Session) -> User:
         full_name=user.full_name,
         phone_number=user.phone_number,
         is_active=True,
+        is_owner=False,
         hashed_password=get_password_hash(user.password),
     )
 
@@ -31,19 +32,19 @@ def create_user(user: UserRegister, db: Session) -> User:
     db.commit()
     db.refresh(db_user)
     return db_user
+  
+
+def create_public_user(user: User) -> UserPublic:
+    return UserPublic(
+        id=user.id,
+        email=user.email,
+        full_name=user.full_name,
+        phone_number=user.phone_number,
+        is_owner=user.is_owner,
+    )
 
 @registration.post("/signup", response_model=UserPublic)
 def signup(user: UserRegister, db: Session = Depends(get_db)) -> UserPublic:
     db_user = create_user(user, db)
-    # Manually create UserPublic object to exclude hashed_password
-    return UserPublic(
-        id=db_user.id,
-        email=db_user.email,
-        full_name=db_user.full_name,
-        phone_number=db_user.phone_number,
-        is_active=db_user.is_active,
-    )
-@registration.post("/signup", response_model=User)
-def signup(user: UserRegister, db: Session = Depends(get_db)) -> User:
-    return create_user(user, db)
+    return create_public_user(db_user)
 

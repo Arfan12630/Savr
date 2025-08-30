@@ -1,8 +1,13 @@
 from datetime import datetime, timedelta, timezone
 from typing import Any
 import jwt
+from jwt.exceptions import InvalidTokenError
+from pydantic import ValidationError
+from fastapi import HTTPException, status
 import secrets
 from passlib.context import CryptContext    
+
+from user_models import TokenPayload
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 ALGORITHM = "HS256"
@@ -18,3 +23,4 @@ def generate_access_token(id:str, expires_delta: timedelta):
     to_encode = {"exp": expire, "sub": str(id)}
     encoded_jwt = jwt.encode(to_encode, secrets.token_urlsafe(32), algorithm=ALGORITHM)
     return encoded_jwt
+
